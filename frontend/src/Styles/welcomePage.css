@@ -1,0 +1,65 @@
+.welcomePageTopic{
+  margin-top: 300px;
+  color: #0f396d;
+  font-size: 50px;
+}
+
+.welcomebtn{
+    background-color: #12488a;
+    border: 1px solid #56A2FC;
+    padding: 20px;
+}
+.welcomeNavBar {
+  background-color: rgba(255, 255, 255, 0.586); 
+  padding-left: 10px;
+  padding-right: 30px;  /* Padding of the navbar */
+}
+
+.welcomeNavBar .navbar-brand {
+  font-size: 2rem; /* Name of the medical center */
+  color: #1a879a;
+}
+
+.welcomeNavBar .nav-link { /* The links in the navbar */
+  font-size: 1.3rem;  
+  padding: 10px 15px; 
+  margin-right: 40px;
+}
+
+.welcomeNavBar .btn { /* Login button in the navbar */
+  font-size: 1.3rem; 
+  padding: 10px;
+}
+
+.btnWhoAreYou{
+   padding: 30px;
+   box-shadow: 4px 6px 10px rgba(0, 0, 0, 0.2);
+   background-color: white;
+   color:rgb(79, 147, 160);
+   border: transparent;
+   padding-left: 60px;
+   padding-right: 60px;
+}
+
+.btnWhoAreYou:hover{
+    background-color: rgb(79, 147, 160);
+    color:#ffffff;
+}
+
+.btnWhoAreYou:active{
+  background-color: rgb(60, 110, 120) !important;
+  color:#ffffff;
+}
+
+.btnRow{
+  margin-top: 200px;
+}
+
+.nav-div
+{
+  padding: 0px;
+  
+}
+.btn-sin-text{
+  margin-left: 1px;
+}

@@ -1,0 +1,129 @@
+.dashboard-container {
+    display: flex;
+    height: 100vh;
+  }
+  
+  .vertical-nav {
+    width: 250px;
+    background-color:#2c6a7595;
+    color: white;
+    padding-top: 20px;
+    font-size: large;
+    text-align: center;;
+  }
+  
+  .vertical-nav h4 {
+    text-align: center;
+    background-color:#1b4249 ;
+    padding: 20px;
+  }
+  
+  .vertical-nav .nav-item {
+    margin: 20px;
+
+  }
+  
+  .vertical-nav .nav-link {
+    color: white;
+    text-decoration: none;
+  }
+  
+  .vertical-nav .nav-link:hover {
+    background-color: #122c31;
+    border-radius: 4px;
+  }
+  
+  .content-area {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #f8f9fa;
+  }
+  
+  .greeting-container {
+    text-align: left;
+    padding: 10px;
+    box-shadow: 4px 6px 10px rgba(0, 0, 0, 0.2);    width: 500px;
+    border-radius: 20px;
+    background-color: transparent;
+    margin : 40px;
+  }
+  
+  .assistant-name {
+    font-size: 2rem;
+    font-weight: bold;
+  }
+  
+  .greeting-text {
+    font-size: 2rem;
+    color: gray;
+  }
+  
+  .button-container {
+    display: flex;
+    gap: 10px;
+    margin: 40px;
+  }
+  
+  .dashboard-content {
+    padding: 20px;
+    flex-grow: 1;
+    background-color: #f8f9fa;
+  }
+  
+  .logout-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+  
+  .logout-btn:hover {
+    background-color: #9c1a27;
+  }
+  
+  .btnAddPatient{
+    padding: 40px;
+    background-color:rgb(157, 211, 236) ;
+    border:transparent;
+    color:rgb(31, 68, 85);
+  }
+  .btnAddPatient:hover{
+    background-color: #2f85f6;
+  }
+
+  .btnAddInventory{
+    padding: 40px;
+    background-color: #f9f6a8;
+    border: transparent;
+    color:#737013;
+  }
+
+  .btnAddInventory:hover{
+    background-color: #faf43e;
+  }
+
+  .btnstartQueue{
+    padding: 40px;
+    background-color: #f59535;
+    border: transparent;
+    color: #663d14;
+  }
+
+  .btnstartQueue:hover{
+    background-color: #f67b00;
+  }
+  
+  .nav-icon{
+    margin-right: 10px;
+    font-size: 20px;;
+  }

@@ -1,14 +1,14 @@
-"use client"; // This line makes the component a client component
+"use client";
 
 import React from 'react';
-import { useRouter } from 'next/navigation'; // Use next/navigation for router
+import { useRouter } from 'next/navigation';
 import '../../Styles/AssistantDashboard.css';
 import DoctorNavBar from '../../components/assistantSideBar';
 import { FaUser, FaBoxes } from 'react-icons/fa'; // Import icons
 
 function DoctorDashboard() {
   const router = useRouter();
-  const username = router.query.username || 'Doctor'; // Set a default value
+  const username = router.query?.username ; // ✅ Optional chaining to prevent errors
 
   // Function to handle logout
   const logout = () => {
@@ -24,7 +24,7 @@ function DoctorDashboard() {
 
       <div className="content-area">
         <div className="greeting-container">
-          <h5 className="assistant-name">Hello, {username}</h5> {/* Use a fallback for username */}
+          <h5 className="assistant-name">Hello, {username}</h5> {/* Default to 'Doctor' if username is not available */}
           <p className="greeting-text">Welcome back!</p>
         </div>
 

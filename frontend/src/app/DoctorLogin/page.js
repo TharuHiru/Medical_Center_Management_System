@@ -1,11 +1,13 @@
 "use client"; 
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation"; // Next.js routing
-import BackNavbar from "../../components/backNavBar"; // Navbar component
+import { useRouter } from "next/navigation"; 
+
+import BackNavbar from "../../components/backNavBar"; 
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { doctorLogin } from "../../Services/authService";
+
+import { doctorLogin } from "../../services/authService";
 import Link from "next/link"; // Next.js navigation
 
 function DoctorLogin() {
@@ -15,23 +17,29 @@ function DoctorLogin() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
-      const data = await doctorLogin(UserName, password);
-
+      const data = await doctorLogin(UserName, password); // API call
+  
       if (data.success) {
         toast.success("Logged in successfully!");
-        localStorage.setItem("doctorToken", data.token); // Save token for authentication
-
-        // Redirect to Doctor Dashboard
-        router.push(`/DoctorDashboard?username=${UserName}`);
+        localStorage.setItem("doctorToken", data.token);
+  
+        // Redirect with username
+        router.push(`/DoctorDashboard?username=${encodeURIComponent(UserName)}`);
       } else {
+        console.error("Login Failed:", data.message); // Debugging
         toast.error(data.message || "Login failed! Invalid username or password");
       }
     } catch (error) {
-      toast.error("An error occurred while logging in.");
+      console.error("Login Error:", error); // Debugging
+  
+      // Handle backend errors from `doctorLogin`
+      toast.error(error.message || "A network error occurred. Please check your connection.");
     }
   };
+  
+  
 
   return (
     <div>
@@ -76,6 +84,7 @@ function DoctorLogin() {
       </section>
     </div>
   );
-}
+};
 
 export default DoctorLogin;
+  

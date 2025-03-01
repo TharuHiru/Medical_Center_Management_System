@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import BackNavbar from "../../components/backNavBar"; // Import Navbar
 import { useRouter } from "next/navigation"; // Import useRouter hook
-import { registerDoctorStep1 } from "../../Services/authService";
+import { registerDoctorStep1 } from "../../services/authService";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 

@@ -88,6 +88,7 @@ router.post('/register/step2', async (req, res) => {
 
         if (!isMatch){
             return res.status(401).json({success:false , message:"Invalid Credentials !"})
+            console.log("Invalid Credentials");
         }
 
         // Generate JWT token

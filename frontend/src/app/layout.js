@@ -2,6 +2,8 @@
 
 import { useEffect } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ToastContainer } from "react-toastify"; // Import ToastContainer
+import "react-toastify/dist/ReactToastify.css"; // Import Toastify CSS
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,8 +16,9 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+//react component that wraps the entire app
 export default function RootLayout({ children }) {
-  // ✅ Load Bootstrap only in the browser (client-side)
+
   useEffect(() => {
     import("bootstrap/dist/js/bootstrap.bundle.min.js");
   }, []);
@@ -24,6 +27,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         {children}
+        <ToastContainer position="top-right" autoClose={5000} />
       </body>
     </html>
   );

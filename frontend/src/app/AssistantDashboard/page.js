@@ -1,6 +1,10 @@
+"use client"
+
 import React from 'react';
-import { useRouter } from 'next/router'; // Import useRouter from Next.js
-import styles from '../../Styles/AssistantDashboard.module.css'; // Adjust if using CSS Modules
+import { useRouter } from 'next/navigation'; // Import useRouter from Next.js
+import '../../Styles/AssistantDashboard.css';
+import '../../Styles/sideNavBar.css';
+import '../../Styles/loginForms.css';
 import AssistNavBar from '../../components/assistantSideBar';
 import { FaUser, FaBoxes, FaPlay } from 'react-icons/fa'; // Import icons
 
@@ -15,31 +19,31 @@ function AssistantDashboard() {
   };
 
   return (
-    <div className={styles.dashboardContainer}> {/* Use styles if using CSS Modules */}
+    <div className="dashboard-container">
       {/* Vertical Navigation Bar */}
       <AssistNavBar onLogout={logout} /> {/* Pass the logout function as a prop */}
 
-      <div className={styles.contentArea}>
-        <div className={styles.greetingContainer}>
-          <h5 className={styles.assistantName}>Hello, Assistant Name</h5>
-          <p className={styles.greetingText}>Welcome back!</p>
+      <div className="content-area">
+        <div className="greeting-container">
+          <h5 className="assistant-name">Hello, Assistant Name</h5>
+          <p className="greeting-text">Welcome back!</p>
         </div>
 
         {/* Three Buttons */}
-        <div className={styles.buttonContainer}>
-          <button className={`${styles.btn} ${styles.btnPrimary} ${styles.btnAddPatient}`}>
-            <FaUser size={40} />
+        <div className="button-container">
+        <button className="btn btn-primary btnAddPatient">
+        <FaUser size={40} />
             <br />
             Add new Patient
           </button>
 
-          <button className={`${styles.btn} ${styles.btnPrimary} ${styles.btnAddInventory}`}>
+          <button className="btn btn-primary btnAddInventory">
             <FaBoxes size={40} />
             <br />
             Add new Inventory
           </button>
 
-          <button className={`${styles.btn} ${styles.btnPrimary} ${styles.btnStartQueue}`}>
+          <button className="btn btn-primary btnstartQueue">
             <FaPlay size={40} />
             <br />
             <h5>Start Queue</h5>

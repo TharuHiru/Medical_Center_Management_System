@@ -1,18 +1,19 @@
 "use client";
 
 import React from 'react';
-import { useRouter } from 'next/navigation';
+import { useSearchParams } from "next/navigation";
 import '../../Styles/AssistantDashboard.css';
-import DoctorNavBar from '../../components/assistantSideBar';
+import '../../Styles/loginForms.css';
+import DoctorNavBar from '../../components/doctorSideBar';
 import { FaUser, FaBoxes } from 'react-icons/fa'; // Import icons
 
 function DoctorDashboard() {
-  const router = useRouter();
-  const username = router.query?.username ; // ✅ Optional chaining to prevent errors
+  //This is used to fetch the username from the URL
+  const searchParams = useSearchParams();
+  const username = searchParams.get("username");
 
   // Function to handle logout
   const logout = () => {
-    // Logout logic
     console.log('Logged out');
     router.push('/login'); // Use router.push instead of navigate
   };

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import BackNavbar from '../../components/backNavBar'; // Import the Navbar component
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { registerDoctorStep2 } from '../../Services/authService'; // Import the registerDoctor step 2 function
+import { registerDoctorStep2 } from '../../services/authService'; // Import the registerDoctor step 2 function
 import { useRouter } from 'next/router'; // Import useRouter from next/router
 
 // Component for the Doctor Sign Up Details

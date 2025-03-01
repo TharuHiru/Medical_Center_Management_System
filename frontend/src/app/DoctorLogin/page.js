@@ -29,7 +29,7 @@ function DoctorLogin() {
       if (data.success) {
         toast.success("Logged in successfully!");
         localStorage.setItem("doctorToken", data.token);
-        // Redirect with username
+       // Redirect with username
         router.push(`/DoctorDashboard?username=${encodeURIComponent(UserName)}`);
       } 
       else {

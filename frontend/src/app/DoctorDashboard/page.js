@@ -1,14 +1,18 @@
 "use client";
 
-import React from 'react';
-import { useSearchParams } from "next/navigation";
+import React , { useState } from 'react';
+import { useSearchParams , useRouter } from "next/navigation";
 import '../../Styles/AssistantDashboard.css';
 import '../../Styles/loginForms.css';
 import DoctorNavBar from '../../components/doctorSideBar';
 import { FaUser, FaBoxes } from 'react-icons/fa'; // Import icons
 
+import AddAssistantModal from '../../components/addAssistantModel';
+
 function DoctorDashboard() {
   //This is used to fetch the first anem and the last name from the URL
+  const router = useRouter();
+
   const searchParams = useSearchParams();
   const firstName = searchParams.get("firstname");
   const lastName = searchParams.get("lastname");
@@ -18,8 +22,25 @@ function DoctorDashboard() {
   const logout = () => {
     console.log('Logged out');
     router.push('/login'); // Use router.push instead of navigate
+
   };
 
+    const [showAssistantModal, setShowAssistantModal] = useState(false);
+    const [showInventoryModal, setShowInventoryModal] = useState(false);
+    
+    const handleShowAssistantModal = () => setShowAssistantModal(true);
+    const handleCloseAssistantModal = () => setShowAssistantModal(false);
+    
+    //const handleShowInventoryModal = () => setShowInventoryModal(true);
+    //const handleCloseInventoryModal = () => setShowInventoryModal(false);
+    
+    const handleFormSubmit = () => {
+    console.log("Form submitted");
+    handleCloseAssistantModal(); // Close modal after submission
+    
+  
+    };
+  
   return (
     <div className="dashboard-container">
       {/* Vertical Navigation Bar */}
@@ -32,11 +53,16 @@ function DoctorDashboard() {
         </div>
 
         <div className="button-container">
-          <button className="btn btn-primary btnAddPatient">
-            <FaUser size={40} />
+          <button className="btn btn-primary btnAddPatient" onClick={handleShowAssistantModal}>
+            <FaUser size={40}  />
             <br />
             Add new Assistant
           </button>
+
+          <AddAssistantModal 
+            showModal={showAssistantModal} 
+            handleClose={handleCloseAssistantModal} 
+            handleSubmit={handleFormSubmit} />
 
           <button className="btn btn-primary btnAddInventory">
             <FaBoxes size={40} />

@@ -94,8 +94,15 @@ router.post('/register/step2', async (req, res) => {
 
         // Generate JWT token
             const token = jwt.sign({ id: LoggedDoctor.id }, "your_secret_key", { expiresIn: "1h" });
-
-            return res.json({ success: true, message: "Login successful!", token });
+            return res.json({ 
+                success: true, 
+                message: "Login successful!", 
+                token,
+                user: {
+                    firstName: LoggedDoctor.First_Name,
+                    lastName: LoggedDoctor.Last_Name,
+                }
+        });
         } catch (error) {
             console.error("Login error:", error);
             res.status(500).json({ success: false, message: "Server error!" });

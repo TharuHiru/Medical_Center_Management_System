@@ -8,9 +8,11 @@ import DoctorNavBar from '../../components/doctorSideBar';
 import { FaUser, FaBoxes } from 'react-icons/fa'; // Import icons
 
 function DoctorDashboard() {
-  //This is used to fetch the username from the URL
+  //This is used to fetch the first anem and the last name from the URL
   const searchParams = useSearchParams();
-  const username = searchParams.get("username");
+  const firstName = searchParams.get("firstname");
+  const lastName = searchParams.get("lastname");
+  const username = `${firstName} ${lastName}`;
 
   // Function to handle logout
   const logout = () => {

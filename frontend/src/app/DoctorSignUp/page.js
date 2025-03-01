@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import BackNavbar from "../../components/backNavBar"; // Import Navbar
 import { useRouter } from "next/navigation"; // Import useRouter hook
+
+import BackNavbar from "../../components/backNavBar"; // Import Navbar
 import { registerDoctorStep1 } from "../../services/authService";
+
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -73,8 +75,9 @@ const DoctorSignUp = () => {
       const result = await registerDoctorStep1(formData);
       if (result.success) {
         toast.success("Step 1 complete. Proceed to Step 2.");
-        router.push("/DoctorSignUpDetails"); // Change this to your desired route
-      } else {
+        router.push("/DoctorSignUpDetails"); 
+      } 
+      else {
         toast.error(result.message || "Something went wrong!");
       }
     } catch (error) {

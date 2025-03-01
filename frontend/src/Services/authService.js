@@ -10,7 +10,9 @@ export const registerDoctorStep1 = async (formData) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
     });
+    
     return await response.json();
+
   } catch (error) {
     console.error("Registration error:", error);
     throw new Error("Failed to connect to the server");
@@ -28,11 +30,8 @@ export const registerDoctorStep2 = async (formData) => {
       body: JSON.stringify(formData),
     });
 
-    const data = await response.json();
+    return await response.json();
 
-    if (!response.ok) {
-      throw new Error(data.message || 'Registration failed');
-    }
   } catch (error) {
     throw new Error(error.message || 'Failed to connect to the server');
   }
@@ -41,6 +40,7 @@ export const registerDoctorStep2 = async (formData) => {
 
 // Doctor Login API Call
 export const doctorLogin = async (UserName, password) => {
+  // call the function in the node backend
   try {
     const response = await axios.post(`${API_URL}/doctor-login`, {
       UserName,

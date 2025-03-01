@@ -1,37 +1,43 @@
 "use client"; 
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation"; 
+import React, { useState } from "react"; //get state
+import { useRouter } from "next/navigation"; // use routing
 
-import BackNavbar from "../../components/backNavBar"; 
-import { toast } from "react-toastify";
+import BackNavbar from "../../components/backNavBar"; //import backnav bar to use
+
+import { toast } from "react-toastify";// toast css
 import "react-toastify/dist/ReactToastify.css";
 
-import { doctorLogin } from "../../services/authService";
+import { doctorLogin } from "../../services/authService"; // import the login function from the service file
 import Link from "next/link"; // Next.js navigation
 
 function DoctorLogin() {
   const router = useRouter(); // Use Next.js router
+
+  //set the user name when it changes
   const [UserName, setUserName] = useState('');
   const [password, setPassword] = useState('');
 
+  // function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
   
+    // run the doctor login function using the user name and the password values
     try {
-      const data = await doctorLogin(UserName, password); // API call
+      const data = await doctorLogin(UserName, password); // API call and await for response
   
       if (data.success) {
         toast.success("Logged in successfully!");
         localStorage.setItem("doctorToken", data.token);
-  
         // Redirect with username
         router.push(`/DoctorDashboard?username=${encodeURIComponent(UserName)}`);
-      } else {
-        console.error("Login Failed:", data.message); // Debugging
+      } 
+      else {
+        console.error("Login Failed:", data.message); // messgae for Debugging
         toast.error(data.message || "Login failed! Invalid username or password");
       }
-    } catch (error) {
+    } 
+    catch (error) {
       console.error("Login Error:", error); // Debugging
   
       // Handle backend errors from `doctorLogin`

@@ -16,15 +16,14 @@ router.post('/register/step1', (req, res) => {
     }
 
     userTempData[email] = { title, FirstName, LastName, Speciality , email};// Store data temporarily using email as a key
-    console.log("Stored Step 1 Data:", userTempData); //log fro debugging
-    return res.status(200).json({ success: true, message: 'Step 1 complete. Proceed to Step 2.', email });
+    console.log("Stored Step 1 Data:", userTempData); //log for debugging
+    res.status(200).json({ success: true, message: 'Step 1 complete. Proceed to Step 2.', email });
 });
 
 
 // Doctor Registration :- step2 
 router.post('/register/step2', async (req, res) => {
     console.log("Received Step 2 Data:", req.body); // Log received data
-    console.log("Current Step 1 Data:", userTempData); // Log stored Step 1 data
 
     const { email, username, password, secretKey } = req.body; // Get data from the request body
 
@@ -64,7 +63,9 @@ router.post('/register/step2', async (req, res) => {
         console.log("User registered and temporary data deleted:", email);
 
         return res.status(201).json({ success: true , message: 'User registered successfully.' });
-    } catch (error) {
+
+    } 
+    catch (error) {
         console.error('Error inserting data:', error);
         return res.status(500).json({ message: 'Server error.' });
     }
@@ -87,14 +88,14 @@ router.post('/register/step2', async (req, res) => {
         const isMatch = await bcrypt.compare (password , LoggedDoctor.Password);
 
         if (!isMatch){
+            console.log("Invalid Credentials")
             return res.status(401).json({success:false , message:"Invalid Credentials !"})
-            console.log("Invalid Credentials");
         }
 
         // Generate JWT token
             const token = jwt.sign({ id: LoggedDoctor.id }, "your_secret_key", { expiresIn: "1h" });
 
-            res.json({ success: true, message: "Login successful!", token });
+            return res.json({ success: true, message: "Login successful!", token });
         } catch (error) {
             console.error("Login error:", error);
             res.status(500).json({ success: false, message: "Server error!" });

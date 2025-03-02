@@ -182,17 +182,6 @@ const AddAssistantModal = ({ showModal, handleClose }) => {
           />
         </Form.Group>
 
-        <Form.Group controlId="formPassword" className='addAssisttextbox'>   
-            <Form.Label>Password</Form.Label>
-            <Form.Control
-                type="password"
-                placeholder="Enter password"
-                name="password"
-                value={assistantDetails.password}
-                onChange={handleInputChange}
-            />
-        </Form.Group>
-
             <Button variant="primary" type="submit" disabled={loading} className="btn btn-primary w-100 loginBtn">
               Add Assistant
               {loading ? 'Submitting...' : ''}

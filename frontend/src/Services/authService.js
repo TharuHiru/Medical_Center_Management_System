@@ -52,3 +52,18 @@ export const registerAssistant = async (assistantDetails) => {
     return error.response?.data || { success: false, message: "Server error!" };
   }
 }
+
+// Assistant Login API Call
+export const assistLogin = async (email, password) => {
+  // call the function in the node backend
+  try {
+    const response = await axios.post(`${API_URL}/assistant-login`, {
+      email,
+      password,
+    });
+
+    return response.data; // Return the response data
+  } catch (error) {
+    return error.response?.data || { success: false, message: "Server error!" };
+  }
+};

@@ -1,7 +1,7 @@
 "use client"
 
 import React from 'react';
-import { useRouter } from 'next/navigation'; // Import useRouter from Next.js
+import { useSearchParams , useRouter } from "next/navigation";
 import '../../Styles/AssistantDashboard.css';
 import '../../Styles/sideNavBar.css';
 import '../../Styles/loginForms.css';
@@ -10,6 +10,11 @@ import { FaUser, FaBoxes, FaPlay } from 'react-icons/fa'; // Import icons
 
 function AssistantDashboard() {
   const router = useRouter();
+  
+  const searchParams = useSearchParams();
+  const firstName = searchParams.get("firstname");
+  const lastName = searchParams.get("lastname");
+  const username = `${firstName} ${lastName}`;
 
   // Function to handle logout
   const logout = () => {
@@ -25,8 +30,7 @@ function AssistantDashboard() {
 
       <div className="content-area">
         <div className="greeting-container">
-          <h5 className="assistant-name">Hello, Assistant Name</h5>
-          <p className="greeting-text">Welcome back!</p>
+        <h5 className="assistant-name">Hello, {username}</h5> {/* Default to 'Doctor' if username is not available */}          <p className="greeting-text">Welcome back!</p>
         </div>
 
         {/* Three Buttons */}

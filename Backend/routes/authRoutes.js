@@ -2,6 +2,8 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const pool = require('../config/db');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+//const nodemailer = require('nodemailer');
 
 const router = express.Router();
 const userTempData = {}; // Temporary storage for step 1 data
@@ -111,23 +113,39 @@ router.post('/register/step2', async (req, res) => {
 
 //Register Assistant
 
-router.post('/register-assistant', async (req, res) => {
+    router.post('/register-assistant', async (req, res) => {
     console.log("Received Assistant Data:", req.body);
-    const { nic, title, firstname, lastname, contact, houseNo, addline1, addline2, email, password } = req.body;
+    const { nic, title, firstname, lastname, contact, houseNo, addline1, addline2, email } = req.body;
 
-    if (!nic || !title || !firstname || !lastname || !contact || !houseNo || !addline1 || !addline2 || !email || !password) {
+    if (!nic || !title || !firstname || !lastname || !contact || !houseNo || !addline1 || !addline2 || !email) {
         return res.status(400).json({ message: "All fields are required." });
+
     }
 
-    try {
-        const hashedPassword = await bcrypt.hash(password, 10);
+    // Check if assistant already exists
+    const [rows] = await pool.query("SELECT * FROM assistant WHERE Assist_Email = ?", [email]);
+    if (rows.length > 0) {  // Check if any rows exist
+        return res.status(400).json({ message: 'Assistant already exists' });
+    }
 
-        const query = `INSERT INTO assistant (NIC, Title, First_Name, Last_Name, Contact_Number, House_No, Address_Line_1, Address_Line_2, Assist_User_Name, Assist_Password) 
+    // Generate a random password
+    //const randomPassword = crypto.randomBytes(6).toString('hex'); // Example: "a3b4c6d7e9f1"
+
+    const randomPassword = "tharu"; // Example: "a3b4c6d7e9f1"
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(randomPassword, 10);
+
+    try {
+        const query = `INSERT INTO assistant (NIC, Title, First_Name, Last_Name, Contact_Number, House_No, Address_Line_1, Address_Line_2, Assist_Email, Assist_Password) 
                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
         await pool.query(query, [nic, title, firstname, lastname, contact, houseNo, addline1, addline2, email, hashedPassword]);
 
-        return res.status(201).json({ success: true, message: 'Assistant registered successfully.' });
+        // Send email with credentials
+        //await sendEmail(email, randomPassword);
+
+        return res.status(201).json({ success: true, message: 'Assistant registered successfully. Email sent!' });
 
     } 
     catch (error) {
@@ -135,5 +153,67 @@ router.post('/register-assistant', async (req, res) => {
         return res.status(500).json({ message: 'Server error.' });
     }
 });
+
+/* Function to send email
+async function sendEmail(email, password) {
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.EMAIL_USER,  
+            pass: process.env.EMAIL_PASS   
+        }
+    });
+
+    const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: 'Your Assistant Account Details',
+        text: `Hello, \n\nYour account has been created. \n\nLogin Details: \nEmail: ${email}\nPassword: ${password}\n\nPlease change your password on your first login.\n\nBest Regards`
+    };
+
+    await transporter.sendMail(mailOptions);
+}
+*/
+
+
+// Assistant Login
+router.post('/assistant-login', async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        const [rows] = await pool.query("SELECT * FROM assistant WHERE Assist_Email = ?", [email]);
+
+        if (rows.length === 0) {
+            return res.status(401).json({ success: false, message: "Assistant not found!" });
+        }
+
+        const LoggedAssistant = rows[0];
+
+        const isMatch = await bcrypt.compare(password, LoggedAssistant.Assist_Password);
+
+        if (!isMatch) {
+            console.log("Invalid Credentials")
+            return res.status(401).json({ success: false, message: "Invalid Credentials !" });
+        }
+    
+        // Generate JWT token
+        const token = jwt.sign({ id: LoggedAssistant.id }, "your_secret_key", { expiresIn: "1h" });
+        return res.json({ 
+            success: true, 
+            message: "Login successful!", 
+            token,
+            user: {
+                firstName: LoggedAssistant.First_Name,
+                lastName: LoggedAssistant.Last_Name,
+            }
+    });
+    } catch (error) {
+        console.error("Login error:", error);
+        res.status(500).json({ success: false, message: "Server error!" });
+    }
+});
+
+        
+
 
 module.exports = router;

@@ -1,27 +1,41 @@
 "use client"
 
-import React from 'react';
+import React , { useState } from 'react';
 import { useSearchParams , useRouter } from "next/navigation";
 import '../../Styles/AssistantDashboard.css';
-import '../../Styles/sideNavBar.css';
 import '../../Styles/loginForms.css';
 import AssistNavBar from '../../components/assistantSideBar';
-import { FaUser, FaBoxes, FaPlay } from 'react-icons/fa'; // Import icons
+import { FaUser, FaBoxes, FaPlay } from 'react-icons/fa'; 
+
+import AddPatientModal from '../../components/addPatientModel';
 
 function AssistantDashboard() {
   const router = useRouter();
   
-  const searchParams = useSearchParams();
-  const firstName = searchParams.get("firstname");
-  const lastName = searchParams.get("lastname");
-  const username = `${firstName} ${lastName}`;
-
   // Function to handle logout
   const logout = () => {
     // Logout logic (e.g., clearing tokens)
     console.log('Logged out');
     router.push('/login'); // Use router.push for navigation
   };
+
+  const searchParams = useSearchParams();
+  const firstName = searchParams.get("firstname");
+  const lastName = searchParams.get("lastname");
+  const username = `${firstName} ${lastName}`;
+
+  const [showPatientModal, setShowPatientModal] = useState(false);    
+  const handleShowPatientModal = () => setShowPatientModal(true);
+  const handleClosePatientModal = () => setShowPatientModal(false);
+  
+  //const handleShowInventoryModal = () => setShowInventoryModal(true);
+  //const handleCloseInventoryModal = () => setShowInventoryModal(false);
+
+  const handleFormSubmit = () => {
+    console.log("Form submitted");
+    handleClosePatientModal(); // Close modal after submission
+  };
+
 
   return (
     <div className="dashboard-container">
@@ -35,11 +49,16 @@ function AssistantDashboard() {
 
         {/* Three Buttons */}
         <div className="button-container">
-        <button className="btn btn-primary btnAddPatient">
+        <button className="btn btn-primary btnAddPatient" onClick={handleShowPatientModal}>
         <FaUser size={40} />
             <br />
             Add new Patient
           </button>
+
+          <AddPatientModal 
+            showModal={showPatientModal} 
+            handleClose={handleClosePatientModal} 
+            handleSubmit={handleFormSubmit} />
 
           <button className="btn btn-primary btnAddInventory">
             <FaBoxes size={40} />

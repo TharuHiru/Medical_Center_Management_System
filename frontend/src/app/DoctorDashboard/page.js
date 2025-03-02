@@ -25,9 +25,7 @@ function DoctorDashboard() {
 
   };
 
-    const [showAssistantModal, setShowAssistantModal] = useState(false);
-    const [showInventoryModal, setShowInventoryModal] = useState(false);
-    
+    const [showAssistantModal, setShowAssistantModal] = useState(false);    
     const handleShowAssistantModal = () => setShowAssistantModal(true);
     const handleCloseAssistantModal = () => setShowAssistantModal(false);
     

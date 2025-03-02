@@ -109,4 +109,31 @@ router.post('/register/step2', async (req, res) => {
         }
 });
 
+//Register Assistant
+
+router.post('/register-assistant', async (req, res) => {
+    console.log("Received Assistant Data:", req.body);
+    const { nic, title, firstname, lastname, contact, houseNo, addline1, addline2, email, password } = req.body;
+
+    if (!nic || !title || !firstname || !lastname || !contact || !houseNo || !addline1 || !addline2 || !email || !password) {
+        return res.status(400).json({ message: "All fields are required." });
+    }
+
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const query = `INSERT INTO assistant (NIC, Title, First_Name, Last_Name, Contact_Number, House_No, Address_Line_1, Address_Line_2, Assist_User_Name, Assist_Password) 
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+        await pool.query(query, [nic, title, firstname, lastname, contact, houseNo, addline1, addline2, email, hashedPassword]);
+
+        return res.status(201).json({ success: true, message: 'Assistant registered successfully.' });
+
+    } 
+    catch (error) {
+        console.error('Error inserting data:', error);
+        return res.status(500).json({ message: 'Server error.' });
+    }
+});
+
 module.exports = router;

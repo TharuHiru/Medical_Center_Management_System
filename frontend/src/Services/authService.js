@@ -40,3 +40,15 @@ export const doctorLogin = async (UserName, password) => {
     return error.response?.data || { success: false, message: "Server error!" };
   }
 };
+
+//Register Assistant API call
+
+export const registerAssistant = async (assistantDetails) => {
+  try {
+    const response = await axios.post(`${API_URL}/register-assistant`,assistantDetails);
+    return response.data; // Return the response data
+
+  } catch (error) {
+    return error.response?.data || { success: false, message: "Server error!" };
+  }
+}

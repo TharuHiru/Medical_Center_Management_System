@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Button, Modal, Form } from 'react-bootstrap';
-import axios from 'axios';
+import { Button, Modal, Form } from 'react-bootstrap';;
 import { toast } from 'react-toastify'; // Import Toastify for toast notifications
 import 'react-toastify/dist/ReactToastify.css';
 import { FaUser } from 'react-icons/fa'; // Import icons
 import '../Styles/loginForms.css';
+
+import { registerAssistant } from "../services/authService";
+
 
 const AddAssistantModal = ({ showModal, handleClose }) => {
   const [assistantDetails, setAssistantDetails] = useState({
@@ -51,18 +53,21 @@ const AddAssistantModal = ({ showModal, handleClose }) => {
 
     setLoading(true);
     try {
-      const response = await axios.post('/api/add-assistant', assistantDetails);
-      if (response.data.success) {
+      const response = await registerAssistant(assistantDetails);
+      if (response.success) {
         toast.success('Assistant added successfully');
+        //clear the form
         setAssistantDetails({
           nic: '', title: '', firstname: '', lastname: '', contact: '',
           houseNo: '', addline1: '', addline2: '', email: '', password: ''
         });
         handleClose(); // Close modal after successful submission
-      } else {
-        toast.error(response.data.message || 'Error adding assistant');
+      } 
+      else {
+        toast.error(response.message || 'Error adding assistant');
       }
-    } catch (error) {
+    } 
+    catch (error) {
       toast.error('Error adding assistant: ' + error.message);
     }
     setLoading(false);
@@ -105,7 +110,7 @@ const AddAssistantModal = ({ showModal, handleClose }) => {
           <Form.Control
             type="text"
             placeholder="Enter first name"
-            name="firstName"
+            name="firstname"
             value={assistantDetails.firstname}
             onChange={handleInputChange}
           />
@@ -116,7 +121,7 @@ const AddAssistantModal = ({ showModal, handleClose }) => {
           <Form.Control
             type="text"
             placeholder="Enter last name"
-            name="lastName"
+            name="lastname"
             value={assistantDetails.lastname}
             onChange={handleInputChange}
           />

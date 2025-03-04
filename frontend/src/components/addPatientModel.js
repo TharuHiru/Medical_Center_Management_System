@@ -127,7 +127,7 @@ const AddPatientModal = ({ showModal, handleClose }) => {
               </Form.Group>
             </Col>
             <Col md={6}>
-              <Form.Group controlId="formContact" className="formGroup">
+              <Form.Group controlId="formContact" className="formGroup ">
                 <Form.Label>Contact</Form.Label>
                 <Form.Control
                   type="text"
@@ -140,8 +140,46 @@ const AddPatientModal = ({ showModal, handleClose }) => {
               </Form.Group>
             </Col>
           </Row>
-  
+
+          <Row>
+            <Col md={12}>
+              <Form.Group controlId="formGender" className="formGroup genderBoxBorder">
+                <Form.Label className="genderLabel">Gender</Form.Label>
+                <Row>
+                  <Col md={6}>
+                    <Form.Check
+                      type="checkbox"
+                      label="Male"
+                      name="gender"
+                      value="male"
+                      checked={patientDetails.gender === "male"}
+                      onChange={handleInputChange}
+                    />
+                  </Col>
+                  <Col md={6}>
+                    <Form.Check
+                      type="checkbox"
+                      label="Female"
+                      name="gender"
+                      value="female"
+                      checked={patientDetails.gender === "female"}
+                      onChange={handleInputChange}
+                    />
+                  </Col>
+                </Row>
+              </Form.Group>
+            </Col>
+          </Row>
           <Row className="mb-3">
+          <Col md={6}>
+          <Form.Label>Date of Birth</Form.Label>
+          <Form.Control
+            type="date"
+            name="dob"
+            value={patientDetails.dob}
+            onChange={handleInputChange}
+          />
+        </Col>
             <Col md={6}>
               <Form.Group controlId="formHouseNo" className="formGroup">
                 <Form.Label>House No</Form.Label>
@@ -155,7 +193,10 @@ const AddPatientModal = ({ showModal, handleClose }) => {
                 />
               </Form.Group>
             </Col>
-            <Col md={6}>
+          </Row>
+  
+          <Row className="mb-3">
+          <Col md={6}>
               <Form.Group controlId="formAddLine1" className="formGroup">
                 <Form.Label>Address Line 1</Form.Label>
                 <Form.Control
@@ -168,9 +209,6 @@ const AddPatientModal = ({ showModal, handleClose }) => {
                 />
               </Form.Group>
             </Col>
-          </Row>
-  
-          <Row className="mb-3">
             <Col md={6}>
               <Form.Group controlId="formAddLine2" className="formGroup">
                 <Form.Label>Address Line 2</Form.Label>
@@ -184,7 +222,9 @@ const AddPatientModal = ({ showModal, handleClose }) => {
                 />
               </Form.Group>
             </Col>
-            <Col md={6}>
+          </Row>
+          <Row>
+          <Col md={12}>
               <Form.Group controlId="formEmail" className="formGroup">
                 <Form.Label>Email</Form.Label>
                 <Form.Control

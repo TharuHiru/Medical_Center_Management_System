@@ -20,6 +20,7 @@ body{
     background-color: #2c6a75;
     color: white;
     transition: background-color 0.3s;
+    margin-top: 15px;
   }
   
 
@@ -55,5 +56,23 @@ body{
 .addAssisttextbox {
   margin-bottom: 15px;
 }
+
+.genderBoxBorder {
+  border: 1px solid #4e494925;  /* Border around the group */
+  padding: 15px;           /* Space inside */
+  border-radius: 8px;      /* Rounded edges */
+  position: relative;      /* Needed for label positioning */
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.genderLabel {
+  position: absolute;
+  top: -12px;              /* Moves the label up */
+  left: -10px;              /* Adjusts label position */
+  background: white;       /* Matches background to blend */
+  padding: 0 8px;          /* Adds space around text */
+}
+
 
 

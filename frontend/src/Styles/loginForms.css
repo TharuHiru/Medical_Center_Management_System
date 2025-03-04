@@ -1,8 +1,5 @@
 body{
     background-image: url("/form-background.jpg");
-    background-size: cover;
-    background-repeat: no-repeat;
-    height: 100vh;
   }
 
   .loginForm{
@@ -15,14 +12,16 @@ body{
     box-shadow: 4px 6px 10px rgba(0, 0, 0, 0.2);
   }
 
-  .loginBtn{
-    background-color: rgb(67, 131, 144);
-    color: white;
+  .loginBtn {
+    font-size: 16px;
+    padding: 12px;
+    border-radius: 5px;
     border: transparent;
-    padding: 10px;
-    margin-top: 15px;
-    margin-bottom: 15px;
+    background-color: #2c6a75;
+    color: white;
+    transition: background-color 0.3s;
   }
+  
 
   .loginBtn:hover{
     background-color: rgb(63, 119, 131);
@@ -32,36 +31,13 @@ body{
     background-color: rgb(48, 90, 99)!important;
   }
 
-.backFormContainer {
-    align-items: center; /* Center horizontally */
-    height: 60vh; /* Adjust height to fit the screen */
-    text-align: center; /* Center text inside */
-    margin-top: 50px;
-    padding: 20px;
-    border-radius: 30px;
-}
 
 .topicText {
     margin-bottom: 20px; 
     color: #2c6a75;
 }
 
-.row {
-    display: flex;
-    justify-content: center; /* Center buttons */
-    gap: 20px; /* Add spacing between buttons */
-}
 
-.backNavBar {
-    background-color: rgba(255, 255, 255, 0.364); 
-    padding-left: 10px;
-    padding-right: 30px; 
-  }
-
-.backNavBar .navbar-brand {
-    font-size: 2rem; /* Name of the medical center */
-    color: rgb(21, 108, 125);
-  }
 
 .backbtn{
   background-color: rgb(79, 147, 160);
@@ -72,21 +48,12 @@ body{
 }
 
 .addAssistTitle{
-  color: #2c6a75;
-  margin-top: 10px;
-  margin-left: 10px;
+  font-size: 24px;
+  color: #2c6a75;;
 }
 
-.addAssistForm{
-  color: #2c6a75;
-}
-
-.addAssisttextbox{
-  width: 100%;
-  padding-left: 0px;
-  padding-right: 10px;
-  padding-bottom: 10px;
-  margin-left: 5px;
+.addAssisttextbox {
+  margin-bottom: 15px;
 }
 
 

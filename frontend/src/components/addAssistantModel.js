@@ -1,14 +1,13 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Button, Modal, Form } from 'react-bootstrap';;
+import { Button, Modal, Form, Row, Col } from 'react-bootstrap';
 import { toast } from 'react-toastify'; // Import Toastify for toast notifications
 import 'react-toastify/dist/ReactToastify.css';
 import { FaUser } from 'react-icons/fa'; // Import icons
 import '../Styles/loginForms.css';
 
 import { registerAssistant } from "../services/authService";
-
 
 const AddAssistantModal = ({ showModal, handleClose }) => {
   const [assistantDetails, setAssistantDetails] = useState({
@@ -56,12 +55,11 @@ const AddAssistantModal = ({ showModal, handleClose }) => {
       const response = await registerAssistant(assistantDetails);
       if (response.success) {
         toast.success('Assistant added successfully');
-        //clear the form
         setAssistantDetails({
           nic: '', title: '', firstname: '', lastname: '', contact: '',
           houseNo: '', addline1: '', addline2: '', email: '', password: ''
         });
-        handleClose(); // Close modal after successful submission
+        handleClose();
       } 
       else {
         toast.error(response.message || 'Error adding assistant');
@@ -76,117 +74,154 @@ const AddAssistantModal = ({ showModal, handleClose }) => {
   return (
     <Modal show={showModal} onHide={handleClose} backdrop="static" keyboard={false} >
       <Modal.Header closeButton>
-      <Modal.Title className='addAssistTitle'>
-          <FaUser size={30}/> &nbsp;
-          Add New Assistant
-      </Modal.Title>
+        <Modal.Title className='addAssistTitle'>
+          <FaUser size={30}/> &nbsp; Add New Assistant
+        </Modal.Title>
       </Modal.Header>
-      <Modal.Body  >
-      <Form onSubmit={handleSubmit} className='addAssistForm' >
-        <Form.Group controlId="formNIC" className='addAssisttextbox'>
-          <Form.Label>NIC</Form.Label>          
-            <Form.Control 
-                type="text"
-                placeholder="Enter NIC"
-                name="nic"
-                value={assistantDetails.nic}
-                onChange={handleInputChange}
-        />
-        </Form.Group>
 
-        <Form.Group controlId="formTitle" className='addAssisttextbox'>
-          <Form.Label>Title</Form.Label>          
-            <Form.Control
-                type="text"
-                placeholder="Enter Title"
-                name="title"
-                value={assistantDetails.title}
-                onChange={handleInputChange}
-        />
-        </Form.Group>
+      <Modal.Body>
+        <Form onSubmit={handleSubmit} className='addAssistForm'>
+          <Row className="mb-3">
+            <Col md={6}>
+              <Form.Group controlId="formNIC" className="formGroup">
+                <Form.Label>NIC</Form.Label>
+                <Form.Control 
+                  type="text"
+                  placeholder="Enter NIC"
+                  name="nic"
+                  value={assistantDetails.nic}
+                  onChange={handleInputChange}
+                  className="formControl"
+                />
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group controlId="formTitle" className="formGroup">
+                <Form.Label>Title</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter Title"
+                  name="title"
+                  value={assistantDetails.title}
+                  onChange={handleInputChange}
+                  className="formControl"
+                />
+              </Form.Group>
+            </Col>
+          </Row>
 
-        <Form.Group controlId="formFirstName" className='addAssisttextbox'>
-          <Form.Label>First Name</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter first name"
-            name="firstname"
-            value={assistantDetails.firstname}
-            onChange={handleInputChange}
-          />
-        </Form.Group>
+          <Row className="mb-3">
+            <Col md={6}>
+              <Form.Group controlId="formFirstName" className="formGroup">
+                <Form.Label>First Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter First Name"
+                  name="firstname"
+                  value={assistantDetails.firstname}
+                  onChange={handleInputChange}
+                  className="formControl"
+                />
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group controlId="formLastName" className="formGroup">
+                <Form.Label>Last Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter Last Name"
+                  name="lastname"
+                  value={assistantDetails.lastname}
+                  onChange={handleInputChange}
+                  className="formControl"
+                />
+              </Form.Group>
+            </Col>
+          </Row>
 
-        <Form.Group controlId="formLastName" className='addAssisttextbox'>
-          <Form.Label>Last Name</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter last name"
-            name="lastname"
-            value={assistantDetails.lastname}
-            onChange={handleInputChange}
-          />
-        </Form.Group>
+          <Row className="mb-3">
+            <Col md={6}>
+              <Form.Group controlId="formContact" className="formGroup">
+                <Form.Label>Contact</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter Contact"
+                  name="contact"
+                  value={assistantDetails.contact}
+                  onChange={handleInputChange}
+                  className="formControl"
+                />
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group controlId="formHouseNo" className="formGroup">
+                <Form.Label>House No</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter House No"
+                  name="houseNo"
+                  value={assistantDetails.houseNo}
+                  onChange={handleInputChange}
+                  className="formControl"
+                />
+              </Form.Group>
+            </Col>
+          </Row>
 
-        <Form.Group controlId="formContact" className='addAssisttextbox'>
-            <Form.Label>Contact</Form.Label>
-            <Form.Control
-                type="text"
-                placeholder="Enter Contact"
-                name="contact"
-                value={assistantDetails.contact}
-                onChange={handleInputChange}
-            />
-        </Form.Group>
+          <Row className="mb-3">
+            <Col md={6}>
+              <Form.Group controlId="formAddLine1" className="formGroup">
+                <Form.Label>Address Line 1</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter Address Line 1"
+                  name="addline1"
+                  value={assistantDetails.addline1}
+                  onChange={handleInputChange}
+                  className="formControl"
+                />
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group controlId="formAddLine2" className="formGroup">
+                <Form.Label>Address Line 2</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter Address Line 2"
+                  name="addline2"
+                  value={assistantDetails.addline2}
+                  onChange={handleInputChange}
+                  className="formControl"
+                />
+              </Form.Group>
+            </Col>
+          </Row>
 
-        <Form.Group controlId="formHouseNo" className='addAssisttextbox'>
-            <Form.Label>House No</Form.Label>
-            <Form.Control
-                type="text"
-                placeholder="Enter House No"
-                name="houseNo"
-                value={assistantDetails.houseNo}
-                onChange={handleInputChange}
-            />
-        </Form.Group>
+          <Row className="mb-3">
+            <Col md={12}>
+              <Form.Group controlId="formEmail" className="formGroup">
+                <Form.Label>Email</Form.Label>
+                <Form.Control
+                  type="email"
+                  placeholder="Enter Email"
+                  name="email"
+                  value={assistantDetails.email}
+                  onChange={handleInputChange}
+                  className="formControl"
+                />
+              </Form.Group>
+            </Col>
+          </Row>
 
-        <Form.Group controlId="formAddLine1" className='addAssisttextbox'>
-            <Form.Label>Address Line 1</Form.Label>
-            <Form.Control
-                type="text"
-                placeholder="Enter Address Line 1"
-                name="addline1"
-                value={assistantDetails.addline1}
-                onChange={handleInputChange}
-            />
-        </Form.Group>
-
-        <Form.Group controlId="formAddLine2" className='addAssisttextbox'>
-            <Form.Label>Address Line 2</Form.Label>
-            <Form.Control
-                type="text"
-                placeholder="Enter Address Line 2"
-                name="addline2"
-                value={assistantDetails.addline2}
-                onChange={handleInputChange}
-            />      
-        </Form.Group>
-
-        <Form.Group controlId="formEmail" className='addAssisttextbox'>
-          <Form.Label>Email</Form.Label>
-          <Form.Control
-            type="email"
-            placeholder="Enter email"
-            name="email"
-            value={assistantDetails.email}
-            onChange={handleInputChange}
-          />
-        </Form.Group>
-
-            <Button variant="primary" type="submit" disabled={loading} className="btn btn-primary w-100 loginBtn">
-              Add Assistant
-              {loading ? 'Submitting...' : ''}
-            </Button>
-          </Form>
+          <Button 
+            variant="primary" 
+            type="submit" 
+            disabled={loading} 
+            className="btn btn-primary w-100 loginBtn"
+          >
+            {loading ? 'Submitting...' : 'Add Assistant'}
+          </Button>
+        </Form>
       </Modal.Body>
     </Modal>
   );

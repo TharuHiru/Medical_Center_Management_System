@@ -7,20 +7,14 @@ import 'react-toastify/dist/ReactToastify.css';
 import { FaUser } from 'react-icons/fa'; // Import icons
 import '../Styles/loginForms.css';
 
-import { registerAssistant } from "../services/authService";
-
 const AddInventoryModal = ({ showModal, handleClose }) => {
-  const [InventoryDetails, setInventoryDetails] = useState({
-    nic: '',
-    title: '',
-    firstname: '',
-    lastname: '',
-    contact: '',
-    houseNo: '',
-    addline1: '',
-    addline2: '',
-    email: '',
-    password: '',
+  const [inventoryDetails, setInventoryDetails] = useState({
+    name: '',
+    batch_no: '',
+    exp_date: '',
+    stock_quantity: '',
+    unit_price: '',
+    buying_price: '',
   });
 
   const [loading, setLoading] = useState(false);
@@ -28,17 +22,19 @@ const AddInventoryModal = ({ showModal, handleClose }) => {
   // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setInventoryDetails({ ...InventoryDetails, [name]: value });
+    setInventoryDetails({ ...inventoryDetails, [name]: value });
   };
 
   // Form validation logic
   const validateForm = () => {
-    if ((!InventoryDetails.firstname.trim()) 
-        || (!InventoryDetails.lastname.trim())
-        || (!InventoryDetails.email.trim())
-        || (!InventoryDetails.contact.trim())) 
+    if ((!inventoryDetails.name.trim()) 
+        || (!inventoryDetails.batch_no.trim())
+        || (!inventoryDetails.exp_date.trim())
+        || (!inventoryDetails.stock_quantity.trim())
+        || (!inventoryDetails.unit_price.trim())
+        || (!inventoryDetails.buying_price.trim())) 
     {    
-      toast.error('Please Fill all the values');
+      toast.error('Please fill all the values');
       return false;
     }
     return true;
@@ -52,30 +48,29 @@ const AddInventoryModal = ({ showModal, handleClose }) => {
 
     setLoading(true);
     try {
-      const response = await registerInventory(InventoryDetails);
+      const response = await registerInventory(inventoryDetails);
       if (response.success) {
         toast.success('Inventory added successfully');
         setInventoryDetails({
-          nic: '', title: '', firstname: '', lastname: '', contact: '',
-          houseNo: '', addline1: '', addline2: '', email: '', password: ''
+          name: '', batch_no: '', exp_date: '', stock_quantity: '', unit_price: '', buying_price: ''
         });
         handleClose();
       } 
       else {
-        toast.error(response.message || 'Error adding Inventory');
+        toast.error(response.message || 'Error adding inventory');
       }
     } 
     catch (error) {
-      toast.error('Error adding Inventory: ' + error.message);
+      toast.error('Error adding inventory: ' + error.message);
     }
     setLoading(false);
   };
 
   return (
-    <Modal show={showModal} onHide={handleClose} backdrop="static" keyboard={false} >
+    <Modal show={showModal} onHide={handleClose} backdrop="static" keyboard={false}>
       <Modal.Header closeButton>
         <Modal.Title className='addAssistTitle'>
-          <FaUser size={30}/> &nbsp; Add New Assistant
+          <FaUser size={30}/> &nbsp; Add New Inventory
         </Modal.Title>
       </Modal.Header>
 
@@ -83,26 +78,26 @@ const AddInventoryModal = ({ showModal, handleClose }) => {
         <Form onSubmit={handleSubmit} className='addAssistForm'>
           <Row className="mb-3">
             <Col md={6}>
-              <Form.Group controlId="formNIC" className="formGroup">
+              <Form.Group controlId="formName" className="formGroup">
                 <Form.Label>Medicine Name</Form.Label>
                 <Form.Control 
                   type="text"
-                  placeholder="Enter NIC"
-                  name="nic"
-                  value={assistantDetails.nic}
+                  placeholder="Enter Medicine Name"
+                  name="name"
+                  value={inventoryDetails.name}
                   onChange={handleInputChange}
                   className="formControl"
                 />
               </Form.Group>
             </Col>
             <Col md={6}>
-              <Form.Group controlId="formTitle" className="formGroup">
+              <Form.Group controlId="formBatchNo" className="formGroup">
                 <Form.Label>Batch Number</Form.Label>
                 <Form.Control
                   type="text"
-                  placeholder="Enter Title"
-                  name="title"
-                  value={assistantDetails.title}
+                  placeholder="Enter Batch Number"
+                  name="batch_no"
+                  value={inventoryDetails.batch_no}
                   onChange={handleInputChange}
                   className="formControl"
                 />
@@ -112,26 +107,25 @@ const AddInventoryModal = ({ showModal, handleClose }) => {
 
           <Row className="mb-3">
             <Col md={6}>
-              <Form.Group controlId="formFirstName" className="formGroup">
+              <Form.Group controlId="formExpDate" className="formGroup">
                 <Form.Label>Expiry Date</Form.Label>
                 <Form.Control
-                  type="text"
-                  placeholder="Enter First Name"
-                  name="firstname"
-                  value={assistantDetails.firstname}
+                  type="date"
+                  name="exp_date"
+                  value={inventoryDetails.exp_date}
                   onChange={handleInputChange}
                   className="formControl"
                 />
               </Form.Group>
             </Col>
             <Col md={6}>
-              <Form.Group controlId="formLastName" className="formGroup">
+              <Form.Group controlId="formStockQuantity" className="formGroup">
                 <Form.Label>Quantity</Form.Label>
                 <Form.Control
-                  type="text"
-                  placeholder="Enter Last Name"
-                  name="lastname"
-                  value={assistantDetails.lastname}
+                  type="number"
+                  placeholder="Enter Quantity"
+                  name="stock_quantity"
+                  value={inventoryDetails.stock_quantity}
                   onChange={handleInputChange}
                   className="formControl"
                 />
@@ -141,26 +135,26 @@ const AddInventoryModal = ({ showModal, handleClose }) => {
 
           <Row className="mb-3">
             <Col md={6}>
-              <Form.Group controlId="formContact" className="formGroup">
+              <Form.Group controlId="formBuyingPrice" className="formGroup">
                 <Form.Label>Buying Price</Form.Label>
                 <Form.Control
-                  type="text"
-                  placeholder="Enter Contact"
-                  name="contact"
-                  value={assistantDetails.contact}
+                  type="number"
+                  placeholder="Enter Buying Price"
+                  name="buying_price"
+                  value={inventoryDetails.buying_price}
                   onChange={handleInputChange}
                   className="formControl"
                 />
               </Form.Group>
             </Col>
             <Col md={6}>
-              <Form.Group controlId="formHouseNo" className="formGroup">
+              <Form.Group controlId="formUnitPrice" className="formGroup">
                 <Form.Label>Unit Price</Form.Label>
                 <Form.Control
-                  type="text"
-                  placeholder="Enter House No"
-                  name="houseNo"
-                  value={assistantDetails.houseNo}
+                  type="number"
+                  placeholder="Enter Unit Price"
+                  name="unit_price"
+                  value={inventoryDetails.unit_price}
                   onChange={handleInputChange}
                   className="formControl"
                 />

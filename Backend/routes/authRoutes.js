@@ -112,14 +112,12 @@ router.post('/register/step2', async (req, res) => {
 });
 
 //Register Assistant
-
     router.post('/register-assistant', async (req, res) => {
     console.log("Received Assistant Data:", req.body);
     const { nic, title, firstname, lastname, contact, houseNo, addline1, addline2, email } = req.body;
 
     if (!nic || !title || !firstname || !lastname || !contact || !houseNo || !addline1 || !addline2 || !email) {
         return res.status(400).json({ message: "All fields are required." });
-
     }
 
     // Check if assistant already exists

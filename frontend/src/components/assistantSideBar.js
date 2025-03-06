@@ -14,7 +14,7 @@ const AssistNavBar = ({ onLogout }) => {
           </Link>
         </li>
         <li className="nav-item">
-          <Link href="/patients" className="nav-link">
+          <Link href="AssistantDashboard/patientManagement" className="nav-link">
             <FaUser className="nav-icon"/> Patients
           </Link>
         </li>
@@ -24,7 +24,7 @@ const AssistNavBar = ({ onLogout }) => {
           </Link>
         </li>
         <li className="nav-item">
-          <Link href="/inventory" className="nav-link">
+          <Link href="AssistantDashboard/inventoryManagement" className="nav-link">
             <FaBoxes className="nav-icon"/> Inventory
           </Link>
         </li>

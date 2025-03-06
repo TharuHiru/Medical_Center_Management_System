@@ -11,7 +11,7 @@ function Page1() {
 
     // Function to handle Yes button click
     const handleYesClick = () => {
-       router.push('/yes'); // Navigate to the "/yes" route
+       router.push('/PatientLogin'); // Navigate to the "/yes" route
     };
 
     // Function to handle No button click

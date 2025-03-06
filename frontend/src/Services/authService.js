@@ -67,3 +67,14 @@ export const assistLogin = async (email, password) => {
     return error.response?.data || { success: false, message: "Server error!" };
   }
 };
+
+// Temporary Patient SignUp API Call
+export const temporyPatientSignUp = async (formData) => {
+  try {
+    const response = await axios.post(`${API_URL}/tempory-patient-signup`,formData);
+    return response.data; // Return the response data
+
+  } catch (error) {
+    return error.response?.data || { success: false, message: "Server error!" };
+  }
+};

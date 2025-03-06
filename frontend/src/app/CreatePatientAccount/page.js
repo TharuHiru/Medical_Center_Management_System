@@ -12,7 +12,7 @@ const CreatePatient = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Navigate to the code form page
-    router.push('/codeForm'); // Change this to your desired page
+    router.push('/codeForm'); 
   };
 
   return (

@@ -111,6 +111,31 @@ router.post('/register/step2', async (req, res) => {
         }
 });
 
+    // Temporary Patient SignUp
+    router.post('/tempory-patient-signup', async (req, res) => {
+        console.log("Received Temporary Patient Data:", req.body);
+
+        const { title, name, address, phone } = req.body;
+
+        if (!title || !name || !address || !phone) {
+            return res.status(400).json({ success: false, message: 'Please fill all the fields' });
+        }
+
+        try {
+            const query = 'INSERT INTO temporary_patients (title, name, address, phone_number) VALUES (?, ?, ?, ?)';
+            const values = [title, name, address, phone];
+
+            await pool.query(query, values); // Using pool.query to interact with the database
+
+            res.status(200).json({ success: true, message: 'Temporary patient added successfully' });
+        } catch (err) {
+            console.error('Error inserting temporary patient:', err);
+            res.status(500).json({ success: false, message: 'Error adding temporary patient' });
+        }
+    });
+
+
+
 //Register Assistant
     router.post('/register-assistant', async (req, res) => {
     console.log("Received Assistant Data:", req.body);

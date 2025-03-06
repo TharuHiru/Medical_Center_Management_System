@@ -1,24 +1,45 @@
-"use client";
+"use client"; // ✅ This makes the file a client component
 
 import React, { useState } from "react";
-import BackNavbar from "../../components/backNavBar"; // Import the Navbar component
-import '../../Styles/loginForms.css'; // Optional: Create your CSS for styling
-import { useRouter } from "next/navigation"; // Import useRouter for navigation
+import { useRouter } from "next/navigation"; // Next.js 13+ uses "next/navigation"
+import BackNavbar from "../../components/backNavBar";
+import { temporyPatientSignUp } from "../../services/authService"; // Import service
+
+import "../../Styles/loginForms.css";
 
 const TemporyLogin = () => {
-  const [TemporyName, setName] = useState('');
-  const [address, setAddress] = useState('');
-  const [PhoneNumber, setPhone] = useState('');
+  const [formData, setFormData] = useState({
+    title: "",
+    name: "",
+    address: "",
+    phone: "",
+  });
+
   const router = useRouter(); // Initialize the router
 
+  // Handle input changes
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+  const submitPatientData = async () => {
+    try {
+      const response = await temporyPatientSignUp(formData); // Call the service function
+  
+      if (response.success) {
+        alert("Temporary patient added successfully");
+        router.push("/"); 
+      } else {
+        alert(response.message || "Error adding temporary patient");
+      }
+    } catch (error) {
+      console.error("Error adding temporary patient:", error);
+      alert(error.response?.data?.message || "An error occurred while adding the patient");
+    }
+  };
+  
   const handleLoginSubmit = (e) => {
     e.preventDefault();
-
-    // Handle login submission logic here (validation, API call, etc.)
-    alert(`Logged in with Name: ${TemporyName}`);
-
-    // After successful login, navigate to the next page (e.g., dashboard)
-    router.push("/NextPage"); // Change this to your desired page
+    submitPatientData();
   };
 
   return (
@@ -26,17 +47,31 @@ const TemporyLogin = () => {
       <BackNavbar />
       <section className="container d-flex justify-content-center">
         <div className="col-md-6 loginForm">
-          <h2 className="text-center mb-4">Temporary Patient Login</h2>
+          <h2 className="text-center mb-4">Temporary Patient SignUp</h2>
           <form onSubmit={handleLoginSubmit}>
             <div className="mb-4">
-              <label htmlFor="TemporyName" className="form-label">Name:</label>
+              <label htmlFor="title" className="form-label">Title:</label>
               <input
                 type="text"
                 className="form-control"
-                id="TemporyName"
+                id="title"
+                name="title"
+                placeholder="Enter your Title"
+                value={formData.title}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="name" className="form-label">Name:</label>
+              <input
+                type="text"
+                className="form-control"
+                id="name"
+                name="name"
                 placeholder="Enter your name"
-                value={TemporyName}
-                onChange={(e) => setName(e.target.value)}
+                value={formData.name}
+                onChange={handleChange}
                 required
               />
             </div>
@@ -47,20 +82,22 @@ const TemporyLogin = () => {
                 className="form-control"
                 placeholder="Enter your Address"
                 id="address"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
                 required
               />
             </div>
             <div className="mb-4">
-              <label htmlFor="PhoneNumber" className="form-label">Phone Number:</label>
+              <label htmlFor="phone" className="form-label">Phone Number:</label>
               <input
                 type="number"
                 className="form-control"
                 placeholder="Enter your phone number"
-                id="PhoneNumber"
-                value={PhoneNumber}
-                onChange={(e) => setPhone(e.target.value)}
+                id="phone"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
                 required
               />
             </div>

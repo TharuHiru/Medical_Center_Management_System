@@ -43,7 +43,7 @@ function WelcomePage() {
               <Link href="/" className="nav-link active fw-bold">Home</Link>
             </li>
             <li className="nav-item">
-              <Link href="/" className="nav-link text-dark">About us</Link>
+              <Link href="/AboutUs" className="nav-link text-dark">About us</Link>
             </li>
           </ul>
           <button className="btn btn-primary ms-2 rounded-pill px-4 loginBtn" onClick={() => router.push('/whoAreYou')}>

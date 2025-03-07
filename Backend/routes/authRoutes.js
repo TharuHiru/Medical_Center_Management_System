@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const pool = require('../config/db');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const QRCode = require('qrcode'); // QR code generator
 //const nodemailer = require('nodemailer');
 
 const router = express.Router();
@@ -236,7 +237,67 @@ router.post('/assistant-login', async (req, res) => {
     }
 });
 
-        
+router.post('/register-patient', async (req, res) => {
+    console.log("Received Patient Data:", req.body); // Log incoming data
+    
+    const { title, firstname, lastname, contact, gender, dob, houseNo, addline1, addline2, email } = req.body;
 
+    // Validation: Check required fields
+    if (!title || !firstname || !lastname || !contact || !gender || !dob || !houseNo || !addline1 || !addline2 || !email) {
+        console.log("Validation failed: Missing fields"); // Log validation failure
+        return res.status(400).json({ message: "All fields are required." });
+    }
+    
+    try {
+        // Step 1: Get the last patient ID
+        console.log("Fetching last patient ID...");
+
+        const [lastPatient] = await pool.query("SELECT patient_ID FROM patients ORDER BY patient_ID DESC LIMIT 1");
+        console.log("Last patient ID fetched:", lastPatient);
+
+        let newPatientID = "PC_ID00001"; // Default for first patient
+        if (lastPatient.length > 0) {
+            // Step 2: Extract and Increment the number
+            const lastID = lastPatient[0].patient_ID;  // e.g., PC_ID00010
+            const lastNumber = parseInt(lastID.substring(5)); // Extract "00010" -> 10
+            const nextNumber = lastNumber + 1;
+            newPatientID = `PC_ID${String(nextNumber).padStart(5, '0')}`; // Format it
+
+            console.log("Generated new patient ID:", newPatientID);
+        }
+
+        // Step 3: Generate QR Code
+        console.log("Generating QR code...");
+        const qrData = `https://yourwebsite.com/patient-card/${newPatientID}`; // URL encoded in QR
+        const qrCodeImage = await QRCode.toDataURL(qrData); // Generate base64 QR code
+        console.log("QR Code generated");
+
+        // Step 4: Insert new patient into database
+        console.log("Inserting new patient into database...");
+
+        const query = `INSERT INTO patients (patient_ID, title, firstName, lastName, contactNo, gender, DOB, house_no, addr_line_1, addr_line_2, email) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        
+        console.log("Database query:", query);
+        console.log("Inserting patient data:", [newPatientID, title, firstname, lastname, contact, gender, dob, houseNo, addline1, addline2, email]);
+
+        await pool.query(query, [newPatientID, title, firstname, lastname, contact, gender, dob, houseNo, addline1, addline2, email]);
+
+        console.log("Patient registered successfully");
+
+        // Step 5: Respond with success
+        return res.status(201).json({ 
+            success: true, 
+            message: 'Patient registered successfully.', 
+            patientID: newPatientID,
+            qrCode: qrCodeImage, 
+            qrPage: qrData 
+        });
+    
+    } catch (error) {
+        console.error('Error occurred while registering patient:', error); // Log detailed error
+        return res.status(500).json({ message: 'Server error.' });
+    }
+});
 
 module.exports = router;

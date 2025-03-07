@@ -78,3 +78,15 @@ export const temporyPatientSignUp = async (formData) => {
     return error.response?.data || { success: false, message: "Server error!" };
   }
 };
+
+// Register Patient API Call
+export const registerPatient = async (patientDetails) => {
+  try {
+    const response = await axios.post(`${API_URL}/register-patient`,patientDetails);
+    return response.data; // Return the response data
+
+  } catch (error) {
+    return error.response?.data || { success: false, message: "Server error!" };
+  }
+};
+

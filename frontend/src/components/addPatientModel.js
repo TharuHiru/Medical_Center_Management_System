@@ -7,21 +7,21 @@ import 'react-toastify/dist/ReactToastify.css';
 import { FaUser } from 'react-icons/fa'; // Import icons
 import '../Styles/loginForms.css';
 
-//import { registerPatient } from "../services/authService";
+import { registerPatient } from "../services/authService";
 
 
 const AddPatientModal = ({ showModal, handleClose }) => {
   const [patientDetails, setPatientDetails] = useState({
-    nic: '',
     title: '',
     firstname: '',
     lastname: '',
     contact: '',
+    gender: '',
+    dob: '',
     houseNo: '',
     addline1: '',
     addline2: '',
     email: '',
-    password: '',
   });
 
   const [loading, setLoading] = useState(false);
@@ -58,8 +58,7 @@ const AddPatientModal = ({ showModal, handleClose }) => {
         toast.success('Assistant added successfully');
         //clear the form
         setPatientDetails({
-          nic: '', title: '', firstname: '', lastname: '', contact: '',
-          houseNo: '', addline1: '', addline2: '', email: '', password: ''
+          title: '',firstname: '',lastname: '',contact: '', gender: '', dob: '', houseNo: '', addline1: '',addline2: '',email: '',
         });
         handleClose(); // Close modal after successful submission
       } 

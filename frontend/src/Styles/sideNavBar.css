@@ -59,6 +59,12 @@
   align-items: center;
 }
 
+.nav-link.active {
+  background-color: #116363db; /* Highlighted tab color */
+  color: white;
+  font-weight: bold;
+}
+
 span {
   margin-left: 16px;
 }

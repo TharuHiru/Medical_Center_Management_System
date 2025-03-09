@@ -8,9 +8,10 @@ import AssistNavBar from '../../components/assistantSideBar';
 import { FaUser, FaBoxes, FaPlay } from 'react-icons/fa'; 
 
 import AddPatientModal from '../../components/addPatientModel';
+//import ViewAndPrintQr from '../../components/viewAndPrintQr';
 
 function AssistantDashboard() {
-  const router = useRouter();
+  const router = useRouter(); // create a router instance
   
   // Function to handle logout
   const logout = () => {
@@ -19,23 +20,18 @@ function AssistantDashboard() {
     router.push('/login'); // Use router.push for navigation
   };
 
-  const searchParams = useSearchParams();
-  const firstName = searchParams.get("firstname");
-  const lastName = searchParams.get("lastname");
-  const username = `${firstName} ${lastName}`;
+  const searchParams = useSearchParams(); // get the search parameters from the URL
+  const username = `${searchParams.get("firstname")} ${searchParams.get("lastname")}`;
 
+  //state variable to track if the add patient model is shown or not(default false)
   const [showPatientModal, setShowPatientModal] = useState(false);    
-  const handleShowPatientModal = () => setShowPatientModal(true);
-  const handleClosePatientModal = () => setShowPatientModal(false);
-  
-  //const handleShowInventoryModal = () => setShowInventoryModal(true);
-  //const handleCloseInventoryModal = () => setShowInventoryModal(false);
+  const handleShowPatientModal = () => setShowPatientModal(true); // show the model
+  const handleClosePatientModal = () => setShowPatientModal(false); // close the model
 
   const handleFormSubmit = () => {
     console.log("Form submitted");
     handleClosePatientModal(); // Close modal after submission
   };
-
 
   return (
     <div className="dashboard-container">

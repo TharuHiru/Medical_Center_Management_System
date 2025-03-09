@@ -1,78 +1,102 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Button, Modal, Form, Row, Col } from 'react-bootstrap';
-import { toast } from 'react-toastify'; // Import Toastify for toast notifications
-import 'react-toastify/dist/ReactToastify.css';
-import { FaUser } from 'react-icons/fa'; // Import icons
-import '../Styles/loginForms.css';
-
+import React, { useState } from "react";
+import { Button, Modal, Form, Row, Col } from "react-bootstrap";
+import { toast } from "react-toastify";
+import { FaUser } from "react-icons/fa";
+import ViewAndPrintQr from "./viewAndPrintQr"; 
 import { registerPatient } from "../services/authService";
-
 
 const AddPatientModal = ({ showModal, handleClose }) => {
   const [patientDetails, setPatientDetails] = useState({
-    title: '',
-    firstname: '',
-    lastname: '',
-    contact: '',
-    gender: '',
-    dob: '',
-    houseNo: '',
-    addline1: '',
-    addline2: '',
-    email: '',
+    title: "",
+    firstname: "",
+    lastname: "",
+    contact: "",
+    gender: "",
+    dob: "",
+    houseNo: "",
+    addline1: "",
+    addline2: "",
+    email: "",
   });
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); // state variable for form submission in progress
+  const [showQrModal, setShowQrModal] = useState(false); //control the visibility of QR model
+  const [newPatient, setNewPatient] = useState(null); // store the new patient data
 
-  // Handle input changes
+  //handlr fprm input data
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setPatientDetails({ ...patientDetails, [name]: value });
   };
 
-  // Form validation logic
+  //validation of the form fields
   const validateForm = () => {
-    if ((!patientDetails.firstname.trim()) 
-        || (!patientDetails.lastname.trim())
-        || (!patientDetails.email.trim())
-        || (!patientDetails.contact.trim())) 
-    {    
-      toast.error('Please Fill all the values');
+    if (!patientDetails.firstname.trim() || !patientDetails.lastname.trim() || !patientDetails.email.trim() || !patientDetails.contact.trim()) {
+      toast.error("Please fill in all required fields.");
       return false;
     }
     return true;
   };
 
-  // Handle form submission
+  // handle submit method
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateForm()) return; // validate the form
+    setLoading(true); // set loading state to true
 
-    if (!validateForm()) return;
-
-    setLoading(true);
     try {
-      const response = await registerPatient(patientDetails);
+      const response = await registerPatient(patientDetails);//call the v=backend API
+  
       if (response.success) {
-        toast.success('Assistant added successfully');
-        //clear the form
+        toast.success("Patient registered successfully!");
+  
+        //Save the new patient data
+        const newPatientData = {
+          patientID: response.patientID,
+          name: response.name,
+          qrCode: response.qrCode,
+          qrPage: response.qrPage,
+        };
+  
+        console.log("New Patient Data:", newPatientData || "no data received"); // Debugging log
+  
+        setNewPatient(newPatientData);
+  
+        // Show the QR modal before closing AddPatientModal
+        setShowQrModal(true);
+  
+        // Close AddPatientModal with a slight delay
+        setTimeout(() => {
+          handleClose();
+        }, 300);
+  
+        // Reset form
         setPatientDetails({
-          title: '',firstname: '',lastname: '',contact: '', gender: '', dob: '', houseNo: '', addline1: '',addline2: '',email: '',
+          title: "",
+          firstname: "",
+          lastname: "",
+          contact: "",
+          gender: "",
+          dob: "",
+          houseNo: "",
+          addline1: "",
+          addline2: "",
+          email: "",
         });
-        handleClose(); // Close modal after successful submission
-      } 
-      else {
-        toast.error(response.message || 'Error adding patient');
+      } else {
+        toast.error(response.message || "Error adding patient");
       }
-    } 
-    catch (error) {
-      toast.error('Error adding patient: ' + error.message);
+    } catch (error) {
+      toast.error("Error adding patient: " + error.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
+    <>
     <Modal show={showModal} onHide={handleClose} backdrop="static" keyboard={false}>
       <Modal.Header closeButton>
         <Modal.Title className="addAssistTitle">
@@ -249,7 +273,17 @@ const AddPatientModal = ({ showModal, handleClose }) => {
         </Form>
       </Modal.Body>
     </Modal>
+  
+    {/* Conditionally render the ViewAndPrintQr modal */}
+    {showQrModal && newPatient && (
+      <ViewAndPrintQr 
+        showModal={showQrModal}
+        handleClose={() => setShowQrModal(false)}
+        patient={newPatient} // Pass the patient data to the modal
+      />
+    )}
+    </>
   );
-}  
+};
 
 export default AddPatientModal;

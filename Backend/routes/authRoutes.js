@@ -290,6 +290,7 @@ router.post('/register-patient', async (req, res) => {
             success: true, 
             message: 'Patient registered successfully.', 
             patientID: newPatientID,
+            name: `${title} ${firstname} ${lastname}`,
             qrCode: qrCodeImage, 
             qrPage: qrData 
         });

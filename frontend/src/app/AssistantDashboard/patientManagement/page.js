@@ -36,7 +36,7 @@ function AssistantDashboard() {
     const getPatients = async () => {
       try {
         const data = await fetchPatients();
-        setPatients(data);
+        setPatients(data.data); // Ensure you are setting the correct data structure
       } catch (error) {
         console.error("Failed to fetch patients:", error);
       }
@@ -73,10 +73,16 @@ function AssistantDashboard() {
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Name</th>
-                <th>Age</th>
-                <th>Gender</th>
+                <th>Title</th>
+                <th>First Name</th>
+                <th>Last Name</th>
                 <th>Contact</th>
+                <th>Gender</th>
+                <th>DOB</th>
+                <th>House No</th>
+                <th>Address Line 1</th>
+                <th>Address Line 2</th>
+                <th>Email</th>
               </tr>
             </thead>
             <tbody>
@@ -84,15 +90,21 @@ function AssistantDashboard() {
                 patients.map((patient) => (
                   <tr key={patient.patient_ID}>
                     <td>{patient.patient_ID}</td>
+                    <td>{patient.title}</td>
                     <td>{patient.firstName}</td>
-                    <td>{patient.lastNane}</td>
+                    <td>{patient.lastName}</td>
                     <td>{patient.contactNo}</td>
                     <td>{patient.gender}</td>
+                    <td>{patient.DOB}</td>
+                    <td>{patient.house_no}</td>
+                    <td>{patient.addr_line_1}</td>
+                    <td>{patient.addr_line_2}</td>
+                    <td>{patient.email}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5">No patients found</td>
+                  <td colSpan="11">No patients found</td>
                 </tr>
               )}
             </tbody>

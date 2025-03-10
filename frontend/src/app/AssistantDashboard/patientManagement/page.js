@@ -1,66 +1,102 @@
-"use client"
+"use client";
 
-import React , { useState } from 'react';
-import { useSearchParams , useRouter } from "next/navigation";
-import '../../../Styles/AssistantDashboard.css';
-import '../../../Styles/loginForms.css';
-import AssistNavBar from '../../../components/assistantSideBar';
-import { FaUser, FaBoxes, FaPlay } from 'react-icons/fa'; 
-
-import AddPatientModal from '../../../components/addPatientModel';
-//import ViewAndPrintQr from '../../components/viewAndPrintQr';
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import "../../../Styles/AssistantDashboard.css";
+import "../../../Styles/loginForms.css";
+import AssistNavBar from "../../../components/assistantSideBar";
+import { FaPlus } from "react-icons/fa";
+import AddPatientModal from "../../../components/addPatientModel";
+import { fetchPatients } from "../../../services/patientService";
 
 function AssistantDashboard() {
   const router = useRouter(); // create a router instance
-  
+
   // Function to handle logout
   const logout = () => {
-    // Logout logic (e.g., clearing tokens)
-    console.log('Logged out');
-    router.push('/login'); // Use router.push for navigation
+    console.log("Logged out");
+    router.push("/login"); // Use router.push for navigation
   };
 
-  //state variable to track if the add patient model is shown or not(default false)
-  const [showPatientModal, setShowPatientModal] = useState(false);    
-  const handleShowPatientModal = () => setShowPatientModal(true); // show the model
-  const handleClosePatientModal = () => setShowPatientModal(false); // close the model
+  // State variable to track if the add patient modal is shown or not
+  const [showPatientModal, setShowPatientModal] = useState(false);
+  const handleShowPatientModal = () => setShowPatientModal(true);
+  const handleClosePatientModal = () => setShowPatientModal(false);
 
   const handleFormSubmit = () => {
     console.log("Form submitted");
     handleClosePatientModal(); // Close modal after submission
   };
 
+  // State to store patient data
+  const [patients, setPatients] = useState([]);
+
+  // Fetch patients from the service
+  useEffect(() => {
+    const getPatients = async () => {
+      try {
+        const data = await fetchPatients();
+        setPatients(data);
+      } catch (error) {
+        console.error("Failed to fetch patients:", error);
+      }
+    };
+
+    getPatients();
+  }, []);
+
   return (
     <div className="dashboard-container">
       {/* Vertical Navigation Bar */}
-      <AssistNavBar onLogout={logout} /> {/* Pass the logout function as a prop */}
+      <AssistNavBar onLogout={logout} />
 
       <div className="content-area">
-
-        {/* Three Buttons */}
+        {/* Add Patient Button */}
         <div className="button-container">
-        <button className=" btnAddPatient" onClick={handleShowPatientModal}>
-        <FaUser size={40} />
-            <br />
-            Add new Patient
+          <button className="btnAddPatient ms-auto" onClick={handleShowPatientModal}>
+            <FaPlus size={40} />
+            &nbsp; Add New Patient
           </button>
 
-          <AddPatientModal 
-            showModal={showPatientModal} 
-            handleClose={handleClosePatientModal} 
-            handleSubmit={handleFormSubmit} />
+          {/* Modal Component */}
+          <AddPatientModal
+            showModal={showPatientModal}
+            handleClose={handleClosePatientModal}
+            handleSubmit={handleFormSubmit}
+          />
+        </div>
 
-          <button className="btnAddInventory">
-            <FaBoxes size={40} />
-            <br />
-            Add new Inventory
-          </button>
-
-          <button className="btnstartQueue">
-            <FaPlay size={40} />
-            <br />
-            <h5>Start Queue</h5>
-          </button>
+        {/* Patient Table */}
+        <div className="patient-table-container">
+          <h2>&nbsp; &nbsp; Patient Details</h2>
+          <table className="table table-striped data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>Contact</th>
+              </tr>
+            </thead>
+            <tbody>
+              {patients.length > 0 ? (
+                patients.map((patient) => (
+                  <tr key={patient.patient_ID}>
+                    <td>{patient.patient_ID}</td>
+                    <td>{patient.firstName}</td>
+                    <td>{patient.lastNane}</td>
+                    <td>{patient.contactNo}</td>
+                    <td>{patient.gender}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5">No patients found</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

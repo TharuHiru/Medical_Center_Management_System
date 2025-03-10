@@ -92,13 +92,21 @@
   }
   
   .btnAddPatient{
-    padding: 40px;
-    background-color:rgb(157, 211, 236) ;
+    padding-right: 40px;
+    padding-left: 40px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color:rgb(252, 252, 252) ;
     border:transparent;
     color:rgb(31, 68, 85);
+    font-weight: bold;
+    border-radius: 20px;
+    box-shadow: 4px 6px 10px rgba(0, 0, 0, 0.2);
   }
+
   .btnAddPatient:hover{
-    background-color: #2f85f6;
+    background-color: rgba(11, 33, 44, 0.764);
+    color: white;
   }
 
   .btnAddInventory{
@@ -126,4 +134,13 @@
   .nav-icon{
     margin-right: 10px;
     font-size: 20px;;
+  }
+
+  .data-table{
+    margin: 20px;
+    margin-right: 20px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 20px;
+    box-shadow: 4px 6px 10px rgba(0, 0, 0, 0.2);
   }

@@ -29,10 +29,10 @@ app.options('*', cors());
 
 // Import the auth routes (to register doctor , assistant and the patient)
 const authRoutes = require('./routes/authRoutes');
-const inventoryRoutes = require('./routes/inventoryRoute');
+const patientRoutes = require('./routes/patientRoutes');
 
 app.use('/api/auth', authRoutes); // Prefix all auth routes with /api/auth
-app.use('/api/inventory', inventoryRoutes); // Prefix all inventory routes with /api/inventory
+app.use('/api/patients', patientRoutes); // Prefix all patient routes with /api/patients
 
 app.listen(port, () => {
     console.log(`🚀 Server is running on http://localhost:${port}`);

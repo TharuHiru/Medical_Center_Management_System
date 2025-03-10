@@ -23,7 +23,6 @@ body{
     margin-top: 15px;
   }
   
-
   .loginBtn:hover{
     background-color: rgb(63, 119, 131);
   }
@@ -32,13 +31,10 @@ body{
     background-color: rgb(48, 90, 99)!important;
   }
 
-
 .topicText {
     margin-bottom: 20px; 
     color: #2c6a75;
 }
-
-
 
 .backbtn{
   background-color: rgb(79, 147, 160);

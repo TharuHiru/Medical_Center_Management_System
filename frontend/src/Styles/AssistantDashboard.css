@@ -1,146 +1,205 @@
 .dashboard-container {
-    display: flex;
-    height: 100vh;
-  }
-  
-  .vertical-nav {
-    width: 250px;
-    background-color:#2c6a7595;
-    color: white;
-    padding-top: 20px;
-    font-size: large;
-    text-align: center;;
-  }
-  
-  .vertical-nav h4 {
-    text-align: center;
-    background-color:#1b4249 ;
-    padding: 20px;
-  }
-  
-  .vertical-nav .nav-item {
-    margin: 20px;
+  display: flex;
+  height: 100vh;
+}
 
-  }
-  
-  .vertical-nav .nav-link {
-    color: white;
-    text-decoration: none;
-  }
-  
-  .vertical-nav .nav-link:hover {
-    background-color: #122c31;
-    border-radius: 4px;
-  }
-  
-  .content-area {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .top-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    background-color: #f8f9fa;
-  }
-  
-  .greeting-container {
-    text-align: left;
-    padding: 10px;
-    box-shadow: 4px 6px 10px rgba(0, 0, 0, 0.2);    width: 500px;
-    border-radius: 20px;
-    background-color: transparent;
-    margin : 40px;
-  }
-  
-  .assistant-name {
-    font-size: 2rem;
-    font-weight: bold;
-  }
-  
-  .greeting-text {
-    font-size: 2rem;
-    color: gray;
-  }
-  
-  .button-container {
-    display: flex;
-    gap: 10px;
-    margin: 40px;
-  }
-  
-  .dashboard-content {
-    padding: 20px;
-    flex-grow: 1;
-    background-color: #f8f9fa;
-  }
-  
-  .logout-btn {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    margin-top: 20px;
-  }
-  
-  .logout-btn:hover {
-    background-color: #9c1a27;
-  }
-  
-  .btnAddPatient{
-    padding-right: 40px;
-    padding-left: 40px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    background-color:rgb(252, 252, 252) ;
-    border:transparent;
-    color:rgb(31, 68, 85);
-    font-weight: bold;
-    border-radius: 20px;
-    box-shadow: 4px 6px 10px rgba(0, 0, 0, 0.2);
-  }
+.vertical-nav {
+  width: 250px;
+  background-color: #2c6a7595;
+  color: white;
+  padding-top: 20px;
+  font-size: large;
+  text-align: center;
+}
 
-  .btnAddPatient:hover{
-    background-color: rgba(11, 33, 44, 0.764);
-    color: white;
-  }
+.vertical-nav h4 {
+  text-align: center;
+  background-color: #1b4249;
+  padding: 20px;
+}
 
-  .btnAddInventory{
-    padding: 40px;
-    background-color: #f9f6a8;
-    border: transparent;
-    color:#737013;
-  }
+.vertical-nav .nav-item {
+  margin: 20px;
+}
 
-  .btnAddInventory:hover{
-    background-color: #faf43e;
-  }
+.vertical-nav .nav-link {
+  color: white;
+  text-decoration: none;
+}
 
-  .btnstartQueue{
-    padding: 40px;
-    background-color: #f59535;
-    border: transparent;
-    color: #663d14;
-  }
+.vertical-nav .nav-link:hover {
+  background-color: #122c31;
+  border-radius: 4px;
+}
 
-  .btnstartQueue:hover{
-    background-color: #f67b00;
-  }
-  
-  .nav-icon{
-    margin-right: 10px;
-    font-size: 20px;;
-  }
+.content-area {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
 
-  .data-table{
-    margin: 20px;
-    margin-right: 20px;
-    padding: 20px;
-    background-color: #f8f9fa;
-    border-radius: 20px;
-    box-shadow: 4px 6px 10px rgba(0, 0, 0, 0.2);
-  }
+.top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: #f8f9fa;
+}
+
+.greeting-container {
+  text-align: left;
+  padding: 10px;
+  box-shadow: 4px 6px 10px rgba(0, 0, 0, 0.2);
+  width: 500px;
+  border-radius: 20px;
+  background-color: transparent;
+  margin: 40px;
+}
+
+.assistant-name {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.greeting-text {
+  font-size: 2rem;
+  color: gray;
+}
+
+.button-container {
+  display: flex;
+  gap: 10px;
+  margin: 40px;
+}
+
+.dashboard-content {
+  padding: 20px;
+  flex-grow: 1;
+  background-color: #f8f9fa;
+}
+
+.logout-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.logout-btn:hover {
+  background-color: #9c1a27;
+}
+
+.btnAddPatient {
+  padding-right: 40px;
+  padding-left: 40px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-color: rgb(252, 252, 252);
+  border: transparent;
+  color: rgb(31, 68, 85);
+  font-weight: bold;
+  border-radius: 20px;
+  box-shadow: 4px 6px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btnAddPatient:hover {
+  background-color: rgba(11, 33, 44, 0.764);
+  color: white;
+}
+
+.btnAddInventory {
+  padding: 40px;
+  background-color: #f9f6a8;
+  border: transparent;
+  color: #737013;
+}
+
+.btnAddInventory:hover {
+  background-color: #faf43e;
+}
+
+.btnstartQueue {
+  padding: 40px;
+  background-color: #f59535;
+  border: transparent;
+  color: #663d14;
+}
+
+.btnstartQueue:hover {
+  background-color: #f67b00;
+}
+
+.nav-icon {
+  margin-right: 10px;
+  font-size: 20px;
+}
+
+.patient-data-table {
+  margin-left: 8px;
+  background-color: #f8f9fa;
+  border-radius: 20px;
+  box-shadow: 4px 6px 10px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  min-width: 800px;
+}
+
+.table-responsive-custom {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-width: 100%;
+  max-height: 500px; /* Adjust height as needed */
+  display: block;
+  white-space: nowrap; /* Prevents text from wrapping */
+  width: 100%;
+  min-width: 700px; /* Adjust min-width to ensure horizontal scroll */
+  border-collapse: collapse; /* Reduces extra spacing */
+}
+
+/* Reduce column padding */
+.patient-data-table th,
+.patient-data-table td {
+  padding: 0.2rem;
+  font-size: 15px; /* Reduce font size if needed */
+}
+
+/* Add styles for table headers */
+.patient-data-table th {
+  background-color: #2c6a75;
+  color: white;
+  text-align: left;
+}
+
+/* Add styles for table rows */
+.patient-data-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.patient-data-table tr:hover {
+  background-color: #ddd;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #fff;
+  max-width: 300px;
+  margin-left: 10PX;
+}
+
+.search-icon {
+  margin-right: 8px;
+  color: #555;
+}
+
+.search-input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 16px;
+}

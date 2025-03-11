@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import "../../../Styles/AssistantDashboard.css";
 import "../../../Styles/loginForms.css";
 import AssistNavBar from "../../../components/assistantSideBar";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaSearch } from "react-icons/fa";
 import AddPatientModal from "../../../components/addPatientModel";
 import { fetchPatients } from "../../../services/patientService";
 
@@ -18,32 +18,40 @@ function AssistantDashboard() {
     router.push("/login"); // Use router.push for navigation
   };
 
-  // State variable to track if the add patient modal is shown or not
+  // State for Add Patient Modal
   const [showPatientModal, setShowPatientModal] = useState(false);
   const handleShowPatientModal = () => setShowPatientModal(true);
   const handleClosePatientModal = () => setShowPatientModal(false);
-
   const handleFormSubmit = () => {
     console.log("Form submitted");
-    handleClosePatientModal(); // Close modal after submission
+    handleClosePatientModal();
   };
 
   // State to store patient data
   const [patients, setPatients] = useState([]);
+  const [searchTerm, setSearchTerm] = useState(""); // State for search input
 
   // Fetch patients from the service
   useEffect(() => {
     const getPatients = async () => {
       try {
         const data = await fetchPatients();
-        setPatients(data.data); // Ensure you are setting the correct data structure
+        setPatients(data.data);
       } catch (error) {
         console.error("Failed to fetch patients:", error);
       }
     };
-
     getPatients();
   }, []);
+
+  // Filter patients based on search input
+  const filteredPatients = patients.filter((patient) => {
+    return Object.values(patient).some(
+      (value) =>
+        value &&
+        value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
 
   return (
     <div className="dashboard-container">
@@ -66,49 +74,63 @@ function AssistantDashboard() {
           />
         </div>
 
+        {/* Search Box */}
+        <h2>&nbsp; &nbsp; Patient Details</h2>
+        <div className="search-container">
+          <FaSearch className="search-icon" />
+          <input
+            type="text"
+            placeholder="Search patients..."
+            className="search-input"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
         {/* Patient Table */}
         <div className="patient-table-container">
-          <h2>&nbsp; &nbsp; Patient Details</h2>
-          <table className="table table-striped data-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Contact</th>
-                <th>Gender</th>
-                <th>DOB</th>
-                <th>House No</th>
-                <th>Address Line 1</th>
-                <th>Address Line 2</th>
-                <th>Email</th>
-              </tr>
-            </thead>
-            <tbody>
-              {patients.length > 0 ? (
-                patients.map((patient) => (
-                  <tr key={patient.patient_ID}>
-                    <td>{patient.patient_ID}</td>
-                    <td>{patient.title}</td>
-                    <td>{patient.firstName}</td>
-                    <td>{patient.lastName}</td>
-                    <td>{patient.contactNo}</td>
-                    <td>{patient.gender}</td>
-                    <td>{patient.DOB}</td>
-                    <td>{patient.house_no}</td>
-                    <td>{patient.addr_line_1}</td>
-                    <td>{patient.addr_line_2}</td>
-                    <td>{patient.email}</td>
-                  </tr>
-                ))
-              ) : (
+          <div className="table-responsive-custom">
+            <table className="table table-striped patient-data-table">
+              <thead>
                 <tr>
-                  <td colSpan="11">No patients found</td>
+                  <th>ID</th>
+                  <th>Title</th>
+                  <th>First Name</th>
+                  <th>Last Name</th>
+                  <th>Contact</th>
+                  <th>Gender</th>
+                  <th>DOB</th>
+                  <th>House No</th>
+                  <th>Address Line 1</th>
+                  <th>Address Line 2</th>
+                  <th>Email</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filteredPatients.length > 0 ? (
+                  filteredPatients.map((patient) => (
+                    <tr key={patient.patient_ID}>
+                      <td>{patient.patient_ID}</td>
+                      <td>{patient.title}</td>
+                      <td>{patient.firstName}</td>
+                      <td>{patient.lastName}</td>
+                      <td>{patient.contactNo}</td>
+                      <td>{patient.gender}</td>
+                      <td>{patient.DOB}</td>
+                      <td>{patient.house_no}</td>
+                      <td>{patient.addr_line_1}</td>
+                      <td>{patient.addr_line_2}</td>
+                      <td>{patient.email}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="11">No patients found</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

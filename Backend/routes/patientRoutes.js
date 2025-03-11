@@ -2,6 +2,7 @@ const express = require('express');
 const pool = require('../config/db');
 const router = express.Router();
 
+//Get all patients list
 router.get('/fetch-patients', async (req, res) => {
     try {
         const [rows] = await pool.query("SELECT * FROM patients");

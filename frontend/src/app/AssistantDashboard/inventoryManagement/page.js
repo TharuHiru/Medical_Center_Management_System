@@ -6,10 +6,10 @@ import "../../../Styles/AssistantDashboard.css";
 import "../../../Styles/loginForms.css";
 import AssistNavBar from "../../../components/assistantSideBar";
 import { FaPlus, FaSearch } from "react-icons/fa";
-import AddPatientModal from "../../../components/addPatientModel";
-import { fetchPatients } from "../../../services/patientService";
+import AddInventoryModal from "../../../components/addInventoryModel";
+import { fetchInventory } from "../../../services/inventoryService";
 
-function AssistantDashboardPatient() {
+function AssistantDashboardInventory() {
   const router = useRouter(); // create a router instance
 
   // Function to handle logout
@@ -19,34 +19,34 @@ function AssistantDashboardPatient() {
   };
 
   // State for Add Patient Modal
-  const [showPatientModal, setShowPatientModal] = useState(false);
-  const handleShowPatientModal = () => setShowPatientModal(true);
-  const handleClosePatientModal = () => setShowPatientModal(false);
+  const [showInventoryModal, setShowInventoryModal] = useState(false);
+  const handleShowInventoryModal = () => setShowInventoryModal(true);
+  const handleCloseInventoryModal = () => setShowInventoryModal(false);
   const handleFormSubmit = () => {
     console.log("Form submitted");
-    handleClosePatientModal();
+    handleCloseInventoryModal();
   };
 
   // State to store patient data
-  const [patients, setPatients] = useState([]);
+  const [inventory, setInventory] = useState([]);
   const [searchTerm, setSearchTerm] = useState(""); // State for search input
 
   // Fetch patients from the service
   useEffect(() => {
-    const getPatients = async () => {
+    const getInventory = async () => {
       try {
-        const data = await fetchPatients();
-        setPatients(data.data);
+        const data = await fetchInventory();
+        setInventory(data.data);
       } catch (error) {
         console.error("Failed to fetch patients:", error);
       }
     };
-    getPatients();
+    getInventory();
   }, []);
 
   // Filter patients based on search input
-  const filteredPatients = patients.filter((patient) => {
-    return Object.values(patient).some(
+  const filteredInventory = inventory.filter((inventory) => {
+    return Object.values(inventory).some(
       (value) =>
         value &&
         value.toString().toLowerCase().includes(searchTerm.toLowerCase())
@@ -61,26 +61,26 @@ function AssistantDashboardPatient() {
       <div className="content-area">
         {/* Add Patient Button */}
         <div className="button-container">
-          <button className="btnAddPatient ms-auto" onClick={handleShowPatientModal}>
+          <button className="btnAddPatient ms-auto" onClick={handleShowInventoryModal}>
             <FaPlus size={40} />
-            &nbsp; Add New Patient
+            &nbsp; Add New Inventory
           </button>
 
           {/* Modal Component */}
-          <AddPatientModal
-            showModal={showPatientModal}
-            handleClose={handleClosePatientModal}
+          <AddInventoryModal
+            showModal={showInventoryModal}
+            handleClose={handleCloseInventoryModal}
             handleSubmit={handleFormSubmit}
           />
         </div>
 
         {/* Search Box */}
-        <h2>&nbsp; &nbsp; Patient Details</h2>
+        <h2>&nbsp; &nbsp; Inventory Details</h2>
         <div className="search-container">
           <FaSearch className="search-icon" />
           <input
             type="text"
-            placeholder="Search patients..."
+            placeholder="Search Inventory..."
             className="search-input"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -94,38 +94,31 @@ function AssistantDashboardPatient() {
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>Title</th>
-                  <th>First Name</th>
-                  <th>Last Name</th>
-                  <th>Contact</th>
-                  <th>Gender</th>
-                  <th>DOB</th>
-                  <th>House No</th>
-                  <th>Address Line 1</th>
-                  <th>Address Line 2</th>
-                  <th>Email</th>
+                  <th>Name</th>
+                  <th>Batch_No</th>
+                  <th>Exp_Date</th>
+                  <th>Quantity</th>
+                  <th>Unit_Price</th>
+                  <th>Buying_Price</th>
+                  <th>Date_Added</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredPatients.length > 0 ? (
-                  filteredPatients.map((patient) => (
-                    <tr key={patient.patient_ID}>
-                      <td>{patient.patient_ID}</td>
-                      <td>{patient.title}</td>
-                      <td>{patient.firstName}</td>
-                      <td>{patient.lastName}</td>
-                      <td>{patient.contactNo}</td>
-                      <td>{patient.gender}</td>
-                      <td>{patient.DOB}</td>
-                      <td>{patient.house_no}</td>
-                      <td>{patient.addr_line_1}</td>
-                      <td>{patient.addr_line_2}</td>
-                      <td>{patient.email}</td>
+                {filteredInventory.length > 0 ? (
+                  filteredInventory.map((inventory) => (
+                    <tr key={inventory.id}>
+                      <td>{inventory.name}</td>
+                      <td>{inventory.batch_no}</td>
+                      <td>{inventory.exp_date}</td>
+                      <td>{inventory.stock_quantity}</td>
+                      <td>{inventory.unit_price}</td>
+                      <td>{inventory.buying_price}</td>
+                      <td>{inventory.date_added}</td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="11">No patients found</td>
+                    <td colSpan="11">No Inventory record found</td>
                   </tr>
                 )}
               </tbody>
@@ -137,4 +130,4 @@ function AssistantDashboardPatient() {
   );
 }
 
-export default AssistantDashboardPatient;
+export default AssistantDashboardInventory;

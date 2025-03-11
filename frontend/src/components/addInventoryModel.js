@@ -7,6 +7,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import { FaUser } from 'react-icons/fa'; // Import icons
 import '../Styles/loginForms.css';
 
+import { registerInventory } from "../services/inventoryService";
+
+
 const AddInventoryModal = ({ showModal, handleClose }) => {
   const [inventoryDetails, setInventoryDetails] = useState({
     name: '',

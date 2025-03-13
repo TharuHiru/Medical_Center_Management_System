@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import "../../../Styles/AssistantDashboard.css";
 import "../../../Styles/loginForms.css";
+import {  Row, Col } from 'react-bootstrap';
 import AssistNavBar from "../../../components/assistantSideBar";
 import { FaPlus, FaSearch } from "react-icons/fa";
 import AddInventoryModal from "../../../components/addInventoryModel";
@@ -108,6 +109,7 @@ function AssistantDashboardInventory() {
     <div className="dashboard-container">
       {/* Vertical Navigation Bar */}
       <AssistNavBar onLogout={logout} />
+     
 
       <div className="content-area">
         {/* Add Patient Button */}
@@ -124,9 +126,12 @@ function AssistantDashboardInventory() {
             handleSubmit={handleFormSubmit}
           />
         </div>
-
-        {/* Search Box */}
         <h2>&nbsp; &nbsp; Inventory Details</h2>
+      <div className="top-bar">
+      <Row>
+        <Col md={4}>
+        {/* Search Box */}
+        
         <div className="search-container">
           <FaSearch className="search-icon" />
           <input
@@ -137,12 +142,14 @@ function AssistantDashboardInventory() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-
+        </Col>
+        <Col md={4}>
         {/* Medicine Category Dropdown */}
         <div>
           <label>Select Medicine:</label>
-          <select value={selectedMedicine} onChange={handleCategoryChange}>
-            <option value="">-- All Categories --</option>
+          &nbsp;&nbsp;
+          <select className="search-input-combo" value={selectedMedicine} onChange={handleCategoryChange}>
+            <option value=""> All Categories </option>
             {medicineCategories.map((category) => (
               <option key={category.medicine_ID} value={category.medicine_Name}>
                 {category.medicine_Name}
@@ -150,18 +157,24 @@ function AssistantDashboardInventory() {
             ))}
           </select>
         </div>
-
+        </Col>
+        
+        <Col md={4}>
       {/* Add New Medicine Category */}
-      <div>
-          <input type="text" placeholder="Enter new medicine category" value={newCategory} onChange={handleNewCategoryChange} />
-          <button onClick={handleAddNewCategory}>Add New Category</button>
+      <div className="new-category-group">
+      <p className = "new-category-group-label">Add new category</p>
+          <input className="search-input-text" type="text" placeholder="Enter new category" value={newCategory} onChange={handleNewCategoryChange} />
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <button className="add-category-btn" onClick={handleAddNewCategory}>Add Category</button>
         </div>
-
+        </Col>
+    </Row>
+    </div>
         {/* Patient Table */}
         <div className="patient-table-container">
           <div className="table-responsive-custom">
             <table className="table table-striped patient-data-table">
-              <thead>
+              <thead className="table-heading">
                 <tr>
                   <th>Inventory ID</th>
                   <th>Medicine Name</th>

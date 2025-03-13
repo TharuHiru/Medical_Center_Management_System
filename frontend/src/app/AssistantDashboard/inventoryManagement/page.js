@@ -48,12 +48,16 @@ function AssistantDashboardInventory() {
   }, []);
 
   // Filter patients based on search input
-  const filteredInventory = inventory.filter((inventory) => {
-    return Object.values(inventory).some(
+  const filteredInventory = inventory.filter((item) => {
+    const matchesSearchTerm = Object.values(item).some(
       (value) =>
-        value &&
-        value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+        value && value.toString().toLowerCase().includes(searchTerm.toLowerCase())
     );
+  
+    const matchesSelectedMedicine =
+      !selectedMedicine || item.medicine_Name === selectedMedicine;
+  
+    return matchesSearchTerm && matchesSelectedMedicine;
   });
 
   // Fetch Medicine Categories
@@ -138,13 +142,13 @@ function AssistantDashboardInventory() {
         <div>
           <label>Select Medicine:</label>
           <select value={selectedMedicine} onChange={handleCategoryChange}>
-  <option value="">-- Select Medicine --</option>
-  {medicineCategories.map((category) => (
-    <option key={category.medicine_ID} value={category.medicine_Name}>
-      {category.medicine_Name}
-    </option>
-  ))}
-</select>
+            <option value="">-- All Categories --</option>
+            {medicineCategories.map((category) => (
+              <option key={category.medicine_ID} value={category.medicine_Name}>
+                {category.medicine_Name}
+              </option>
+            ))}
+          </select>
         </div>
 
       {/* Add New Medicine Category */}
@@ -159,8 +163,8 @@ function AssistantDashboardInventory() {
             <table className="table table-striped patient-data-table">
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>Name</th>
+                  <th>Inventory ID</th>
+                  <th>Medicine Name</th>
                   <th>Batch_No</th>
                   <th>Exp_Date</th>
                   <th>Quantity</th>
@@ -172,8 +176,9 @@ function AssistantDashboardInventory() {
               <tbody>
                 {filteredInventory.length > 0 ? (
                   filteredInventory.map((inventory) => (
-                    <tr key={inventory.id}>
-                      <td>{inventory.name}</td>
+                    <tr key={inventory.medicine_ID}>
+                      <td>{inventory.medicine_ID}</td>
+                      <td>{inventory.medicine_Name}</td>
                       <td>{inventory.batch_no}</td>
                       <td>{inventory.exp_date}</td>
                       <td>{inventory.stock_quantity}</td>

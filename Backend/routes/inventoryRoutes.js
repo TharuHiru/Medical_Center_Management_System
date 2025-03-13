@@ -33,20 +33,37 @@ router.post('/register-inventory', async (req, res) => {
     }
 });
 
-//Get all inventory list
+// Get all inventory list
 router.get('/fetch-inventory', async (req, res) => {
     try {
-        const [rows] = await pool.query("SELECT * FROM medicine_inventory");
-        
-        // Log fetched data
-        console.log('Fetched Inventory:', rows);
+        // Fetch all inventory items
+        const [inventory] = await pool.query("SELECT * FROM medicine_inventory");
 
-        return res.status(200).json({ success: true, data: rows });
+        // Fetch medicine names for each inventory item
+        for (let item of inventory) {
+            const [medicineRow] = await pool.query(
+                "SELECT medicine_Name FROM medicine_category WHERE medicine_ID = ?",
+                [item.medicine_ID] // Use item.medicine_ID from inventory
+            );
+
+            // Attach medicine name to the inventory item
+            if (medicineRow.length > 0) {
+                item.medicine_Name = medicineRow[0].medicine_Name;
+            } else {
+                item.medicine_Name = null; // If no match found
+            }
+        }
+
+        // Log fetched data
+        console.log('Fetched Inventory:', inventory);
+
+        return res.status(200).json({ success: true, data: inventory });
     } catch (error) {
         console.error('Error fetching inventory:', error);
         return res.status(500).json({ success: false, message: 'Server error.' });
     }
 });
+
 
 //Get the medicine category list
 

@@ -2,12 +2,12 @@
 
 import React , { useState } from 'react';
 import { useSearchParams , useRouter } from "next/navigation";
-import '../../Styles/AssistantDashboard.css';
-import '../../Styles/loginForms.css';
-import DoctorNavBar from '../../components/doctorSideBar';
+import '../../../Styles/AssistantDashboard.css';
+import '../../../Styles/loginForms.css';
+import DoctorNavBar from '../../../components/doctorSideBar';
 import { FaUser, FaBoxes } from 'react-icons/fa'; // Import icons
 
-import AddAssistantModal from '../../components/addAssistantModel';
+import AddAssistantModal from '../../../components/addAssistantModel';
 
 function DoctorDashboard() {
   //This is used to fetch the first anem and the last name from the URL

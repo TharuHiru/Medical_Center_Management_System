@@ -7,7 +7,7 @@ import "../../../Styles/loginForms.css";
 import AssistNavBar from "../../../components/assistantSideBar";
 import { FaPlus, FaSearch } from "react-icons/fa";
 import AddInventoryModal from "../../../components/addInventoryModel";
-import { fetchInventory } from "../../../services/inventoryService";
+import { fetchInventory , fetchMedicineCategory ,addMedicineCategory } from "../../../services/inventoryService";
 
 function AssistantDashboardInventory() {
   const router = useRouter(); // create a router instance
@@ -18,7 +18,7 @@ function AssistantDashboardInventory() {
     router.push("/login"); // Use router.push for navigation
   };
 
-  // State for Add Patient Modal
+  // State for Add Inventory Modal
   const [showInventoryModal, setShowInventoryModal] = useState(false);
   const handleShowInventoryModal = () => setShowInventoryModal(true);
   const handleCloseInventoryModal = () => setShowInventoryModal(false);
@@ -30,6 +30,9 @@ function AssistantDashboardInventory() {
   // State to store patient data
   const [inventory, setInventory] = useState([]);
   const [searchTerm, setSearchTerm] = useState(""); // State for search input
+  const [medicineCategories, setMedicineCategories] = useState([]); // Store fetched categories
+  const [selectedMedicine, setSelectedMedicine] = useState(""); // Selected category
+  const [newCategory, setNewCategory] = useState(""); // New category input
 
   // Fetch patients from the service
   useEffect(() => {
@@ -52,6 +55,50 @@ function AssistantDashboardInventory() {
         value.toString().toLowerCase().includes(searchTerm.toLowerCase())
     );
   });
+
+  // Fetch Medicine Categories
+  useEffect(() => {
+    const getCategories = async () => {
+      try {
+        const response = await fetchMedicineCategory(); // API call
+        setMedicineCategories(response.data); // Store categories
+      } catch (error) {
+        console.error("Failed to fetch medicine categories:", error);
+      }
+    };
+    getCategories();
+  }, []);
+
+   // Handle dropdown selection change
+   const handleCategoryChange = (event) => {
+    setSelectedMedicine(event.target.value);
+  };
+
+  // Handle new category input
+  const handleNewCategoryChange = (event) => {
+    setNewCategory(event.target.value);
+  };
+
+  const handleAddNewCategory = async () => {
+    if (newCategory.trim() !== "") {
+      try {
+        // Send the new category to the backend
+        const response = await addMedicineCategory({ medicine_name: newCategory });
+        
+        if (response.success) {
+          // Fetch the updated list of categories after adding the new category
+          const data = await fetchMedicineCategory(); // Assuming this is the function that fetches all categories
+          setMedicineCategories(data.data); // Update the local state with the new categories
+          setNewCategory(""); // Clear the input field
+        } else {
+          console.error("Error adding new category:", response.message);
+        }
+      } catch (error) {
+        console.error("Error adding new category:", error);
+      }
+    }
+};
+
 
   return (
     <div className="dashboard-container">
@@ -85,6 +132,25 @@ function AssistantDashboardInventory() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+        </div>
+
+        {/* Medicine Category Dropdown */}
+        <div>
+          <label>Select Medicine:</label>
+          <select value={selectedMedicine} onChange={handleCategoryChange}>
+  <option value="">-- Select Medicine --</option>
+  {medicineCategories.map((category) => (
+    <option key={category.medicine_ID} value={category.medicine_Name}>
+      {category.medicine_Name}
+    </option>
+  ))}
+</select>
+        </div>
+
+      {/* Add New Medicine Category */}
+      <div>
+          <input type="text" placeholder="Enter new medicine category" value={newCategory} onChange={handleNewCategoryChange} />
+          <button onClick={handleAddNewCategory}>Add New Category</button>
         </div>
 
         {/* Patient Table */}

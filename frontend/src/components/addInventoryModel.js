@@ -1,18 +1,17 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Modal, Form, Row, Col } from 'react-bootstrap';
-import { toast } from 'react-toastify'; // Import Toastify for toast notifications
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { FaUser } from 'react-icons/fa'; // Import icons
+import { FaUser } from 'react-icons/fa';
 import '../Styles/loginForms.css';
 
-import { registerInventory } from "../services/inventoryService";
-
+import { registerInventory ,fetchMedicineCategory} from "../services/inventoryService"; // API call to add inventory
 
 const AddInventoryModal = ({ showModal, handleClose }) => {
   const [inventoryDetails, setInventoryDetails] = useState({
-    name: '',
+    medicine_id: '',
     batch_no: '',
     exp_date: '',
     stock_quantity: '',
@@ -20,50 +19,66 @@ const AddInventoryModal = ({ showModal, handleClose }) => {
     buying_price: '',
   });
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); //loading state of the form 
+  const [medicines, setMedicines] = useState([]); // store the medicine list
 
-  // Handle input changes
+  useEffect(() => {
+    const fetchMedicines = async () => {
+      try {
+        const response = await fetchMedicineCategory(); // call the function imported
+        if (response.success) {
+          setMedicines(response.data);
+        } else {
+          toast.error("Failed to load medicines");
+        }
+      } catch (error) {
+        toast.error("Error fetching medicines: " + error.message);
+      }
+    };
+    fetchMedicines();
+  }, []);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setInventoryDetails({ ...inventoryDetails, [name]: value });
   };
 
-  // Form validation logic
   const validateForm = () => {
-    if ((!inventoryDetails.name.trim()) 
-        || (!inventoryDetails.batch_no.trim())
-        || (!inventoryDetails.exp_date.trim())
-        || (!inventoryDetails.stock_quantity.trim())
-        || (!inventoryDetails.unit_price.trim())
-        || (!inventoryDetails.buying_price.trim())) 
-    {    
+    if (!inventoryDetails.medicine_id || !inventoryDetails.batch_no.trim() ||
+        !inventoryDetails.exp_date.trim() || !inventoryDetails.stock_quantity.trim() ||
+        !inventoryDetails.unit_price.trim() || !inventoryDetails.buying_price.trim()) {
       toast.error('Please fill all the values');
       return false;
     }
     return true;
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validateForm()) return;
 
     setLoading(true);
+
     try {
-      const response = await registerInventory(inventoryDetails);
+      const response = await registerInventory(inventoryDetails); // call inventory register API
+
       if (response.success) {
         toast.success('Inventory added successfully');
+
+        //clear the form
         setInventoryDetails({
-          name: '', batch_no: '', exp_date: '', stock_quantity: '', unit_price: '', buying_price: ''
+          medicine_id: '', batch_no: '', exp_date: '', stock_quantity: '', unit_price: '', buying_price: ''
         });
+
         handleClose();
+
       } 
-      else {
+        else {
         toast.error(response.message || 'Error adding inventory');
       }
     } 
-    catch (error) {
+      catch (error) {
       toast.error('Error adding inventory: ' + error.message);
     }
     setLoading(false);
@@ -73,7 +88,7 @@ const AddInventoryModal = ({ showModal, handleClose }) => {
     <Modal show={showModal} onHide={handleClose} backdrop="static" keyboard={false}>
       <Modal.Header closeButton>
         <Modal.Title className='addAssistTitle'>
-          <FaUser size={30}/> &nbsp; Add New Inventory
+          <FaUser size={30}/> &nbsp; Add New Inventory Record
         </Modal.Title>
       </Modal.Header>
 
@@ -81,16 +96,22 @@ const AddInventoryModal = ({ showModal, handleClose }) => {
         <Form onSubmit={handleSubmit} className='addAssistForm'>
           <Row className="mb-3">
             <Col md={6}>
-              <Form.Group controlId="formName" className="formGroup">
+              <Form.Group controlId="formMedicine" className="formGroup">
                 <Form.Label>Medicine Name</Form.Label>
-                <Form.Control 
-                  type="text"
-                  placeholder="Enter Medicine Name"
-                  name="name"
-                  value={inventoryDetails.name}
+                <Form.Control
+                  as="select"
+                  name="medicine_id"
+                  value={inventoryDetails.medicine_id}
                   onChange={handleInputChange}
                   className="formControl"
-                />
+                >
+                  <option value="">Select Medicine</option>
+                  {medicines.map((medicine) => (
+                    <option key={medicine.medicine_ID} value={medicine.medicine_ID}>
+                      {medicine.medicine_Name}
+                    </option>
+                  ))}
+                </Form.Control>
               </Form.Group>
             </Col>
             <Col md={6}>
@@ -164,6 +185,7 @@ const AddInventoryModal = ({ showModal, handleClose }) => {
               </Form.Group>
             </Col>
           </Row>
+
           <Button 
             variant="primary" 
             type="submit" 

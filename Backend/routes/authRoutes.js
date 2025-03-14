@@ -152,6 +152,7 @@ router.post('/register/step2', async (req, res) => {
         return res.status(400).json({ message: 'Assistant already exists' });
     }
 
+    
     // Generate a random password
     //const randomPassword = crypto.randomBytes(6).toString('hex'); // Example: "a3b4c6d7e9f1"
 
@@ -265,23 +266,25 @@ router.post('/register-patient', async (req, res) => {
 
             console.log("Generated new patient ID:", newPatientID);
         }
-
+        
         // Step 3: Generate QR Code
         console.log("Generating QR code...");
         const qrData = `https://yourwebsite.com/patient-card/${newPatientID}`; // URL encoded in QR
         const qrCodeImage = await QRCode.toDataURL(qrData); // Generate base64 QR code
         console.log("QR Code generated");
 
+        const assist_ID = "1"; // For Now Hardcorded the Assistant ID. This should be get from the session
+
         // Step 4: Insert new patient into database
         console.log("Inserting new patient into database...");
 
-        const query = `INSERT INTO patients (patient_ID, title, firstName, lastName, contactNo, gender, DOB, house_no, addr_line_1, addr_line_2, email) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        const query = `INSERT INTO patients (patient_ID,assist_ID, title, firstName, lastName, contactNo, gender, DOB, house_no, addr_line_1, addr_line_2, email) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`;
         
         console.log("Database query:", query);
-        console.log("Inserting patient data:", [newPatientID, title, firstname, lastname, contact, gender, dob, houseNo, addline1, addline2, email]);
+        console.log("Inserting patient data:", [newPatientID,assist_ID, title, firstname, lastname, contact, gender, dob, houseNo, addline1, addline2, email]);
 
-        await pool.query(query, [newPatientID, title, firstname, lastname, contact, gender, dob, houseNo, addline1, addline2, email]);
+        await pool.query(query, [newPatientID,assist_ID, title, firstname, lastname, contact, gender, dob, houseNo, addline1, addline2, email]);
 
         console.log("Patient registered successfully");
 

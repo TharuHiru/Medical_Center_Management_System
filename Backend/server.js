@@ -32,13 +32,15 @@ const authRoutes = require('./routes/authRoutes');
 const patientRoutes = require('./routes/patientRoutes');
 const inventoryRoutes = require('./routes/inventoryRoutes');
 const assistantRoutes = require('./routes/inventoryRoutes');
+const patientAuthRoutes = require('./routes/patientAuthRoutes');
+
 
 
 app.use('/api/auth', authRoutes); // Prefix all auth routes with /api/auth
 app.use('/api/patients', patientRoutes); // Prefix all patient routes with /api/patients
 app.use('/api/inventory', inventoryRoutes); // Prefix all patient routes with /api/inventory
 app.use('/api/assistant', assistantRoutes); // Prefix all patient routes with /api/inventory
-
+app.use('/api/patientAuth', patientAuthRoutes);
 
 app.listen(port, () => {
     console.log(`🚀 Server is running on http://localhost:${port}`);

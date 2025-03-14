@@ -238,6 +238,7 @@ router.post('/assistant-login', async (req, res) => {
     }
 });
 
+//Route for register patients
 router.post('/register-patient', async (req, res) => {
     console.log("Received Patient Data:", req.body); // Log incoming data
     

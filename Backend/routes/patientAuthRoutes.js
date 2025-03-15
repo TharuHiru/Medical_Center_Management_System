@@ -131,4 +131,42 @@ router.post('/set-password', async (req, res) => {
     }
 });
 
+// Patient login
+router.post('/login', async (req, res) => {
+    const { patient_ID, password } = req.body;
+    console.log("Received Patient Login Details:", req.body);
+
+    if (!patient_ID || !password) {
+        return res.status(400).json({ error: 'Patient ID and password are required' });
+    }
+
+    try {
+        // Fetch patient ID and hashed password from the database
+        const [results] = await pool.query(
+            'SELECT patient_ID, password FROM patient_user WHERE patient_ID = ?',
+            [patient_ID]
+        );
+
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'Patient not found' });
+        }
+
+        const { password: hashedPassword } = results[0];
+
+        // Compare the hashed password
+        const passwordMatch = await bcrypt.compare(password, hashedPassword);
+
+        if (!passwordMatch) {
+            return res.status(401).json({ error: 'Invalid password' });
+        }
+
+        // Respond with success if login is successful
+        res.json({ success: true, message: 'Login successful', patient_ID });
+    } catch (error) {
+        console.error("Database error:", error);
+        res.status(500).json({ error: 'Database error' });
+    }
+});
+
+
 module.exports = router;

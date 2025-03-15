@@ -5,19 +5,30 @@ import BackNavbar from "../../components/backNavBar"; // Import the Navbar compo
 import { useRouter } from "next/navigation"; // Import useRouter for navigation
 import Link from "next/link";
 
+import { patientLogin } from "../../services/patientAuthService";
+
 const PatientLogin = () => {
-  const [UserName, setUserName] = useState("");
+  const [patient_ID, setPatientID] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter(); // Initialize the router
 
-  const handleLoginSubmit = (e) => {
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
-
-    // Handle login submission logic here (validation, API call, etc.)
-    alert(`Logged in with User Name: ${UserName}`);
-
-    // After successful login, navigate to the dashboard or next page
-    router.push("/PatientDashboard");
+  
+    try {
+      // Call the patientLogin service with patient_ID and password
+      const response = await patientLogin(patient_ID, password);
+  
+      if (response.success) {
+        alert("Login successful!");
+        router.push("/patientDashboard/dashboard"); // Redirect to dashboard
+      } else {
+        alert("Login failed: " + response.error);
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("An error occurred during login. Please try again.");
+    }
   };
 
   return (
@@ -28,13 +39,13 @@ const PatientLogin = () => {
           <h2 className="text-center mb-4">Patient Login</h2>
           <form className="temporyLoginForm" onSubmit={handleLoginSubmit}>
             <div className="mb-3">
-              <label htmlFor="userName" className="form-label">User Name:</label>
+              <label htmlFor="userName" className="form-label">Patient ID :</label>
               <input
                 type="text"
                 className="form-control"
-                id="UserName"
-                value={UserName}
-                onChange={(e) => setUserName(e.target.value)}
+                id="patient_ID"
+                value={patient_ID}
+                onChange={(e) => setPatientID(e.target.value)}
                 required
               />
             </div>

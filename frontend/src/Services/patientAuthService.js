@@ -34,3 +34,17 @@ export const setNewPassword = async (password) => {
     throw error;
   }
 };
+
+//patient login
+export const patientLogin = async (patient_ID, password) => {
+  try {
+    const response = await axios.post(`${API_URL}/login`, {
+      patient_ID: patient_ID, // Correct structure
+      password: password
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error logging in:", error);
+    throw error;
+  }
+};

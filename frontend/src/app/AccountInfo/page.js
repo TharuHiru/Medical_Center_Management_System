@@ -3,22 +3,36 @@
 import React, { useState } from "react";
 import BackNavbar from "../../components/backNavBar"; // Import the Navbar component
 import { useRouter } from "next/navigation"; // Import useRouter for navigation
+import { toast } from "react-toastify"; // Ensure you have toast for notifications
+import { setNewPassword } from "../../services/patientAuthService"; // Import setPassword function
 
 const AccountInfo = () => {
-  const [UserName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [passwordCopy, setPasswordCopy] = useState('');
 
   const router = useRouter(); // Initialize the router
-  
-  const handleLoginSubmit = (e) => {
+
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    
-    // Handle login or account creation logic here (e.g., saving data to a database)
-    alert(`Account created with Username: ${UserName}`);
-    
-    // Redirect to the success page
-    router.push('/PatientLogin'); // Change this to your desired route
+
+    if (password !== passwordCopy) {
+      toast.error('Passwords do not match. Please try again.');
+      return;
+    }
+
+    try {
+      // Call the setPassword function with the password
+      const response = await setNewPassword(password);
+      if (response.success) { // Check response.data.success, not response.status
+        toast.success('Password set successfully!');
+        router.push('/PatientLogin'); // Redirect to login page
+      } else {
+        toast.error('Failed to set password. Please try again.');
+      }
+    } catch (error) {
+      console.error("Error setting password:", error);
+      toast.error('An error occurred while setting the password. Please try again.');
+    }
   };
 
   return (
@@ -28,20 +42,7 @@ const AccountInfo = () => {
         <div className="col-md-6 loginForm">
           <h2 className="text-center mb-4">Create Patient Account</h2>
           <form className="temporyLoginForm" onSubmit={handleLoginSubmit}>
-            <p>You are almost there!</p>
-
-            {/* Username Input */}
-            <div className="mb-3">
-              <label htmlFor="userName" className="form-label">User Name:</label>
-              <input
-                type="text"
-                className="form-control"
-                id="UserName"
-                value={UserName}
-                onChange={(e) => setUserName(e.target.value)}
-                required
-              />
-            </div>
+            <p>You are almost there! Let&apos;s create a password.</p>
 
             {/* Password Input */}
             <div className="mb-3">

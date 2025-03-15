@@ -14,9 +14,9 @@ export const sendVerification = async (PID) => {
 };
 
 // **Step 2: Verify Code**
-export const verifyCode = async (verificationDetails) => {
+export const verifyCode = async (fullcode) => {
   try {
-    const response = await axios.post(`${API_URL}/verify-code`, verificationDetails);
+    const response = await axios.post(`${API_URL}/verify-code`, { fullcode });
     return response.data;
   } catch (error) {
     console.error("Error verifying code:", error);
@@ -25,12 +25,12 @@ export const verifyCode = async (verificationDetails) => {
 };
 
 // **Step 3: Reset Password**
-export const resetPassword = async (passwordDetails) => {
+export const setNewPassword = async (password) => {
   try {
-    const response = await axios.post(`${API_URL}/reset-password`, passwordDetails);
+    const response = await axios.post(`${API_URL}/set-password`, {password});
     return response.data;
   } catch (error) {
-    console.error("Error resetting password:", error);
+    console.error("Error Creating Account:", error);
     throw error;
   }
 };

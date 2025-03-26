@@ -21,7 +21,7 @@ const PatientLogin = () => {
   
       if (response.success) {
         alert("Login successful!");
-        router.push("/patientDashboard/dashboard"); // Redirect to dashboard
+        router.push("/patientDashboard/appoinments"); // Redirect to dashboard
       } else {
         alert("Login failed: " + response.error);
       }

@@ -1,30 +1,43 @@
-const db = require("../config/db"); // MySQL Connection
-const firestore = require("../config/firebase"); // Firestore
+const express = require("express");
+const router = express.Router();
+const db = require("../config/firebase");
 
-// Book an Appointment (POST)
-exports.bookAppointment = async (req, res) => {
-  const { patientId, name } = req.body;
-  const today = new Date().toISOString().split("T")[0];
-
+// ✅ Add an Appointment
+router.post("/", async (req, res) => {
   try {
-    // Save to MySQL
-    const [result] = await db.execute(
-      "INSERT INTO appointments (patient_id, date, status) VALUES (?, ?, ?)",
-      [patientId, today, "Waiting"]
-    );
-    const appointmentId = result.insertId;
+    const { patientID, patientName, appointmentDate, status } = req.body;
+
+    // Create appointment data
+    const newAppointment = {
+      patientName,
+      appointmentDate,
+      status: status || "pending", // Default status is 'pending'
+      createdAt: new Date()
+    };
 
     // Save to Firestore
-    await firestore.collection("appointments").doc(appointmentId.toString()).set({
-      patientId,
-      name,
-      date: today,
-      status: "Waiting",
+    await db.collection("appointments").doc(patientID).set(newAppointment);
+
+    res.status(201).json({ message: "Appointment added successfully!" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ✅ Get Real-time Appointments
+router.get("/", async (req, res) => {
+  try {
+    const snapshot = await db.collection("appointments").orderBy("createdAt").get();
+    
+    let appointments = [];
+    snapshot.forEach((doc) => {
+      appointments.push({ id: doc.id, ...doc.data() });
     });
 
-    res.status(201).json({ message: "Appointment booked successfully!" });
+    res.status(200).json(appointments);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error booking appointment" });
+    res.status(500).json({ error: error.message });
   }
-};
+});
+
+module.exports = router;

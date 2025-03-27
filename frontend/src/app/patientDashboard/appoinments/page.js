@@ -53,7 +53,7 @@ export default function AppointmentQueue() {
                   appt.status === "pending" ? "list-group-item-danger" : "list-group-item-success"
                 }`}
               >
-                <span className="fw-bold">Position {index + 1}</span>
+                <span className="fw-bold"> {index + 1}</span>
                 <span>
                   {appt.status === "pending" ? (
                     <>

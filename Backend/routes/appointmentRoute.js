@@ -2,23 +2,27 @@ const express = require("express");
 const router = express.Router();
 const db = require("../config/firebase");
 
-// ✅ Add an Appointment
+// ✅ Add an Appointment with Patient ID as Document ID
 router.post("/", async (req, res) => {
   try {
-    const { patientID, patientName, appointmentDate, status } = req.body;
+    const { patientID, patientName, appointmentDate } = req.body;
+
+    if (!patientID) {
+      return res.status(400).json({ error: "Patient ID is required" });
+    }
 
     // Create appointment data
     const newAppointment = {
       patientName,
       appointmentDate,
-      status: status || "pending", // Default status is 'pending'
-      createdAt: new Date()
+      status: "pending", // Default status
+      createdAt: new Date(),
     };
 
-    // Save to Firestore
+    // Save to Firestore with patientID as the document ID
     await db.collection("appointments").doc(patientID).set(newAppointment);
 
-    res.status(201).json({ message: "Appointment added successfully!" });
+    res.status(201).json({ id: patientID, message: "Appointment added successfully!" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

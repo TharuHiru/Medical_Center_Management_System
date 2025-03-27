@@ -1,28 +1,98 @@
 "use client";
-import { createAppointment } from "../../../services/appointmentService";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { getAppointments, createAppointment } from "../../../services/appointmentService";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
-export default function AppointmentForm() {
+export default function AppointmentQueue() {
+  const [appointments, setAppointments] = useState([]);
   const [patientID, setPatientID] = useState("");
   const [patientName, setPatientName] = useState("");
-  const [appointmentDate, setAppointmentDate] = useState("");
+  const [nextPosition, setNextPosition] = useState(1);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // ✅ Fetch appointments
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      const data = await getAppointments();
+      setAppointments(data);
+      setNextPosition(data.length + 1); // Next available position
+    };
+    fetchAppointments();
+  }, []);
+
+  // ✅ Book the next available slot
+  const handleBook = async () => {
+    if (!patientID || !patientName) {
+      toast.error("Please enter patient details");
+      return;
+    }
+  
     try {
-      const data = await createAppointment(patientID, patientName, appointmentDate);
-      alert("Appointment created successfully!");
+      await createAppointment(patientID, patientName, new Date().toISOString().split("T")[0]);
+      toast.success("Appointment booked successfully!");
+      setAppointments([...appointments, { position: nextPosition, patientID, patientName }]);
+      setNextPosition(nextPosition + 1);
     } catch (error) {
-      console.error("Error creating appointment:", error.message);
+      console.error("Error Response:", error.response?.data); // Debugging
+  
+      // ✅ Extract and display the exact error message
+      const errorMessage = error.response?.data?.error || "Error booking appointment";
+      toast.error(errorMessage);
     }
   };
-
+  
   return (
-    <form onSubmit={handleSubmit}>
-      <input type="text" placeholder="Patient ID" value={patientID} onChange={(e) => setPatientID(e.target.value)} />
-      <input type="text" placeholder="Patient Name" value={patientName} onChange={(e) => setPatientName(e.target.value)} />
-      <input type="date" value={appointmentDate} onChange={(e) => setAppointmentDate(e.target.value)} />
-      <button type="submit">Book Appointment</button>
-    </form>
+    <div className="container mt-4">
+      <h2 className="text-center">Today&apos;s Appointment Queue</h2>
+
+      <div className="row">
+        {/* Queue View */}
+        <div className="col-md-8">
+          <div className="list-group">
+            {appointments.map((appt, index) => (
+              <div
+                key={index}
+                className={`list-group-item d-flex justify-content-between align-items-center ${
+                  appt.patientID ? "list-group-item-danger" : "list-group-item-success"
+                }`}
+              >
+                <span className="fw-bold">Position {index + 1}</span>
+                <span>{appt.patientID ? `Booked by ${appt.patientName}` : "Available"}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Booking Panel */}
+        <div className="col-md-4">
+          <div className="card p-3">
+            <h5>Book the Next Available Position</h5>
+            <p>Next Available: <strong>Position {nextPosition}</strong></p>
+
+            <input
+              type="text"
+              className="form-control mb-2"
+              placeholder="Patient ID"
+              value={patientID}
+              onChange={(e) => setPatientID(e.target.value)}
+            />
+            <input
+              type="text"
+              className="form-control mb-2"
+              placeholder="Patient Name"
+              value={patientName}
+              onChange={(e) => setPatientName(e.target.value)}
+            />
+
+            <button className="btn btn-primary w-100" onClick={handleBook}>
+              Book Appointment
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <ToastContainer />
+    </div>
   );
 }

@@ -27,21 +27,17 @@ export default function AppointmentQueue() {
       toast.error("Please enter patient details");
       return;
     }
-  
+
     try {
       await createAppointment(patientID, patientName, new Date().toISOString().split("T")[0]);
       toast.success("Appointment booked successfully!");
-      setAppointments([...appointments, { position: nextPosition, patientID, patientName }]);
+      setAppointments([...appointments, { position: nextPosition, patientID, patientName, status: "pending" }]);
       setNextPosition(nextPosition + 1);
-    } catch (error) {
-      console.error("Error Response:", error.response?.data); // Debugging
-  
-      // ✅ Extract and display the exact error message
-      const errorMessage = error.response?.data?.error || "Error booking appointment";
+    } catch (errorMessage) {  // ✅ Now this will be just the string message
       toast.error(errorMessage);
     }
   };
-  
+
   return (
     <div className="container mt-4">
       <h2 className="text-center">Today&apos;s Appointment Queue</h2>
@@ -54,11 +50,19 @@ export default function AppointmentQueue() {
               <div
                 key={index}
                 className={`list-group-item d-flex justify-content-between align-items-center ${
-                  appt.patientID ? "list-group-item-danger" : "list-group-item-success"
+                  appt.status === "pending" ? "list-group-item-danger" : "list-group-item-success"
                 }`}
               >
                 <span className="fw-bold">Position {index + 1}</span>
-                <span>{appt.patientID ? `Booked by ${appt.patientName}` : "Available"}</span>
+                <span>
+                  {appt.status === "pending" ? (
+                    <>
+                      Booked by {appt.patientName} - <strong>Not yet seen by the doctor</strong>
+                    </>
+                  ) : (
+                    `Booked by ${appt.patientName}`
+                  )}
+                </span>
               </div>
             ))}
           </div>

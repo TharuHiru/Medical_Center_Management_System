@@ -2,7 +2,7 @@ import axios from "axios";
 
 const API_URL = "http://localhost:5000/api/appointments";
 
-// ✅ Create an Appointment
+// ✅ Create an Appointment with Improved Error Handling
 export const createAppointment = async (patientID, patientName, appointmentDate) => {
   try {
     const response = await axios.post(API_URL, {
@@ -10,11 +10,13 @@ export const createAppointment = async (patientID, patientName, appointmentDate)
       patientName,
       appointmentDate,
     });
-    return response.data;
+    return response.data; // ✅ Return success response
   } catch (error) {
-    throw new Error(error.response?.data?.error || "Something went wrong");
+    // ✅ Extract backend error message and return as a rejected Promise
+    return Promise.reject(error.response?.data?.error || "Something went wrong");
   }
 };
+
 
 // ✅ Get All Appointments
 export const getAppointments = async () => {

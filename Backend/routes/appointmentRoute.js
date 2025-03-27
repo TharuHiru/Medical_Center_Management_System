@@ -1,14 +1,21 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../config/firebase");
+const db = require("../config/firebase"); // import firebase database
 
 // ✅ Add an Appointment with Patient ID as Document ID
 router.post("/", async (req, res) => {
   try {
-    const { patientID, patientName, appointmentDate } = req.body;
+    const { patientID, patientName, appointmentDate } = req.body; //get the details from the requirement body
 
     if (!patientID) {
       return res.status(400).json({ error: "Patient ID is required" });
+    }
+
+    // 🔹 Check if the appointment already exists
+    const existingAppointment = await db.collection("appointments").doc(patientID).get();
+
+    if (existingAppointment.exists) {
+      return res.status(400).json({ error: "You already have an appointment!" });
     }
 
     // Create appointment data
@@ -33,7 +40,8 @@ router.get("/", async (req, res) => {
   try {
     const snapshot = await db.collection("appointments").orderBy("createdAt").get();
     
-    let appointments = [];
+    let appointments = []; // Initialize an empty array
+    // Loop through appointment documents
     snapshot.forEach((doc) => {
       appointments.push({ id: doc.id, ...doc.data() });
     });

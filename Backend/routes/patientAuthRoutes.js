@@ -22,6 +22,13 @@ router.post('/send-verification', async (req, res) => {
     }
 
     try {
+        // Check if the patient already has an account
+        const [existingUser] = await pool.query('SELECT * FROM patient_user WHERE patient_ID = ?', [PID]);
+
+        if (existingUser.length > 0) {
+            return res.status(400).json({ error: 'An account with this Patient ID already exists' });
+        }
+        
         // Fetch patient email from the database
         const [results] = await pool.query('SELECT email FROM patients WHERE patient_ID = ?', [PID]);
 

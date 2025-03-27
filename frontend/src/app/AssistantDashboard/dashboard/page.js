@@ -5,9 +5,6 @@ import { useSearchParams, useRouter } from "next/navigation";
 import "../../../Styles/AssistantDashboard.css";
 import "../../../Styles/loginForms.css";
 import AssistNavBar from "../../../components/assistantSideBar";
-import { FaUser, FaBoxes, FaPlay } from "react-icons/fa";
-
-import AddPatientModal from "../../../components/addPatientModel";
 
 function AssistantDashboard() {
   const router = useRouter();

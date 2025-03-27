@@ -30,7 +30,7 @@ function DoctorLogin() {
         toast.success("Logged in successfully!");
         localStorage.setItem("doctorToken", data.token);
 
-        router.push(`/DoctorDashboard?firstname=${data.user.firstName}&lastname=${data.user.lastName}`); // Redirect to the dashboard
+        router.push(`/DoctorDashboard/assistantManage?firstname=${data.user.firstName}&lastname=${data.user.lastName}`); // Redirect to the dashboard
       } 
       else {
         console.error("Login Failed:", data.message); // messgae for Debugging

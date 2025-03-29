@@ -11,7 +11,7 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ error: "Patient ID is required" });
     }
 
-    // 🔹 Check if the appointment already exists
+    // Check if the appointment already exists
     const existingAppointment = await db.collection("appointments").doc(patientID).get();
 
     if (existingAppointment.exists) {

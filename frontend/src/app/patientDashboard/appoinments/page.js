@@ -13,13 +13,20 @@ export default function AppointmentQueue() {
 
   // ✅ Fetch appointments
   useEffect(() => {
+    //get appoinments from the backend
     const fetchAppointments = async () => {
       const data = await getAppointments();
-      setAppointments(data);
+      // handle the error if appointments cannot fetch
+      if (!data) {
+        toast.error("Failed to fetch appointments");
+        return;
+      }
+      else{
+      setAppointments(data); // view the appoinments
       setNextPosition(data.length + 1); // Next available position
     };
     fetchAppointments();
-  }, []);
+  }}, []);
 
   // ✅ Book the next available slot
   const handleBook = async () => {
@@ -29,8 +36,10 @@ export default function AppointmentQueue() {
     }
 
     try {
+      //send patient ID, name and date to create an appointment
       await createAppointment(patientID, patientName, new Date().toISOString().split("T")[0]);
       toast.success("Appointment booked successfully!");
+      //view the newly created appointment details in the queue
       setAppointments([...appointments, { position: nextPosition, patientID, patientName, status: "pending" }]);
       setNextPosition(nextPosition + 1);
     } catch (errorMessage) {  // ✅ Now this will be just the string message
@@ -46,15 +55,18 @@ export default function AppointmentQueue() {
         {/* Queue View */}
         <div className="col-md-8">
           <div className="list-group">
+          {/*loop through the appointments  and view them in the frontend*/}
             {appointments.map((appt, index) => (
               <div
                 key={index}
                 className={`list-group-item d-flex justify-content-between align-items-center ${
+                //pending ones in red colour
                   appt.status === "pending" ? "list-group-item-danger" : "list-group-item-success"
                 }`}
               >
                 <span className="fw-bold"> {index + 1}</span>
                 <span>
+                  {/*add text not yet seen by the doctor*/}
                   {appt.status === "pending" ? (
                     <>
                       Booked by {appt.patientName} - <strong>Not yet seen by the doctor</strong>

@@ -131,78 +131,99 @@ function AssistantDashboardPatient() {
 
         {/* Patient Details on the Right Side */}
         {selectedPatient && (
-          <div className="patient-details-container">
+        <div className="col-md-6 loginForm">
             <h3>Patient Details</h3>
-            <form onSubmit={handleEditPatient}>
-              <div className="form-group">
-                <label>Title:</label>
+            <form onSubmit={handleEditPatient} className="temporyLoginForm">
+            <div className="mb-3">
+                <label className="form-label">Patient ID:</label>
                 <input
-                  type="text"
-                  value={selectedPatient.title}
-                  onChange={(e) =>
+                type="text"
+                className="form-control"
+                value={selectedPatient.patient_ID}
+                readOnly
+                onChange={(e) =>
                     setSelectedPatient({
-                      ...selectedPatient,
-                      title: e.target.value,
+                    ...selectedPatient,
+                    title: e.target.value,
                     })
-                  }
+                }
                 />
-              </div>
-              <div className="form-group">
-                <label>First Name:</label>
+            </div>
+            <div className="mb-3">
+                <label className="form-label">Title:</label>
                 <input
-                  type="text"
-                  value={selectedPatient.firstName}
-                  onChange={(e) =>
+                type="text"
+                className="form-control"
+                value={selectedPatient.title}
+                onChange={(e) =>
                     setSelectedPatient({
-                      ...selectedPatient,
-                      firstName: e.target.value,
+                    ...selectedPatient,
+                    title: e.target.value,
                     })
-                  }
+                }
                 />
-              </div>
-              <div className="form-group">
-                <label>Last Name:</label>
+            </div>
+            <div className="mb-3">
+                <label className="form-label">First Name:</label>
                 <input
-                  type="text"
-                  value={selectedPatient.lastName}
-                  onChange={(e) =>
+                type="text"
+                className="form-control"
+                value={selectedPatient.firstName}
+                onChange={(e) =>
                     setSelectedPatient({
-                      ...selectedPatient,
-                      lastName: e.target.value,
+                    ...selectedPatient,
+                    firstName: e.target.value,
                     })
-                  }
+                }
                 />
-              </div>
-              <div className="form-group">
-                <label>Contact:</label>
+            </div>
+            <div className="mb-3">
+                <label className="form-label">Last Name:</label>
                 <input
-                  type="text"
-                  value={selectedPatient.contactNo}
-                  onChange={(e) =>
+                type="text"
+                className="form-control"
+                value={selectedPatient.lastName}
+                onChange={(e) =>
                     setSelectedPatient({
-                      ...selectedPatient,
-                      contactNo: e.target.value,
+                    ...selectedPatient,
+                    lastName: e.target.value,
                     })
-                  }
+                }
                 />
-              </div>
-              <div className="form-group">
-                <label>Email:</label>
+            </div>
+            <div className="mb-3">
+                <label className="form-label">Contact:</label>
                 <input
-                  type="email"
-                  value={selectedPatient.email}
-                  onChange={(e) =>
+                type="text"
+                className="form-control"
+                value={selectedPatient.contactNo}
+                onChange={(e) =>
                     setSelectedPatient({
-                      ...selectedPatient,
-                      email: e.target.value,
+                    ...selectedPatient,
+                    contactNo: e.target.value,
                     })
-                  }
+                }
                 />
-              </div>
-              <button type="submit">Save Changes</button>
+            </div>
+            <div className="mb-3">
+                <label className="form-label">Email:</label>
+                <input
+                type="email"
+                className="form-control"
+                value={selectedPatient.email}
+                onChange={(e) =>
+                    setSelectedPatient({
+                    ...selectedPatient,
+                    email: e.target.value,
+                    })
+                }
+                />
+            </div>
+            <button type="submit" className="btn btn-primary">Save Changes</button>
             </form>
-          </div>
+        </div>
         )}
+
       </div>
     </div>
   );

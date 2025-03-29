@@ -4,9 +4,12 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import "../../../Styles/AssistantDashboard.css";
 import "../../../Styles/loginForms.css";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 import AssistNavBar from "../../../components/assistantSideBar";
 import { FaEye, FaSearch } from "react-icons/fa";
-import { fetchPatients } from "../../../services/patientService";
+import { fetchPatients, updatePatient } from "../../../services/patientService";
 
 function AssistantDashboardPatient() {
   const router = useRouter();
@@ -14,13 +17,13 @@ function AssistantDashboardPatient() {
   // Function to handle logout
   const logout = () => {
     console.log("Logged out");
-    router.push("/login"); 
+    router.push("/login");
   };
 
   // State to store patient data
   const [patients, setPatients] = useState([]);
-  const [searchTerm, setSearchTerm] = useState(""); 
-  const [selectedPatient, setSelectedPatient] = useState(null); 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedPatient, setSelectedPatient] = useState(null);
 
   // Fetch patients from the service
   useEffect(() => {
@@ -46,14 +49,26 @@ function AssistantDashboardPatient() {
 
   // Handle clicking the eye icon to show patient details
   const handleViewPatient = (patient) => {
-    setSelectedPatient(patient); 
+    setSelectedPatient(patient);
   };
 
   // Handle editing the patient details
-  const handleEditPatient = (e) => {
+  const handleEditPatient = async (e) => {
     e.preventDefault();
-    // Implement the edit functionality, e.g., send updated data to the server
-    console.log("Patient updated:", selectedPatient);
+
+    try {
+        const response = await updatePatient(selectedPatient); // Call the updatePatient function
+    
+        if (response.success) { // Check if the API response indicates success
+          console.log("Patient updated:", response);
+          toast.success("Patient details updated successfully"); // Success toast
+        } else {
+          toast.error(response.message || "Failed to update patient details"); // Error toast if API fails
+        }
+      } catch (error) {
+        console.error("Failed to update patient:", error);
+        toast.error("Failed to update patient details"); // Error toast for exception
+      }
   };
 
   return (
@@ -61,7 +76,6 @@ function AssistantDashboardPatient() {
       <AssistNavBar onLogout={logout} />
 
       <div className="content-area">
-        {/* Search Box */}
         <br />
         <h2>&nbsp; &nbsp; Patient Details</h2>
         <br />
@@ -76,7 +90,6 @@ function AssistantDashboardPatient() {
           />
         </div>
 
-        {/* Patient Table */}
         <div className="patient-table-container">
           <div className="table-responsive-custom">
             <table className="table table-striped patient-data-table">
@@ -131,99 +144,100 @@ function AssistantDashboardPatient() {
 
         {/* Patient Details on the Right Side */}
         {selectedPatient && (
-        <div className="col-md-6 loginForm">
+          <div className="col-md-6 loginForm">
             <h3>Patient Details</h3>
             <form onSubmit={handleEditPatient} className="temporyLoginForm">
-            <div className="mb-3">
+              <div className="mb-3">
                 <label className="form-label">Patient ID:</label>
                 <input
-                type="text"
-                className="form-control"
-                value={selectedPatient.patient_ID}
-                readOnly
-                onChange={(e) =>
+                  type="text"
+                  className="form-control"
+                  value={selectedPatient.patient_ID}
+                  readOnly
+                  onChange={(e) =>
                     setSelectedPatient({
-                    ...selectedPatient,
-                    title: e.target.value,
+                      ...selectedPatient,
+                      patient_ID: e.target.value,
                     })
-                }
+                  }
                 />
-            </div>
-            <div className="mb-3">
+              </div>
+              <div className="mb-3">
                 <label className="form-label">Title:</label>
                 <input
-                type="text"
-                className="form-control"
-                value={selectedPatient.title}
-                onChange={(e) =>
+                  type="text"
+                  className="form-control"
+                  value={selectedPatient.title}
+                  onChange={(e) =>
                     setSelectedPatient({
-                    ...selectedPatient,
-                    title: e.target.value,
+                      ...selectedPatient,
+                      title: e.target.value,
                     })
-                }
+                  }
                 />
-            </div>
-            <div className="mb-3">
+              </div>
+              <div className="mb-3">
                 <label className="form-label">First Name:</label>
                 <input
-                type="text"
-                className="form-control"
-                value={selectedPatient.firstName}
-                onChange={(e) =>
+                  type="text"
+                  className="form-control"
+                  value={selectedPatient.firstName}
+                  onChange={(e) =>
                     setSelectedPatient({
-                    ...selectedPatient,
-                    firstName: e.target.value,
+                      ...selectedPatient,
+                      firstName: e.target.value,
                     })
-                }
+                  }
                 />
-            </div>
-            <div className="mb-3">
+              </div>
+              <div className="mb-3">
                 <label className="form-label">Last Name:</label>
                 <input
-                type="text"
-                className="form-control"
-                value={selectedPatient.lastName}
-                onChange={(e) =>
+                  type="text"
+                  className="form-control"
+                  value={selectedPatient.lastName}
+                  onChange={(e) =>
                     setSelectedPatient({
-                    ...selectedPatient,
-                    lastName: e.target.value,
+                      ...selectedPatient,
+                      lastName: e.target.value,
                     })
-                }
+                  }
                 />
-            </div>
-            <div className="mb-3">
+              </div>
+              <div className="mb-3">
                 <label className="form-label">Contact:</label>
                 <input
-                type="text"
-                className="form-control"
-                value={selectedPatient.contactNo}
-                onChange={(e) =>
+                  type="text"
+                  className="form-control"
+                  value={selectedPatient.contactNo}
+                  onChange={(e) =>
                     setSelectedPatient({
-                    ...selectedPatient,
-                    contactNo: e.target.value,
+                      ...selectedPatient,
+                      contactNo: e.target.value,
                     })
-                }
+                  }
                 />
-            </div>
-            <div className="mb-3">
+              </div>
+              <div className="mb-3">
                 <label className="form-label">Email:</label>
                 <input
-                type="email"
-                className="form-control"
-                value={selectedPatient.email}
-                onChange={(e) =>
+                  type="email"
+                  className="form-control"
+                  value={selectedPatient.email}
+                  onChange={(e) =>
                     setSelectedPatient({
-                    ...selectedPatient,
-                    email: e.target.value,
+                      ...selectedPatient,
+                      email: e.target.value,
                     })
-                }
+                  }
                 />
-            </div>
-            <button type="submit" className="btn btn-primary">Save Changes</button>
+              </div>
+              <button type="submit" className="btn btn-primary">
+                Update Patient
+              </button>
             </form>
-        </div>
+          </div>
         )}
-
       </div>
     </div>
   );

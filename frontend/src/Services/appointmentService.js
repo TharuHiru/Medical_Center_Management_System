@@ -38,3 +38,21 @@ export const getDoctorAppointments = async () => {
     return null;
   }
 };
+
+// ✅ Admit a Patient
+export const admitPatient = async (patientID, appointmentDate) => {
+  try {
+
+    const requestData = { patientID, appointmentDate };
+    console.log("Sending request:", requestData); // ✅ Log data before sending
+
+    const response = await axios.put(`${API_URL}/admit/`, {
+      patientID,
+      appointmentDate,
+    });
+    
+    return response.data;
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};

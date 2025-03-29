@@ -53,3 +53,19 @@ router.get("/", async (req, res) => {
 });
 
 module.exports = router;
+
+// ✅ Get all appointments for the doctor
+router.get("/doctor-view", async (req, res) => {
+  try {
+    const snapshot = await db.collection("appointments").orderBy("createdAt").get();
+
+    let appointments = [];
+    snapshot.forEach((doc) => {
+      appointments.push({ id: doc.id, ...doc.data() });
+    });
+
+    res.status(200).json(appointments);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});

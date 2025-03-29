@@ -16,17 +16,17 @@ export default function AppointmentQueue() {
     //get appoinments from the backend
     const fetchAppointments = async () => {
       const data = await getAppointments();
+      console.log("Fetched Data:", data); // Debugging
       // handle the error if appointments cannot fetch
       if (!data) {
         toast.error("Failed to fetch appointments");
         return;
       }
-      else{
       setAppointments(data); // view the appoinments
       setNextPosition(data.length + 1); // Next available position
-    };
+  };
     fetchAppointments();
-  }}, []);
+  }, []);
 
   // ✅ Book the next available slot
   const handleBook = async () => {

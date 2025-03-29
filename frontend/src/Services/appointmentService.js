@@ -27,3 +27,14 @@ export const getAppointments = async () => {
     throw new Error(error.response?.data?.error || "Something went wrong");
   }
 };
+
+// ✅ Get all appointments for the doctor
+export const getDoctorAppointments = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/doctor-view`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching doctor appointments:", error);
+    return null;
+  }
+};

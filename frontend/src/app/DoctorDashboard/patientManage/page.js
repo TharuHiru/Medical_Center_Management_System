@@ -10,6 +10,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import AssistNavBar from "../../../components/assistantSideBar";
 import { FaEye, FaSearch } from "react-icons/fa";
 import { fetchPatients, updatePatient } from "../../../services/patientService";
+import PrescriptionModal from "../../../components/AddPrescriptionModel";
+import { Button } from "react-bootstrap";
+
 
 function AssistantDashboardPatient() {
   const router = useRouter();
@@ -24,6 +27,8 @@ function AssistantDashboardPatient() {
   const [patients, setPatients] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPatient, setSelectedPatient] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const availableMedicines = ["Paracetamol", "Ibuprofen", "Amoxicillin"];
 
   // Fetch patients from the service
   useEffect(() => {
@@ -235,6 +240,12 @@ function AssistantDashboardPatient() {
               <button type="submit" className="btn btn-primary">
                 Update Patient
               </button>
+              <Button onClick={() => setShowModal(true)}>Add Prescription</Button>
+              <PrescriptionModal
+                show={showModal}
+                handleClose={() => setShowModal(false)}
+                medicines={availableMedicines}
+              />
             </form>
           </div>
         )}

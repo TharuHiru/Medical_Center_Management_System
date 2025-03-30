@@ -7,7 +7,7 @@ import "../../../Styles/loginForms.css";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import AssistNavBar from "../../../components/assistantSideBar";
+import DoctorNavBar from '../../../components/doctorSideBar';
 import { FaEye, FaSearch } from "react-icons/fa";
 import { fetchPatients, updatePatient } from "../../../services/patientService";
 import PrescriptionModal from "../../../components/AddPrescriptionModel";
@@ -78,7 +78,7 @@ function AssistantDashboardPatient() {
 
   return (
     <div className="dashboard-container">
-      <AssistNavBar onLogout={logout} />
+      <DoctorNavBar onLogout={logout} />
 
       <div className="content-area">
         <br />

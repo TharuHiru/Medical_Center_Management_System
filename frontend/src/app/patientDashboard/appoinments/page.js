@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { db } from "../../../lib/firebase";
-import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { collection, query,orderBy, onSnapshot } from "firebase/firestore";
 import { createAppointment } from "../../../services/appointmentService";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -15,7 +15,7 @@ export default function AppointmentQueue() {
 
   // ✅ Real-time listener for appointments
   useEffect(() => {
-    const q = query(collection(db, "appointments"), where("status", "!=", "completed"));
+    const q = query(collection(db, "appointments"),orderBy("createdAt", "asc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       setAppointments(data);

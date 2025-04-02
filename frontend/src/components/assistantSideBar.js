@@ -28,8 +28,8 @@ const AssistNavBar = ({ onLogout }) => {
         </li>
         <hr></hr>
         <li className="nav-item">
-          <Link href="/appointments" 
-          className={`nav-link ${pathname === "/appointments" ? "active" : ""}`}>
+          <Link href="/AssistantDashboard/appointmentManagement" 
+          className={`nav-link ${pathname === "/AssistantDashboard/appointmentManagement" ? "active" : ""}`}>
             <FaCalendarCheck className="nav-icon" /> Appointments
           </Link>
         </li>

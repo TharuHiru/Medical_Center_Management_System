@@ -4,13 +4,14 @@ import React, { useState } from "react";
 import BackNavbar from "../../components/backNavBar"; // Import the Navbar component
 import { useRouter } from "next/navigation"; // Import useRouter for navigation
 import Link from "next/link";
-
+import { useAuth } from "../../context/AuthContext"; // Import AuthContext
 import { patientLogin } from "../../services/patientAuthService";
 
 const PatientLogin = () => {
   const [patient_ID, setPatientID] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter(); // Initialize the router
+  const { login } = useAuth(); // Use login from AuthContext
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
@@ -20,6 +21,7 @@ const PatientLogin = () => {
       const response = await patientLogin(patient_ID, password);
   
       if (response.success) {
+        login("patient", patient_ID); // Store patient ID in context
         alert("Login successful!");
         router.push("/patientDashboard/appoinments"); // Redirect to dashboard
       } else {

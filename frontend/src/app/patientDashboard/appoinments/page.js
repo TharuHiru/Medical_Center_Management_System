@@ -1,6 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { getAppointments, createAppointment } from "../../../services/appointmentService";
+import { db } from "../../../lib/firebase";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { createAppointment } from "../../../services/appointmentService";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -11,21 +13,15 @@ export default function AppointmentQueue() {
   const [patientName, setPatientName] = useState("");
   const [nextPosition, setNextPosition] = useState(1);
 
-  // ✅ Fetch appointments
+  // ✅ Real-time listener for appointments
   useEffect(() => {
-    //get appoinments from the backend
-    const fetchAppointments = async () => {
-      const data = await getAppointments();
-      console.log("Fetched Data:", data); // Debugging
-      // handle the error if appointments cannot fetch
-      if (!data) {
-        toast.error("Failed to fetch appointments");
-        return;
-      }
-      setAppointments(data); // view the appoinments
-      setNextPosition(data.length + 1); // Next available position
-  };
-    fetchAppointments();
+    const q = query(collection(db, "appointments"), where("status", "!=", "completed"));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setAppointments(data);
+      setNextPosition(data.length + 1);
+    });
+    return () => unsubscribe();
   }, []);
 
   // ✅ Book the next available slot
@@ -36,13 +32,11 @@ export default function AppointmentQueue() {
     }
 
     try {
-      //send patient ID, name and date to create an appointment
       await createAppointment(patientID, patientName, new Date().toISOString().split("T")[0]);
       toast.success("Appointment booked successfully!");
-      //view the newly created appointment details in the queue
-      setAppointments([...appointments, { position: nextPosition, patientID, patientName, status: "pending" }]);
-      setNextPosition(nextPosition + 1);
-    } catch (errorMessage) {  // ✅ Now this will be just the string message
+      setPatientID("");
+      setPatientName("");
+    } catch (errorMessage) {
       toast.error(errorMessage);
     }
   };
@@ -55,18 +49,15 @@ export default function AppointmentQueue() {
         {/* Queue View */}
         <div className="col-md-8">
           <div className="list-group">
-          {/*loop through the appointments  and view them in the frontend*/}
             {appointments.map((appt, index) => (
               <div
-                key={index}
+                key={appt.id}
                 className={`list-group-item d-flex justify-content-between align-items-center ${
-                //pending ones in red colour
                   appt.status === "pending" ? "list-group-item-danger" : "list-group-item-success"
                 }`}
               >
                 <span className="fw-bold"> {index + 1}</span>
                 <span>
-                  {/*add text not yet seen by the doctor*/}
                   {appt.status === "pending" ? (
                     <>
                       Booked by {appt.patientName} - <strong>Not yet seen by the doctor</strong>

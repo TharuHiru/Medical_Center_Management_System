@@ -1,15 +1,17 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { db } from "../../../lib/firebase";
-import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot, deleteDoc, doc } from "firebase/firestore";
 import { createAppointment } from "../../../services/appointmentService";
 import { ToastContainer, toast } from "react-toastify";
+import Swal from "sweetalert2"; // ✅ Import SweetAlert2
+import "sweetalert2/dist/sweetalert2.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useAuth } from "../../../context/AuthContext"; // ✅ Import Auth Context
 
 export default function AppointmentQueue() {
-  const { userType, patientID } = useAuth(); // ✅ Correct: Get patientID from context
+  const { userType, patientID } = useAuth(); // ✅ Get patientID from context
   console.log("User from AuthContext:", patientID); // ✅ Debugging
 
   const [appointments, setAppointments] = useState([]);
@@ -34,9 +36,32 @@ export default function AppointmentQueue() {
     return () => unsubscribe();
   }, []);
 
+  // ✅ Show SweetAlert2 confirmation before removing
+  const handleRemove = async (appointmentID) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This will remove your appointment permanently!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, remove it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await deleteDoc(doc(db, "appointments", appointmentID));
+          toast.success("Appointment removed successfully!");
+        } catch (error) {
+          Swal.fire("Error", "Failed to remove appointment.", "error");
+          toast.error("Failed to remove appointment.");
+        }
+      }
+    });
+  };
+
   // ✅ Book the next available slot
   const handleBook = async () => {
-    if (!patientID ) {
+    if (!patientID) {
       toast.error("Please enter patient details");
       return;
     }
@@ -60,20 +85,24 @@ export default function AppointmentQueue() {
             {appointments.map((appt, index) => (
               <div
                 key={appt.id}
-                className={`list-group-item d-flex justify-content-between align-items-center ${
-                  appt.status === "pending" ? "list-group-item-danger" : "list-group-item-success"
-                }`}
+                className={`list-group-item d-flex justify-content-between align-items-center 
+                  ${appt.id === patientIDState ? "list-group-item-primary" : appt.status === "pending" ? "list-group-item-danger" : "list-group-item-success"}`}
               >
                 <span className="fw-bold"> {index + 1}</span>
                 <span>
                   {appt.status === "pending" ? (
-                    <>
-                      <strong>Not yet seen by the doctor</strong>
-                    </>
+                    <strong>Not yet seen by the doctor</strong>
                   ) : (
-                    `Booked by ${appt.patientName}`
+                    <strong>Seen by the doctor</strong>
                   )}
                 </span>
+
+                {/* ✅ Remove Button (Only for logged-in patient & status is "pending") */}
+                {appt.id === patientIDState && appt.status === "pending" && (
+                  <button className="btn btn-danger btn-sm" onClick={() => handleRemove(appt.id)}>
+                    Remove
+                  </button>
+                )}
               </div>
             ))}
           </div>

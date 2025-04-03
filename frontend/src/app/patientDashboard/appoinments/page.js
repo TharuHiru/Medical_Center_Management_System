@@ -14,7 +14,6 @@ export default function AppointmentQueue() {
 
   const [appointments, setAppointments] = useState([]);
   const [patientIDState, setPatientIDState] = useState(patientID || ""); // ✅ Initialize with context value
-  const [patientName, setPatientName] = useState("");
   const [nextPosition, setNextPosition] = useState(1);
 
   // ✅ Update patient ID when user is available
@@ -37,15 +36,14 @@ export default function AppointmentQueue() {
 
   // ✅ Book the next available slot
   const handleBook = async () => {
-    if (!patientID || !patientName) {
+    if (!patientID ) {
       toast.error("Please enter patient details");
       return;
     }
 
     try {
-      await createAppointment(patientID, patientName, new Date().toISOString().split("T")[0]);
+      await createAppointment(patientID, new Date().toISOString().split("T")[0]);
       toast.success("Appointment booked successfully!");
-      setPatientName("");
     } catch (errorMessage) {
       toast.error(errorMessage);
     }
@@ -70,7 +68,7 @@ export default function AppointmentQueue() {
                 <span>
                   {appt.status === "pending" ? (
                     <>
-                      Booked by {appt.patientName} - <strong>Not yet seen by the doctor</strong>
+                      <strong>Not yet seen by the doctor</strong>
                     </>
                   ) : (
                     `Booked by ${appt.patientName}`
@@ -94,14 +92,6 @@ export default function AppointmentQueue() {
               value={patientID}
               disabled // ✅ Prevent manual editing
             />
-            <input
-              type="text"
-              className="form-control mb-2"
-              placeholder="Patient Name"
-              value={patientName}
-              onChange={(e) => setPatientName(e.target.value)}
-            />
-
             <button className="btn btn-primary w-100" onClick={handleBook}>
               Book Appointment
             </button>

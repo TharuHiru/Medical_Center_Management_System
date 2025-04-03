@@ -3,11 +3,10 @@ import axios from "axios";
 const API_URL = "http://localhost:5000/api/appointments";
 
 // ✅ Create an Appointment 
-export const createAppointment = async (patientID, patientName, appointmentDate) => {
+export const createAppointment = async (patientID, appointmentDate) => {
   try {
     const response = await axios.post(API_URL, {
       patientID,
-      patientName,
       appointmentDate,
     });
     return response.data; // ✅ Return success response

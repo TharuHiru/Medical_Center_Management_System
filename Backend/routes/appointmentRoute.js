@@ -6,7 +6,7 @@ const pool = require('../config/db'); // MySQL connection pool
 // ✅ Add an Appointment with Patient ID as Document ID
 router.post("/", async (req, res) => {
   try {
-    const { patientID, patientName, appointmentDate } = req.body;
+    const { patientID,appointmentDate } = req.body;
 
     if (!patientID) {
       return res.status(400).json({ error: "Patient ID is required" });
@@ -20,7 +20,6 @@ router.post("/", async (req, res) => {
 
     // Create appointment data
     const newAppointment = {
-      patientName,
       appointmentDate,
       status: "pending", // Default status
       createdAt: new Date(),

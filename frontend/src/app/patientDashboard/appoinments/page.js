@@ -1,21 +1,32 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { db } from "../../../lib/firebase";
-import { collection, query,orderBy, onSnapshot } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 import { createAppointment } from "../../../services/appointmentService";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { useAuth } from "../../../context/AuthContext"; // ✅ Import Auth Context
 
 export default function AppointmentQueue() {
+  const { userType, patientID } = useAuth(); // ✅ Correct: Get patientID from context
+  console.log("User from AuthContext:", patientID); // ✅ Debugging
+
   const [appointments, setAppointments] = useState([]);
-  const [patientID, setPatientID] = useState("");
+  const [patientIDState, setPatientIDState] = useState(patientID || ""); // ✅ Initialize with context value
   const [patientName, setPatientName] = useState("");
   const [nextPosition, setNextPosition] = useState(1);
 
+  // ✅ Update patient ID when user is available
+  useEffect(() => {
+    if (userType === "patient" && patientID) {
+      setPatientIDState(patientID);
+    }
+  }, [userType, patientID]);
+
   // ✅ Real-time listener for appointments
   useEffect(() => {
-    const q = query(collection(db, "appointments"),orderBy("createdAt", "asc"));
+    const q = query(collection(db, "appointments"), orderBy("createdAt", "asc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       setAppointments(data);
@@ -34,7 +45,6 @@ export default function AppointmentQueue() {
     try {
       await createAppointment(patientID, patientName, new Date().toISOString().split("T")[0]);
       toast.success("Appointment booked successfully!");
-      setPatientID("");
       setPatientName("");
     } catch (errorMessage) {
       toast.error(errorMessage);
@@ -82,7 +92,7 @@ export default function AppointmentQueue() {
               className="form-control mb-2"
               placeholder="Patient ID"
               value={patientID}
-              onChange={(e) => setPatientID(e.target.value)}
+              disabled // ✅ Prevent manual editing
             />
             <input
               type="text"

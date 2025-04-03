@@ -22,7 +22,8 @@ const PatientLogin = () => {
   
       if (response.success) {
         login("patient", patient_ID); // Store patient ID in context
-        alert("Login successful!");
+        console.log("Patient ID stored in context:", patient_ID); // ✅ Log the ID
+        alert(`Login successful! Your Patient ID: ${patient_ID}`); // ✅ Include ID in alert
         router.push("/patientDashboard/appoinments"); // Redirect to dashboard
       } else {
         alert("Login failed: " + response.error);

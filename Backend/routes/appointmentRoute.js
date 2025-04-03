@@ -14,7 +14,7 @@ router.post("/", async (req, res) => {
 
     // Check if the appointment already exists
     const existingAppointment = await db.collection("appointments").doc(patientID).get();
-    if (existingAppointment.exists) {
+    if (existingAppointment.exists && existingAppointment.data().status === "pending") {
       return res.status(400).json({ error: "You already have an appointment!" });
     }
 

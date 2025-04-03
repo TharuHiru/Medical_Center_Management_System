@@ -4,39 +4,36 @@ import { db } from "../../../lib/firebase";
 import { collection, query, orderBy, onSnapshot, deleteDoc, doc } from "firebase/firestore";
 import { createAppointment } from "../../../services/appointmentService";
 import { ToastContainer, toast } from "react-toastify";
-import Swal from "sweetalert2"; // ✅ Import SweetAlert2
+import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useAuth } from "../../../context/AuthContext"; // ✅ Import Auth Context
+import { useAuth } from "../../../context/AuthContext";
 
 export default function AppointmentQueue() {
-  const { userType, patientID } = useAuth(); // ✅ Get patientID from context
-  console.log("User from AuthContext:", patientID); // ✅ Debugging
-
+  const { userType, patientID } = useAuth();
   const [appointments, setAppointments] = useState([]);
-  const [patientIDState, setPatientIDState] = useState(patientID || ""); // ✅ Initialize with context value
+  const [patientQueueNumber, setPatientQueueNumber] = useState(null);
   const [nextPosition, setNextPosition] = useState(1);
 
-  // ✅ Update patient ID when user is available
-  useEffect(() => {
-    if (userType === "patient" && patientID) {
-      setPatientIDState(patientID);
-    }
-  }, [userType, patientID]);
-
-  // ✅ Real-time listener for appointments
   useEffect(() => {
     const q = query(collection(db, "appointments"), orderBy("createdAt", "asc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      const data = snapshot.docs.map((doc, index) => ({ id: doc.id, queueNumber: index + 1, ...doc.data() }));
       setAppointments(data);
       setNextPosition(data.length + 1);
+
+      // Find patient's queue number
+      const patientAppointment = data.find((appt) => appt.id === patientID);
+      if (patientAppointment && patientAppointment.status === "pending") {
+        setPatientQueueNumber(patientAppointment.queueNumber);
+      } else {
+        setPatientQueueNumber(null);
+      }
     });
     return () => unsubscribe();
-  }, []);
+  }, [patientID]);
 
-  // ✅ Show SweetAlert2 confirmation before removing
   const handleRemove = async (appointmentID) => {
     Swal.fire({
       title: "Are you sure?",
@@ -59,13 +56,11 @@ export default function AppointmentQueue() {
     });
   };
 
-  // ✅ Book the next available slot
   const handleBook = async () => {
     if (!patientID) {
       toast.error("Please enter patient details");
       return;
     }
-
     try {
       await createAppointment(patientID, new Date().toISOString().split("T")[0]);
       toast.success("Appointment booked successfully!");
@@ -78,15 +73,23 @@ export default function AppointmentQueue() {
     <div className="container mt-4">
       <h2 className="text-center">Today&apos;s Appointment Queue</h2>
 
+      {/* Display patient's queue number or message */}
+      <div className="text-center my-3">
+        {patientQueueNumber ? (
+          <h4 className="text-primary">Your Number: {patientQueueNumber}</h4>
+        ) : (
+          <h5 className="text-danger">You haven&apos;t booked an appointment today.</h5>
+        )}
+      </div>
+
       <div className="row">
-        {/* Queue View */}
         <div className="col-md-8">
           <div className="list-group">
             {appointments.map((appt, index) => (
               <div
                 key={appt.id}
                 className={`list-group-item d-flex justify-content-between align-items-center 
-                  ${appt.id === patientIDState ? "list-group-item-primary" : appt.status === "pending" ? "list-group-item-danger" : "list-group-item-success"}`}
+                  ${appt.id === patientID ? "list-group-item-primary" : appt.status === "pending" ? "list-group-item-danger" : "list-group-item-success"}`}
               >
                 <span className="fw-bold"> {index + 1}</span>
                 <span>
@@ -96,9 +99,7 @@ export default function AppointmentQueue() {
                     <strong>Seen by the doctor</strong>
                   )}
                 </span>
-
-                {/* ✅ Remove Button (Only for logged-in patient & status is "pending") */}
-                {appt.id === patientIDState && appt.status === "pending" && (
+                {appt.id === patientID && appt.status === "pending" && (
                   <button className="btn btn-danger btn-sm" onClick={() => handleRemove(appt.id)}>
                     Remove
                   </button>
@@ -108,7 +109,6 @@ export default function AppointmentQueue() {
           </div>
         </div>
 
-        {/* Booking Panel */}
         <div className="col-md-4">
           <div className="card p-3">
             <h5>Book the Next Available Position</h5>
@@ -119,7 +119,7 @@ export default function AppointmentQueue() {
               className="form-control mb-2"
               placeholder="Patient ID"
               value={patientID}
-              disabled // ✅ Prevent manual editing
+              disabled
             />
             <button className="btn btn-primary w-100" onClick={handleBook}>
               Book Appointment

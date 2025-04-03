@@ -55,3 +55,13 @@ export const admitPatient = async (patientID, appointmentDate) => {
     return { success: false, error: error.message };
   }
 };
+
+//reomve appointment
+export const removeAppointment = async (patientID) => {
+  try {
+    const response = await axios.delete(`${API_URL}/remove/${patientID}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || "Something went wrong");
+  }
+};

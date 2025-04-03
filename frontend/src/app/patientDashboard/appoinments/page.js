@@ -83,32 +83,41 @@ export default function AppointmentQueue() {
       </div>
 
       <div className="row">
-        <div className="col-md-8">
-          <div className="list-group">
-            {appointments.map((appt, index) => (
-              <div
-                key={appt.id}
-                className={`list-group-item d-flex justify-content-between align-items-center 
-                  ${appt.id === patientID ? "list-group-item-primary" : appt.status === "pending" ? "list-group-item-danger" : "list-group-item-success"}`}
-              >
-                <span className="fw-bold"> {index + 1}</span>
-                <span>
-                  {appt.status === "pending" ? (
-                    <strong>Not yet seen by the doctor</strong>
-                  ) : (
-                    <strong>Seen by the doctor</strong>
-                  )}
-                </span>
-                {appt.id === patientID && appt.status === "pending" && (
-                  <button className="btn btn-danger btn-sm" onClick={() => handleRemove(appt.id)}>
-                    Remove
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
+  <div className="col-md-8">
+    <div className="list-group">
+      {appointments.map((appt, index) => (
+        <div
+          key={appt.id}
+          className={`list-group-item d-flex justify-content-between align-items-center 
+            ${
+              appt.id === patientID 
+                ? "list-group-item-primary" 
+                : appt.status === "in progress" 
+                ? "list-group-item-warning" 
+                : appt.status === "pending" 
+                ? "list-group-item-danger" 
+                : "list-group-item-success"
+            }`}
+        >
+          <span className="fw-bold"> {index + 1}</span>
+          <span>
+            {appt.status === "pending" ? (
+              <strong>Not yet seen by the doctor</strong>
+            ) : appt.status === "in progress" ? (
+              <strong>In Progress</strong>
+            ) : (
+              <strong>Seen by the doctor</strong>
+            )}
+          </span>
+          {appt.id === patientID && appt.status === "pending" && (
+            <button className="btn btn-danger btn-sm" onClick={() => handleRemove(appt.id)}>
+              Remove
+            </button>
+          )}
         </div>
-
+      ))}
+    </div>
+  </div>
         <div className="col-md-4">
           <div className="card p-3">
             <h5>Book the Next Available Position</h5>

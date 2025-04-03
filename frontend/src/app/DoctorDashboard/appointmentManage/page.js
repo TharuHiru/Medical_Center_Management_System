@@ -3,13 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import '../../../Styles/AssistantDashboard.css';
 import '../../../Styles/loginForms.css';
-import { admitPatient } from "../../../services/appointmentService";
+import { admitPatient, removeAppointment } from "../../../services/appointmentService"; // Import removeAppointment
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import DoctorNavBar from '../../../components/doctorSideBar';
 import { db } from "../../../lib/firebase"; // Ensure correct Firebase import
-import { collection, query,orderBy, onSnapshot } from "../../../lib/firebase"; // Ensure correct Firebase import
+import { collection, query, orderBy, onSnapshot, doc, deleteDoc } from "firebase/firestore";
 
 function DoctorQueue() {
   const [appointments, setAppointments] = useState([]);
@@ -22,7 +22,7 @@ function DoctorQueue() {
 
   // ✅ Real-time listener for appointments
   useEffect(() => {
-    const q = query(collection(db, "appointments"),orderBy("createdAt", "asc"));
+    const q = query(collection(db, "appointments"), orderBy("createdAt", "asc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setAppointments(data);
@@ -41,6 +41,18 @@ function DoctorQueue() {
       }
     } catch (error) {
       toast.error("Error admitting patient.");
+    }
+  };
+
+  // ✅ Handle "Remove" button click
+  const handleRemove = async (appointmentId) => {
+    try {
+      // Delete the appointment from Firestore
+      const appointmentRef = doc(db, "appointments", appointmentId);
+      await deleteDoc(appointmentRef);  // Using deleteDoc to remove the appointment
+      toast.success("Appointment removed successfully!");
+    } catch (error) {
+      toast.error("Error removing appointment.");
     }
   };
 
@@ -64,15 +76,18 @@ function DoctorQueue() {
                 <span className="fw-bold"> {index + 1}</span>
                 <span>
                   {appt.patientName} ({appt.patientID})
-                  {appt.status === "pending" && (
-                    <strong> - Not yet seen by the doctor</strong>
-                  )}
+                  {appt.status === "pending" && <strong> - Not yet seen by the doctor</strong>}
                 </span>
                 {appt.status === "pending" && (
                   <button className="btn btn-primary" onClick={() => handleAdmit(appt)}>
                     Admit
                   </button>
-                )}              
+                )}
+                {appt.status === "in progress" && (
+                  <button className="btn btn-danger" onClick={() => handleRemove(appt.id)}>
+                    Remove
+                  </button>
+                )}
               </div>
             ))}
           </div>

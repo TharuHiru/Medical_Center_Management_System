@@ -57,6 +57,7 @@ export default function AppointmentQueue() {
                 }`}
               >
                 <span className="fw-bold"> {index + 1}</span>
+                <span>{appt.id}</span>
                 <span>
                   {appt.status === "pending" ? (
                     <>

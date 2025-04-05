@@ -74,8 +74,8 @@ function DoctorQueue() {
                 }`}
               >
                 <span className="fw-bold"> {index + 1}</span>
+                <span>{appt.id}</span>
                 <span>
-                  {appt.patientName} ({appt.patientID})
                   {appt.status === "pending" && <strong> - Not yet seen by the doctor</strong>}
                 </span>
                 {appt.status === "pending" && (

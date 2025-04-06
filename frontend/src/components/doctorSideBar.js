@@ -1,62 +1,114 @@
-"use client";
+'use client';
 
-import React from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { FaTachometerAlt, FaCalendarCheck, FaUser } from "react-icons/fa";
-import "../Styles/sideNavBar.css";
+import {
+  AppBar, Box, Divider, Drawer, IconButton, List, ListItem, ListItemIcon,
+  ListItemText, Toolbar, Typography, useMediaQuery, useTheme,
+} from '@mui/material';
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { FaTachometerAlt, FaUser, FaCalendarCheck, FaBoxes } from 'react-icons/fa';
+import MenuIcon from '@mui/icons-material/Menu';
 
-const DoctorNavBar = ({ onLogout }) => {
-  const pathname = usePathname(); // Get current route
+const AssistSidebar = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  const tabMap = {
+    '/AssistantDashboard/dashboard': 'Dashboard',
+    '/AssistantDashboard/patientManagement': 'Patients',
+    '/AssistantDashboard/appointmentManagement': 'Appointments',
+    '/AssistantDashboard/inventoryManagement': 'Inventory',
+  };
+
+  const currentTab = tabMap[pathname] || 'Dashboard';
+
+  const toggleDrawer = () => {
+    setOpen(!open);
+  };
+
+  const links = [
+    { href: '/AssistantDashboard/dashboard', text: 'Dashboard', icon: <FaTachometerAlt /> },
+    { href: '/AssistantDashboard/patientManagement', text: 'Patients', icon: <FaUser /> },
+    { href: '/AssistantDashboard/appointmentManagement', text: 'Appointments', icon: <FaCalendarCheck /> },
+    { href: '/AssistantDashboard/inventoryManagement', text: 'Inventory', icon: <FaBoxes /> },
+  ];
 
   return (
-    <div className="vertical-nav">
-      <h4>Dashboard</h4>
-      <ul className="nav flex-column dsh-nav-items">
-        <li className="nav-item">
-          <Link 
-            href="/DoctorDashboard" 
-            className={`nav-link ${pathname === "/DoctorDashboard" ? "active" : ""}`}
-          >
-            <FaTachometerAlt className="nav-icon" /> Dashboard
-          </Link>
-        </li>
+    <Box>
+      <AppBar position="sticky">
+        <Toolbar>
+          {isMobile && (
+            <IconButton color="inherit" edge="start" onClick={toggleDrawer} aria-label="menu" sx={{ mr: 2 }}>
+              <MenuIcon />
+            </IconButton>
+          )}
+        </Toolbar>
+      </AppBar>
+
+      <Drawer
+        sx={{
+          width: 240,
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+            width: 240,
+            boxSizing: 'border-box',
+            backgroundColor: '#333',
+            color: 'white',
+            paddingTop: '20px',
+          },
+        }}
+        variant={isMobile ? 'temporary' : 'permanent'}
+        anchor="left"
+        open={open}
+        onClose={toggleDrawer}
+        ModalProps={{
+          keepMounted: true,
+        }}
+      >
+        <Typography variant="h5" sx={{ textAlign: 'center' }}>
+          {currentTab}
+        </Typography>
         <hr />
-        <li className="nav-item">
-          <Link 
-            href="/DoctorDashboard/patientManage" 
-            className={`nav-link ${pathname === "/DoctorDashboard/patientManage" ? "active" : ""}`}
-          >
-            <FaUser className="nav-icon" /> Patients
-          </Link>
-        </li>
-        <hr />
-        <li className="nav-item">
-          <Link 
-            href="/DoctorDashboard/appointmentManage" 
-            className={`nav-link ${pathname === "/DoctorDashboard/appointmentManage" ? "active" : ""}`}
-          >
-            <FaCalendarCheck className="nav-icon" /> Appointments
-          </Link>
-        </li>
-        <hr />
-        <li className="nav-item">
-          <Link 
-            href="/DoctorDashboard/assistantManage" 
-            className={`nav-link ${pathname === "/DoctorDashboard/assistantManage" ? "active" : ""}`}
-          >
-            <FaUser className="nav-icon" /> Assistants
-          </Link>
-        </li>
-        <hr />
-        <li>
-          <button className="btn btn-danger logout-btn" onClick={onLogout}>
-            Logout
-          </button>
-        </li>
-      </ul>
-    </div>
+
+        <List>
+          {links.map(({ href, text, icon }) => (
+            <React.Fragment key={text}>
+              <Link href={href} passHref legacyBehavior>
+                <ListItem
+                  button
+                  component="a"
+                  selected={pathname === href}
+                  sx={{
+                    '&.Mui-selected': {
+                      backgroundColor: '#555',
+                    },
+                    '&:hover': {
+                      backgroundColor: '#444',
+                    },
+                  }}
+                >
+                  <ListItemIcon sx={{ color: 'white' }}>{icon}</ListItemIcon>
+                  <ListItemText
+                    primary={text}
+                    primaryTypographyProps={{
+                      sx: {
+                        color: 'white', // ✅ normal white text
+                        textDecoration: 'none', // ✅ remove underline
+                      },
+                    }}
+                  />
+                </ListItem>
+              </Link>
+              <Divider />
+            </React.Fragment>
+          ))}
+        </List>
+      </Drawer>
+    </Box>
   );
 };
 
-export default DoctorNavBar;
+export default AssistSidebar;

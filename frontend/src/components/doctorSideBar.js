@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FaTachometerAlt, FaUser, FaCalendarCheck, FaBoxes } from 'react-icons/fa';
 import MenuIcon from '@mui/icons-material/Menu';
+import '../Styles/sideNavBar.css'
 
 const AssistSidebar = () => {
   const theme = useTheme();
@@ -17,10 +18,10 @@ const AssistSidebar = () => {
   const pathname = usePathname();
 
   const tabMap = {
-    '/AssistantDashboard/dashboard': 'Dashboard',
-    '/AssistantDashboard/patientManagement': 'Patients',
-    '/AssistantDashboard/appointmentManagement': 'Appointments',
-    '/AssistantDashboard/inventoryManagement': 'Inventory',
+    '/DoctorDashboard/dashboard': 'Dashboard',
+    '/DoctorDashboard/patientManage': 'Patients',
+    '/DoctorDashboard/appointmentManage': 'Appointments',
+    '/DoctorDashboard/assistantManage': 'Assistants',
   };
 
   const currentTab = tabMap[pathname] || 'Dashboard';
@@ -30,14 +31,14 @@ const AssistSidebar = () => {
   };
 
   const links = [
-    { href: '/AssistantDashboard/dashboard', text: 'Dashboard', icon: <FaTachometerAlt /> },
-    { href: '/AssistantDashboard/patientManagement', text: 'Patients', icon: <FaUser /> },
-    { href: '/AssistantDashboard/appointmentManagement', text: 'Appointments', icon: <FaCalendarCheck /> },
-    { href: '/AssistantDashboard/inventoryManagement', text: 'Inventory', icon: <FaBoxes /> },
+    { href: '/DoctorDashboard/dashboard', text: 'Dashboard', icon: <FaTachometerAlt /> },
+    { href: '/DoctorDashboard/patientManage', text: 'Patients', icon: <FaUser /> },
+    { href: '/DoctorDashboard/appointmentManage', text: 'Appointments', icon: <FaCalendarCheck /> },
+    { href: '/DoctorDashboard/assistantManage', text: 'Assistants', icon: <FaUser /> },
   ];
 
   return (
-    <Box>
+    <Box >
       <AppBar position="sticky">
         <Toolbar>
           {isMobile && (
@@ -55,7 +56,7 @@ const AssistSidebar = () => {
           '& .MuiDrawer-paper': {
             width: 240,
             boxSizing: 'border-box',
-            backgroundColor: '#333',
+            backgroundColor: 'rgb(48, 90, 99)',
             color: 'white',
             paddingTop: '20px',
           },
@@ -68,10 +69,10 @@ const AssistSidebar = () => {
           keepMounted: true,
         }}
       >
-        <Typography variant="h5" sx={{ textAlign: 'center' }}>
+        <Typography variant="h5" sx={{ textAlign: 'center' , fontWeight:'bold'}}>
           {currentTab}
         </Typography>
-        <hr />
+        <hr></hr>
 
         <List>
           {links.map(({ href, text, icon }) => (
@@ -86,17 +87,18 @@ const AssistSidebar = () => {
                       backgroundColor: '#555',
                     },
                     '&:hover': {
-                      backgroundColor: '#444',
+                      backgroundColor: '#0f262a',
                     },
                   }}
                 >
-                  <ListItemIcon sx={{ color: 'white' }}>{icon}</ListItemIcon>
+                  <ListItemIcon sx={{ color: 'white' , fontSize:'20px'}}>{icon}</ListItemIcon>
                   <ListItemText
                     primary={text}
                     primaryTypographyProps={{
                       sx: {
-                        color: 'white', // ✅ normal white text
-                        textDecoration: 'none', // ✅ remove underline
+                        color: 'white', 
+                        textDecoration: 'none',
+                        fontSize:'20px' 
                       },
                     }}
                   />

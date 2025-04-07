@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FaTachometerAlt, FaUser, FaCalendarCheck, FaBoxes } from 'react-icons/fa';
 import MenuIcon from '@mui/icons-material/Menu';
+import '../Styles/sideNavBar.css'
 
 const AssistSidebar = () => {
   const theme = useTheme();
@@ -37,11 +38,14 @@ const AssistSidebar = () => {
   ];
 
   return (
-    <Box>
+    <Box >
       <AppBar position="sticky">
         <Toolbar>
           {isMobile && (
-            <IconButton color="inherit" edge="start" onClick={toggleDrawer} aria-label="menu" sx={{ mr: 2 }}>
+            <IconButton 
+                edge="start" 
+                onClick={toggleDrawer} 
+                sx={{ mr: 2 , color: '#ffffff', backgroundColor: 'transparent',}}>
               <MenuIcon />
             </IconButton>
           )}
@@ -55,7 +59,7 @@ const AssistSidebar = () => {
           '& .MuiDrawer-paper': {
             width: 240,
             boxSizing: 'border-box',
-            backgroundColor: '#333',
+            backgroundColor: 'rgb(48, 90, 99)',
             color: 'white',
             paddingTop: '20px',
           },
@@ -68,10 +72,10 @@ const AssistSidebar = () => {
           keepMounted: true,
         }}
       >
-        <Typography variant="h5" sx={{ textAlign: 'center' }}>
+        <Typography variant="h5" sx={{ textAlign: 'center' , fontWeight:'bold'}}>
           {currentTab}
         </Typography>
-        <hr />
+        <hr></hr>
 
         <List>
           {links.map(({ href, text, icon }) => (
@@ -86,17 +90,18 @@ const AssistSidebar = () => {
                       backgroundColor: '#555',
                     },
                     '&:hover': {
-                      backgroundColor: '#444',
+                      backgroundColor: '#0f262a',
                     },
                   }}
                 >
-                  <ListItemIcon sx={{ color: 'white' }}>{icon}</ListItemIcon>
+                  <ListItemIcon sx={{ color: 'white' , fontSize:'20px'}}>{icon}</ListItemIcon>
                   <ListItemText
                     primary={text}
                     primaryTypographyProps={{
                       sx: {
-                        color: 'white', // ✅ normal white text
-                        textDecoration: 'none', // ✅ remove underline
+                        color: 'white', 
+                        textDecoration: 'none',
+                        fontSize:'20px' 
                       },
                     }}
                   />

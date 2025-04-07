@@ -76,32 +76,30 @@ const AssistSidebar = () => {
         <List>
           {links.map(({ href, text, icon }) => (
             <React.Fragment key={text}>
-              <Link href={href} passHref legacyBehavior>
-                <ListItem
-                  button
-                  component="a"
-                  selected={pathname === href}
-                  sx={{
-                    '&.Mui-selected': {
-                      backgroundColor: '#555',
-                    },
-                    '&:hover': {
-                      backgroundColor: '#444',
-                    },
-                  }}
-                >
-                  <ListItemIcon sx={{ color: 'white' }}>{icon}</ListItemIcon>
-                  <ListItemText
-                    primary={text}
-                    primaryTypographyProps={{
-                      sx: {
-                        color: 'white', // ✅ normal white text
-                        textDecoration: 'none', // ✅ remove underline
-                      },
-                    }}
-                  />
-                </ListItem>
-              </Link>
+            <Link href={href} passHref legacyBehavior>
+        <ListItem
+          component="a"
+          sx={{
+            backgroundColor: pathname === href ? '#555' : 'transparent', // ✅ highlight selected
+            '&:hover': {
+              backgroundColor: '#444',
+            },
+          }}
+        >
+          <ListItemIcon sx={{ color: 'white' }}>{icon}</ListItemIcon>
+          <ListItemText
+            primary={text}
+            primaryTypographyProps={{
+              sx: {
+                color: 'white',
+                textDecoration: 'none',
+              },
+            }}
+          />
+        </ListItem>
+      </Link>
+
+              
               <Divider />
             </React.Fragment>
           ))}

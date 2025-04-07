@@ -12,6 +12,7 @@ import { FaEye, FaSearch } from "react-icons/fa";
 import { fetchPatients, updatePatient } from "../../../services/patientService";
 import PrescriptionModal from "../../../components/AddPrescriptionModel";
 import { Button } from "react-bootstrap";
+import '../../../Styles/loginForms.css';
 
 
 function AssistantDashboardPatient() {
@@ -237,10 +238,10 @@ function AssistantDashboardPatient() {
                   }
                 />
               </div>
-              <button type="submit" className="btn btn-primary">
+              <button type="submit" className="loginBtn">
                 Update Patient
               </button>
-              <Button onClick={() => setShowModal(true)}>Add Prescription</Button>
+              <button className = "loginBtn" onClick={() => setShowModal(true)}>Add Prescription</button>
               <PrescriptionModal
                 show={showModal}
                 handleClose={() => setShowModal(false)}

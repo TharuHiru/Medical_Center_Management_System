@@ -1,11 +1,25 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Modal, Button, Form, Table } from "react-bootstrap";
+import { fetchMedicineCategory } from "../services/inventoryService";
 
 export default function PrescriptionModal({ show, handleClose, medicines }) {
   const [diagnosis, setDiagnosis] = useState("");
   const [others, setOthers] = useState("");
   const [prescribedMedicines, setPrescribedMedicines] = useState([]);
+  const [inventory, setMedicineCategories] = useState([]);
+
+  useEffect(() => {
+      const getCategories = async () => {
+        try {
+          const response = await fetchMedicineCategory(); // API call
+          setMedicineCategories(response.data); // Store categories
+        } catch (error) {
+          console.error("Failed to fetch medicine categories:", error);
+        }
+      };
+      getCategories();
+    }, []);
 
   const addMedicine = () => {
     setPrescribedMedicines([...prescribedMedicines, { name: "", dosage: "" }]);
@@ -58,7 +72,7 @@ export default function PrescriptionModal({ show, handleClose, medicines }) {
               <tr>
                 <th>Medicine</th>
                 <th>Dosage</th>
-                <th>Action</th>
+                <th>No of units</th>
               </tr>
             </thead>
             <tbody>
@@ -72,9 +86,9 @@ export default function PrescriptionModal({ show, handleClose, medicines }) {
                       }
                     >
                       <option value="">Select Medicine</option>
-                      {medicines.map((med, idx) => (
-                        <option key={idx} value={med}>
-                          {med}
+                      {inventory.map((item) => (
+                        <option key={item.medicine_ID} value={item.medicine_Name}>
+                          {item.medicine_Name}
                         </option>
                       ))}
                     </Form.Select>
@@ -85,6 +99,15 @@ export default function PrescriptionModal({ show, handleClose, medicines }) {
                       value={med.dosage}
                       onChange={(e) =>
                         updateMedicine(index, "dosage", e.target.value)
+                      }
+                    />
+                  </td>
+                  <td>
+                    <Form.Control
+                      type="text"
+                      value={med.unitCount}
+                      onChange={(e) =>
+                        updateMedicine(index, "No of units", e.target.value)
                       }
                     />
                   </td>

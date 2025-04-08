@@ -11,7 +11,6 @@ import DoctorNavBar from '../../../components/doctorSideBar';
 import { FaEye, FaSearch } from "react-icons/fa";
 import { fetchPatients, updatePatient } from "../../../services/patientService";
 import PrescriptionModal from "../../../components/AddPrescriptionModel";
-import { Button } from "react-bootstrap";
 import '../../../Styles/loginForms.css';
 
 

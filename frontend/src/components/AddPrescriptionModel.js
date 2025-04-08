@@ -2,6 +2,8 @@
 import { useState, useEffect } from "react";
 import { Modal, Button, Form, Table } from "react-bootstrap";
 import { fetchMedicineCategory } from "../services/inventoryService";
+import { addPrescription } from "../services/inventoryService"; // Adjust path as needed
+
 
 export default function PrescriptionModal({ show, handleClose, medicines }) {
   const [diagnosis, setDiagnosis] = useState("");
@@ -35,10 +37,36 @@ export default function PrescriptionModal({ show, handleClose, medicines }) {
     setPrescribedMedicines(prescribedMedicines.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = () => {
-    console.log({ diagnosis, others, prescribedMedicines });
-    handleClose();
-  };
+  const handleSubmit = async () => {
+    try {
+      const today = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
+  
+      // Collect your final payload
+      const prescriptionPayload = {
+        date: today,
+        diagnosis,
+        otherNotes: others,
+        patient_ID: selectedPatientId, // get from props/context
+        doctor_ID: loggedInDoctorId,   // get from context
+        medicines: prescribedMedicines.map((med) => ({
+          medicine_Name: med.name,
+          dosage: med.dosage,
+          unitCount: med.unitCount,
+        })),
+      };
+        } catch (error) {
+          console.error("Error while preparing prescription payload:", error);
+        }
+
+        const result = await addPrescription(prescriptionPayload);
+
+        if (result.success) {
+          alert(result.message);
+          handleClose();
+        } else {
+          alert(result.message);
+        }
+      };
 
   return (
     <Modal show={show} onHide={handleClose}>
@@ -88,7 +116,7 @@ export default function PrescriptionModal({ show, handleClose, medicines }) {
                       <option value="">Select Medicine</option>
                       {inventory.map((item) => (
                         <option key={item.medicine_ID} value={item.medicine_Name}>
-                          {item.medicine_Name}
+                        {item.medicine_ID} - {item.medicine_Name}
                         </option>
                       ))}
                     </Form.Select>

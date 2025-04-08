@@ -102,6 +102,7 @@ router.post('/register/step2', async (req, res) => {
                 message: "Login successful!", 
                 token,
                 user: {
+                    _id : LoggedDoctor.doc_ID,
                     firstName: LoggedDoctor.First_Name,
                     lastName: LoggedDoctor.Last_Name,
                 }

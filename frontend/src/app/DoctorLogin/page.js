@@ -2,45 +2,41 @@
 
 import React, { useState } from "react"; //get state
 import { useRouter } from "next/navigation"; // use routing
-
 import BackNavbar from "../../components/backNavBar"; //import backnav bar to use
-
 import { toast } from "react-toastify";// toast css
 import "react-toastify/dist/ReactToastify.css";
-
-import { doctorLogin } from "../../services/authService"; // import the login function from the service file
 import Link from "next/link"; // Next.js navigation
+import { useAuth } from "../../context/AuthContext"; // Make sure this path is correct
+import { doctorLogin } from "../../services/authService";
 
-function DoctorLogin() {
+function DoctorLoginPage() {
   const router = useRouter(); // Use Next.js router
+  const { login } = useAuth(); // ✅ Moved here
 
-  //set the user name when it changes
+  // set the user name and password
   const [UserName, setUserName] = useState('');
   const [password, setPassword] = useState('');
 
-  // function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    // run the doctor login function using the user name and the password values
+
     try {
-      const data = await doctorLogin(UserName, password); // API call and await for response
-  
+      const data = await doctorLogin(UserName, password); // API call
+
       if (data.success) {
         toast.success("Logged in successfully!");
         localStorage.setItem("doctorToken", data.token);
 
-        router.push(`/DoctorDashboard/assistantManage?firstname=${data.user.firstName}&lastname=${data.user.lastName}`); // Redirect to the dashboard
-      } 
-      else {
-        console.error("Login Failed:", data.message); // messgae for Debugging
+        login("doctor", data.user._id); // ✅ store doctor ID in context
+        console.log("Response Data: ", data); // ✅ See full response here
+
+        router.push(`/DoctorDashboard/assistantManage?firstname=${data.user.firstName}&lastname=${data.user.lastName}`);
+      } else {
+        console.error("Login Failed:", data.message);
         toast.error(data.message || "Login failed! Invalid username or password");
       }
-    } 
-    catch (error) {
-      console.error("Login Error:", error); // Debugging
-  
-      // Handle backend errors from `doctorLogin`
+    } catch (error) {
+      console.error("Login Error:", error);
       toast.error(error.message || "A network error occurred. Please check your connection.");
     }
   };
@@ -92,5 +88,5 @@ function DoctorLogin() {
   );
 };
 
-export default DoctorLogin;
+export default DoctorLoginPage;
   

@@ -9,7 +9,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FaTachometerAlt, FaUser, FaCalendarCheck, FaBoxes } from 'react-icons/fa';
 import MenuIcon from '@mui/icons-material/Menu';
-import '../Styles/sideNavBar.css'
 
 const AssistSidebar = () => {
   const theme = useTheme();
@@ -38,14 +37,15 @@ const AssistSidebar = () => {
   ];
 
   return (
-    <Box >
+    <Box>
       <AppBar position="sticky">
         <Toolbar>
           {isMobile && (
-            <IconButton 
-                edge="start" 
-                onClick={toggleDrawer} 
-                sx={{ mr: 2 , color: '#ffffff', backgroundColor: 'transparent',}}>
+            <IconButton
+              edge="start"
+              onClick={toggleDrawer}
+              sx={{ mr: 2, color: '#ffffff', backgroundColor: 'transparent' }}
+            >
               <MenuIcon />
             </IconButton>
           )}
@@ -72,41 +72,43 @@ const AssistSidebar = () => {
           keepMounted: true,
         }}
       >
-        <Typography variant="h5" sx={{ textAlign: 'center' , fontWeight:'bold'}}>
+        <Typography variant="h5" sx={{ textAlign: 'center', fontWeight: 'bold' }}>
           {currentTab}
         </Typography>
-        <hr></hr>
+        <hr />
 
         <List>
           {links.map(({ href, text, icon }) => (
             <React.Fragment key={text}>
-              <Link href={href} passHref legacyBehavior>
-                <ListItem
-                  button
-                  component="a"
-                  selected={pathname === href}
-                  sx={{
-                    '&.Mui-selected': {
-                      backgroundColor: '#555',
-                    },
-                    '&:hover': {
-                      backgroundColor: '#0f262a',
+              <ListItem
+                button
+                component={Link}
+                href={href}
+                selected={pathname === href}
+                sx={{
+                  '&.Mui-selected': {
+                    backgroundColor: '#1a3c42',
+                  },
+                  '&.Mui-selected:hover': {
+                    backgroundColor: '#1a3c42',
+                  },
+                  '&:hover': {
+                    backgroundColor: '#1a3c42',
+                  },
+                }}
+              >
+                <ListItemIcon sx={{ color: 'white', fontSize: '20px' }}>{icon}</ListItemIcon>
+                <ListItemText
+                  primary={text}
+                  primaryTypographyProps={{
+                    sx: {
+                      color: 'white',
+                      textDecoration: 'none',
+                      fontSize: '20px',
                     },
                   }}
-                >
-                  <ListItemIcon sx={{ color: 'white' , fontSize:'20px'}}>{icon}</ListItemIcon>
-                  <ListItemText
-                    primary={text}
-                    primaryTypographyProps={{
-                      sx: {
-                        color: 'white', 
-                        textDecoration: 'none',
-                        fontSize:'20px' 
-                      },
-                    }}
-                  />
-                </ListItem>
-              </Link>
+                />
+              </ListItem>
               <Divider />
             </React.Fragment>
           ))}

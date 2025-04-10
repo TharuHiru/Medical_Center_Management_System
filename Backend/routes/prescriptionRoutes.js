@@ -2,7 +2,7 @@ const express = require('express');
 const pool = require('../config/db');
 const router = express.Router();
 
-router.post("/api/addPrescription", async (req, res) => {
+router.post("/addPrescription", async (req, res) => {
   const { date, diagnosis, otherNotes, patient_ID, doctor_ID, medicines } = req.body;
 
   if (!date || !diagnosis || !patient_ID || !doctor_ID || !Array.isArray(medicines) || medicines.length === 0) {

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL_PATIENT_AUTH;
+const API_URL = process.env.NEXT_PUBLIC_API_URL_PRESCRIPTION_AUTH;
 
 export const addPrescription = async (prescriptionPayload) => {
   try {

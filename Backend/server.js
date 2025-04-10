@@ -44,7 +44,7 @@ const assistantRoutes = require('./routes/assistantRoutes');
 const patientAuthRoutes = require('./routes/patientAuthRoutes');
 
 const appointmentRoutes = require('./routes/appointmentRoute');
-
+const prescriptionRoutes = require('./routes/prescriptionRoutes');
 
 // ✅ Use Routes
 app.use('/api/auth', authRoutes);
@@ -54,6 +54,7 @@ app.use('/api/assistant', assistantRoutes);
 app.use('/api/patientAuth', patientAuthRoutes);
 
 app.use('/api/appointments', appointmentRoutes);
+app.use('/api/prescriptions', prescriptionRoutes);
 
 
 // ✅ Start Server

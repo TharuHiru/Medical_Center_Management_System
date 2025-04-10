@@ -2,10 +2,11 @@
 import { useState, useEffect } from "react";
 import { Modal, Button, Form, Table } from "react-bootstrap";
 import { fetchMedicineCategory } from "../services/inventoryService";
-import { addPrescription } from "../services/inventoryService"; // Adjust path as needed
+import { addPrescription } from "../services/prescriptionService";
+import { useAuth } from "../context/AuthContext"; 
 
-
-export default function PrescriptionModal({ show, handleClose, medicines }) {
+export default function PrescriptionModal({ show, handleClose,patientId , }) {
+  const { doctorID } = useAuth(); // 👈 Get the doctor ID from context
   const [diagnosis, setDiagnosis] = useState("");
   const [others, setOthers] = useState("");
   const [prescribedMedicines, setPrescribedMedicines] = useState([]);
@@ -24,7 +25,7 @@ export default function PrescriptionModal({ show, handleClose, medicines }) {
     }, []);
 
   const addMedicine = () => {
-    setPrescribedMedicines([...prescribedMedicines, { name: "", dosage: "" }]);
+    setPrescribedMedicines([...prescribedMedicines, { name: "", dosage: "" , unitCount: "" }]);
   };
 
   const updateMedicine = (index, field, value) => {
@@ -36,35 +37,38 @@ export default function PrescriptionModal({ show, handleClose, medicines }) {
   const removeMedicine = (index) => {
     setPrescribedMedicines(prescribedMedicines.filter((_, i) => i !== index));
   };
-
-  const handleSubmit = async () => {
-    try {
-      const today = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
   
       // Collect your final payload
-      const prescriptionPayload = {
-        date: today,
-        diagnosis,
-        otherNotes: others,
-        patient_ID: selectedPatientId, // get from props/context
-        doctor_ID: loggedInDoctorId,   // get from context
-        medicines: prescribedMedicines.map((med) => ({
-          medicine_Name: med.name,
-          dosage: med.dosage,
-          unitCount: med.unitCount,
-        })),
-      };
+      const handleSubmit = async () => {
+        try {
+
+          console.log(doctorID)
+          const today = new Date().toISOString().split("T")[0];
+      
+          const prescriptionPayload = {
+            date: today,
+            diagnosis,
+            otherNotes: others,
+            patient_ID: patientId,
+            doctor_ID: doctorID, // 👈 Use context-based doctorID
+            medicines: prescribedMedicines.map((med) => ({
+              medicine_Name: med.name,
+              dosage: med.dosage,
+              unitCount: med.unitCount,
+            })),
+          };
+      
+          const result = await addPrescription(prescriptionPayload);
+      
+          if (result.success) {
+            alert(result.message);
+            handleClose();
+          } else {
+            alert(result.message);
+          }
+      
         } catch (error) {
           console.error("Error while preparing prescription payload:", error);
-        }
-
-        const result = await addPrescription(prescriptionPayload);
-
-        if (result.success) {
-          alert(result.message);
-          handleClose();
-        } else {
-          alert(result.message);
         }
       };
 
@@ -74,6 +78,7 @@ export default function PrescriptionModal({ show, handleClose, medicines }) {
         <Modal.Title>Add Prescription</Modal.Title>
       </Modal.Header>
       <Modal.Body>
+      <p>Patient ID: {patientId}</p>
         <Form>
           <Form.Group className="mb-3">
             <Form.Label>Diagnosis</Form.Label>
@@ -135,7 +140,7 @@ export default function PrescriptionModal({ show, handleClose, medicines }) {
                       type="text"
                       value={med.unitCount}
                       onChange={(e) =>
-                        updateMedicine(index, "No of units", e.target.value)
+                        updateMedicine(index, "unitCount", e.target.value)
                       }
                     />
                   </td>
@@ -167,4 +172,4 @@ export default function PrescriptionModal({ show, handleClose, medicines }) {
       </Modal.Footer>
     </Modal>
   );
-}
+};

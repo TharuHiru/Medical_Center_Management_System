@@ -245,6 +245,7 @@ function AssistantDashboardPatient() {
                 show={showModal}
                 handleClose={() => setShowModal(false)}
                 medicines={availableMedicines}
+                patientId={selectedPatient?.patient_ID} // Pass the selected patient's ID
               />
             </form>
           </div>

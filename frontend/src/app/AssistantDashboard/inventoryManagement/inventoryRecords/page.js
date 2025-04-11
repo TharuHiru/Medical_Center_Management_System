@@ -2,13 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import "../../../Styles/AssistantDashboard.css";
-import "../../../Styles/loginForms.css";
+import "../../../../Styles/AssistantDashboard.css";
+import "../../../../Styles/loginForms.css";
 import {  Row, Col } from 'react-bootstrap';
-import AssistNavBar from "../../../components/assistantSideBar";
+import AssistNavBar from "../../../../components/assistantSideBar";
 import { FaPlus, FaSearch } from "react-icons/fa";
-import AddInventoryModal from "../../../components/addInventoryModel";
-import { fetchInventory , fetchMedicineCategory ,addMedicineCategory } from "../../../services/inventoryService";
+import AddInventoryModal from "../../../../components/addInventoryModel";
+import { fetchInventory , fetchMedicineCategory ,addMedicineCategory } from "../../../../services/inventoryService";
 
 function AssistantDashboardInventory() {
   const router = useRouter(); // create a router instance
@@ -33,7 +33,6 @@ function AssistantDashboardInventory() {
   const [searchTerm, setSearchTerm] = useState(""); // State for search input
   const [medicineCategories, setMedicineCategories] = useState([]); // Store fetched categories
   const [selectedMedicine, setSelectedMedicine] = useState(""); // Selected category
-  const [newCategory, setNewCategory] = useState(""); // New category input
 
   // Fetch patients from the service
   useEffect(() => {
@@ -78,32 +77,6 @@ function AssistantDashboardInventory() {
    const handleCategoryChange = (event) => {
     setSelectedMedicine(event.target.value);
   };
-
-  // Handle new category input
-  const handleNewCategoryChange = (event) => {
-    setNewCategory(event.target.value);
-  };
-
-  const handleAddNewCategory = async () => {
-    if (newCategory.trim() !== "") {
-      try {
-        // Send the new category to the backend
-        const response = await addMedicineCategory({ medicine_name: newCategory });
-        
-        if (response.success) {
-          // Fetch the updated list of categories after adding the new category
-          const data = await fetchMedicineCategory(); // Assuming this is the function that fetches all categories
-          setMedicineCategories(data.data); // Update the local state with the new categories
-          setNewCategory(""); // Clear the input field
-        } else {
-          console.error("Error adding new category:", response.message);
-        }
-      } catch (error) {
-        console.error("Error adding new category:", error);
-      }
-    }
-};
-
 
   return (
     <div className="dashboard-container">
@@ -156,16 +129,6 @@ function AssistantDashboardInventory() {
               </option>
             ))}
           </select>
-        </div>
-        </Col>
-        
-        <Col md={4}>
-      {/* Add New Medicine Category */}
-      <div className="new-category-group">
-      <p className = "new-category-group-label">Add new category</p>
-          <input className="search-input-text" type="text" placeholder="Enter new category" value={newCategory} onChange={handleNewCategoryChange} />
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <button className="add-category-btn" onClick={handleAddNewCategory}>Add Category</button>
         </div>
         </Col>
     </Row>

@@ -55,4 +55,26 @@ export const addMedicineCategory = async (categoryDetails) => {
   }
 };
 
+//Function to add new medicine brand
+export const addMedicineBrand = async (brandDetails) => {
+  try {
+    const response = await axios.post(`${API_URL}/add-medicine-brand`, brandDetails);
+    return response.data;  
+  } catch (error) {
+    console.error("Error Adding Brand:", error);
+    throw error; 
+  }
+};	
+
+export const fetchBrandsByMedicineID = async (medicineID) => {
+  try {
+    const response = await fetch(`${API_URL}/add-medicine-brand` , medicine_ID);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching brand names:", error);
+    return { success: false, message: error.message };
+  }
+};
+
 

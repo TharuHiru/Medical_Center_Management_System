@@ -111,6 +111,48 @@ router.post('/add-medicine-category', async (req, res) => {
     }
 });
 
+//Add new medicine brand
 
+router.post('/add-medicine-brand', async (req, res) => {
+    console.log("Received Medicine Brand Data:", req.body);
 
+    let { brand_name , medicine_ID } = req.body; // because i change this to lowercase
+    if (!brand_name) {
+        return res.status(400).json({ success: false, message: 'Please provide a brand name' });
+    }
+    brand_name = brand_name.toLowerCase();
+    const brand_ID = '001';
+
+    try {
+        // Check if the category name already exists
+        const [rows] = await pool.query("SELECT * FROM medicine_category_brand WHERE medicine_ID = ? AND LOWER(Brand_Name) = ? ", [medicine_ID,brand_name]);
+        if (rows.length > 0) {
+            return res.status(400).json({ success: false, message: 'Brand already exists' });
+        }
+
+        // Insert new category 
+        await pool.query("INSERT INTO medicine_category_brand (medicine_ID,Brand_Name,brand_ID) VALUES (?,?,?)", [medicine_ID,brand_name,brand_ID]);
+
+        console.log("New medicine category added:", brand_name);
+        return res.status(201).json({ success: true, message: 'Medicine category added successfully' });
+    } catch (error) {
+        console.error('Error inserting medicine category:', error);
+        return res.status(500).json({ success: false, message: 'Server error.' });
+    }
+});
 module.exports = router;
+
+//Filter brand names
+router.get('/fetch-brand-names', async (req, res) => {
+    try {
+        const [rows] = await pool.query("SELECT Brand_Name FROM medicine_category_brand WHERE medicine_ID = ?", [req.query.medicine_ID]);
+
+        // Log fetched data
+        console.log('Fetched Brand Names:', rows);
+
+        return res.status(200).json({ success: true, data: rows });
+    } catch (error) {
+        console.error('Error fetching brand names:', error);
+        return res.status(500).json({ success: false, message: 'Server error.' });
+    }
+});

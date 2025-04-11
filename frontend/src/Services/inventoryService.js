@@ -66,11 +66,13 @@ export const addMedicineBrand = async (brandDetails) => {
   }
 };	
 
-export const fetchBrandsByMedicineID = async (medicineID) => {
+export const fetchBrandsByMedicineID = async (selectedID) => {
   try {
-    const response = await fetch(`${API_URL}/add-medicine-brand` , medicine_ID);
-    const data = await response.json();
-    return data;
+    console.log(selectedID)
+    const response = await axios.get(`${API_URL}/fetch-brand-names`, {
+      params: { selectedID },
+    });
+    return response.data;
   } catch (error) {
     console.error("Error fetching brand names:", error);
     return { success: false, message: error.message };

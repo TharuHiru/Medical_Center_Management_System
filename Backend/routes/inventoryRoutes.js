@@ -144,8 +144,10 @@ module.exports = router;
 
 //Filter brand names
 router.get('/fetch-brand-names', async (req, res) => {
+    let { selectedID } = req.query;
+    console.log("Received Medicine ID:", selectedID);
     try {
-        const [rows] = await pool.query("SELECT Brand_Name FROM medicine_category_brand WHERE medicine_ID = ?", [req.query.medicine_ID]);
+        const [rows] = await pool.query("SELECT Brand_Name FROM medicine_category_brand WHERE medicine_ID = ?", [selectedID]);
 
         // Log fetched data
         console.log('Fetched Brand Names:', rows);

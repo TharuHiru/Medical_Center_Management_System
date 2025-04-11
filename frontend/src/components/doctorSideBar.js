@@ -1,7 +1,7 @@
 'use client';
 
 import {
-  AppBar, Box, Divider, Drawer, IconButton, List, ListItem, ListItemIcon,
+  AppBar, Box, Divider, Drawer, IconButton, List, ListItemButton, ListItemIcon,
   ListItemText, Toolbar, Typography, useMediaQuery, useTheme,
 } from '@mui/material';
 import React, { useState } from 'react';
@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FaTachometerAlt, FaUser, FaCalendarCheck, FaBoxes } from 'react-icons/fa';
 import MenuIcon from '@mui/icons-material/Menu';
-import '../Styles/sideNavBar.css'
+import '../Styles/sideNavBar.css';
 
 const AssistSidebar = () => {
   const theme = useTheme();
@@ -38,7 +38,8 @@ const AssistSidebar = () => {
   ];
 
   return (
-    <Box >
+    <Box>
+      {/* AppBar */}
       <AppBar position="sticky">
         <Toolbar>
           {isMobile && (
@@ -49,6 +50,7 @@ const AssistSidebar = () => {
         </Toolbar>
       </AppBar>
 
+      {/* Sidebar Drawer */}
       <Drawer
         sx={{
           width: 240,
@@ -69,41 +71,42 @@ const AssistSidebar = () => {
           keepMounted: true,
         }}
       >
-        <Typography variant="h5" sx={{ textAlign: 'center' , fontWeight:'bold'}}>
+        <Typography variant="h5" sx={{ textAlign: 'center', fontWeight: 'bold' }}>
           {currentTab}
         </Typography>
-        <hr></hr>
+        <hr />
 
+        {/* Sidebar Links */}
         <List>
           {links.map(({ href, text, icon }) => (
             <React.Fragment key={text}>
-              <Link href={href} passHref legacyBehavior>
-                <ListItem
-                  button
-                  component="a"
-                  selected={pathname === href}
-                  sx={{
-                    '&.Mui-selected': {
-                      backgroundColor: '#555',
-                    },
-                    '&:hover': {
-                      backgroundColor: '#0f262a',
+              <ListItemButton
+                component={Link}
+                href={href}
+                selected={pathname === href} // highlight selected tab
+                sx={{
+                  backgroundColor: pathname === href ? '#1a3c42' : 'inherit',
+                  '&:hover': { backgroundColor: '#1a3c42' },
+                  '&.Mui-selected': {
+                    backgroundColor: '#1a3c42 !important',
+                  },
+                  '&.Mui-selected:hover': {
+                    backgroundColor: '#1a3c42',
+                  },
+                }}
+              >
+                <ListItemIcon sx={{ color: 'white', fontSize: '20px' }}>{icon}</ListItemIcon>
+                <ListItemText
+                  primary={text}
+                  primaryTypographyProps={{
+                    sx: {
+                      color: 'white',
+                      textDecoration: 'none',
+                      fontSize: '20px',
                     },
                   }}
-                >
-                  <ListItemIcon sx={{ color: 'white' , fontSize:'20px'}}>{icon}</ListItemIcon>
-                  <ListItemText
-                    primary={text}
-                    primaryTypographyProps={{
-                      sx: {
-                        color: 'white', 
-                        textDecoration: 'none',
-                        fontSize:'20px' 
-                      },
-                    }}
-                  />
-                </ListItem>
-              </Link>
+                />
+              </ListItemButton>
               <Divider />
             </React.Fragment>
           ))}

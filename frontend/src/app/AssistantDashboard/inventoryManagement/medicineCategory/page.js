@@ -6,12 +6,7 @@ import "../../../../Styles/AssistantDashboard.css";
 import "../../../../Styles/loginForms.css";
 import "../../../../Styles/pages.css";
 import AssistNavBar from "../../../../components/assistantSideBar";
-import {
-  fetchBrandsByMedicineID,
-  addMedicineCategory,
-  addMedicineBrand,
-  fetchMedicineCategory,
-} from "../../../../services/inventoryService";
+import {fetchBrandsByMedicineID, addMedicineCategory, addMedicineBrand,fetchMedicineCategory,} from "../../../../services/inventoryService";
 
 const MedicineCategoryPage = () => {
   const [newCategory, setNewCategory] = useState("");
@@ -86,6 +81,7 @@ const MedicineCategoryPage = () => {
     if (selectedID) {
       try {
         const response = await fetchBrandsByMedicineID(selectedID);
+        console.log(selectedID);
         if (response.success) {
           setBrands(response.data);
         } else {
@@ -152,19 +148,21 @@ const MedicineCategoryPage = () => {
                 ))}
               </select>
 
-              {brands.length > 0 && (
-                <div className="brand-list mb-3">
-                  <h5>Available Brands:</h5>
-                  <ul className="list-group">
-                    {brands.map((brand, index) => (
-                      <li key={index} className="list-group-item">
-                        {brand.Brand_Name}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+              <div className="brand-list mb-3">
+              <h5>Available Brands:</h5>
+              {brands.length > 0 ? (
+                <ul className="list-group">
+                  {brands.map((brand, index) => (
+                    <li key={index} className="list-group-item">
+                      {brand.Brand_Name}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-muted">No brands available for this medicine.</p>
               )}
-
+            </div>
+            <hr></hr>
               <input
                 className="search-input-text form-control mb-3"
                 type="text"
@@ -172,7 +170,6 @@ const MedicineCategoryPage = () => {
                 value={newBrand}
                 onChange={handleNewBrandChange}
               />
-
               <div className="text-center">
                 <button className="add-category-btn" onClick={handleAddNewBrand}>
                   Add Brand

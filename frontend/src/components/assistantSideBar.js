@@ -1,8 +1,9 @@
 'use client';
 
 import {
-  AppBar, Box, Divider, Drawer, IconButton, List, ListItem, ListItemIcon,
-  ListItemText, Toolbar, Typography, useMediaQuery, useTheme, Collapse,
+  AppBar, Box, Divider, Drawer, IconButton, List, ListItemButton,
+  ListItemIcon, ListItemText, Toolbar, Typography, useMediaQuery,
+  useTheme, Collapse,
 } from '@mui/material';
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -23,8 +24,8 @@ const AssistSidebar = () => {
     '/AssistantDashboard/dashboard': 'Dashboard',
     '/AssistantDashboard/patientManagement': 'Patients',
     '/AssistantDashboard/appointmentManagement': 'Appointments',
-    '/AssistantDashboard/inventoryManagement/': 'Inventory Records',
-    '/AssistantDashboard/medicineCategory': 'Medicine Category',
+    '/AssistantDashboard/inventoryManagement/inventoryRecords': 'Inventory Records',
+    '/AssistantDashboard/inventoryManagement/medicineCategory': 'Medicine Category',
   };
 
   const currentTab = tabMap[pathname] || 'Dashboard';
@@ -94,52 +95,59 @@ const AssistSidebar = () => {
           {links.map(({ href, text, icon, children }) => (
             <React.Fragment key={text}>
               {!children ? (
-                <ListItem
-                  button
+                <ListItemButton
                   component={Link}
                   href={href}
                   selected={pathname === href}
                   sx={{
-                    '&.Mui-selected': { backgroundColor: '#1a3c42' },
-                    '&.Mui-selected:hover': { backgroundColor: '#1a3c42' },
+                    backgroundColor: pathname === href ? '#1a3c42' : 'inherit',
                     '&:hover': { backgroundColor: '#1a3c42' },
+                    '&.Mui-selected': {
+                      backgroundColor: '#1a3c42 !important',
+                    },
+                    '&.Mui-selected:hover': {
+                      backgroundColor: '#1a3c42',
+                    },
                   }}
                 >
                   <ListItemIcon sx={{ color: 'white' }}>{icon}</ListItemIcon>
                   <ListItemText primary={text} primaryTypographyProps={{ sx: { color: 'white', fontSize: '20px' } }} />
-                </ListItem>
+                </ListItemButton>
               ) : (
                 <>
-                  <ListItem
-                    button
+                  <ListItemButton
                     onClick={handleInventoryClick}
                     sx={{ '&:hover': { backgroundColor: '#1a3c42' } }}
                   >
                     <ListItemIcon sx={{ color: 'white' }}>{icon}</ListItemIcon>
                     <ListItemText primary={text} primaryTypographyProps={{ sx: { color: 'white', fontSize: '20px' } }} />
                     {inventoryOpen ? <ExpandLess sx={{ color: 'white' }} /> : <ExpandMore sx={{ color: 'white' }} />}
-                  </ListItem>
+                  </ListItemButton>
 
                   <Collapse in={inventoryOpen} timeout="auto" unmountOnExit>
                     {children.map(({ href: subHref, text: subText }) => (
-                      <ListItem
+                      <ListItemButton
                         key={subText}
-                        button
                         component={Link}
                         href={subHref}
                         selected={pathname === subHref}
                         sx={{
                           pl: 4,
-                          '&.Mui-selected': { backgroundColor: '#1a3c42' },
-                          '&.Mui-selected:hover': { backgroundColor: '#1a3c42' },
+                          backgroundColor: pathname === subHref ? '#1a3c42' : 'inherit',
                           '&:hover': { backgroundColor: '#1a3c42' },
+                          '&.Mui-selected': {
+                            backgroundColor: '#1a3c42 !important',
+                          },
+                          '&.Mui-selected:hover': {
+                            backgroundColor: '#1a3c42',
+                          },
                         }}
                       >
                         <ListItemText
                           primary={subText}
                           primaryTypographyProps={{ sx: { color: 'white', fontSize: '18px' } }}
                         />
-                      </ListItem>
+                      </ListItemButton>
                     ))}
                   </Collapse>
                 </>

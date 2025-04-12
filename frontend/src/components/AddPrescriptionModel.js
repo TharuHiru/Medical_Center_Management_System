@@ -57,7 +57,6 @@ export default function PrescriptionModal({ show, handleClose,patientId , }) {
             medicines: prescribedMedicines.map((med) => ({
               medicine_Name: med.name,
               dosage: med.dosage,
-              unitCount: med.unitCount,
             })),
           };
 
@@ -110,7 +109,6 @@ export default function PrescriptionModal({ show, handleClose,patientId , }) {
                   <tr>
                     <th>Medicine</th>
                     <th>Dosage</th>
-                    <th>No of units</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -137,15 +135,6 @@ export default function PrescriptionModal({ show, handleClose,patientId , }) {
                           value={med.dosage}
                           onChange={(e) =>
                             updateMedicine(index, "dosage", e.target.value)
-                          }
-                        />
-                      </td>
-                      <td>
-                        <Form.Control
-                          type="text"
-                          value={med.unitCount}
-                          onChange={(e) =>
-                            updateMedicine(index, "unitCount", e.target.value)
                           }
                         />
                       </td>

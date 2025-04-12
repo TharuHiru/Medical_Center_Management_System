@@ -2,6 +2,7 @@ const express = require('express');
 const pool = require('../config/db');
 const router = express.Router();
 
+//Add  a prescription
 router.post("/addPrescription", async (req, res) => {
   const { date, diagnosis, otherNotes, patient_ID, doctor_ID, medicines } = req.body;
 
@@ -36,8 +37,8 @@ router.post("/addPrescription", async (req, res) => {
       const medicine_ID = medicine[0].medicine_ID;
 
       await connection.query(
-        "INSERT INTO prescription_medicine (prescription_ID, medicine_ID, Dosage, No_Of_Units) VALUES (?, ?, ?, ?)",
-        [prescription_ID, medicine_ID, med.dosage, med.unitCount]
+        "INSERT INTO prescription_medicine (prescription_ID, medicine_ID, Dosage) VALUES (?, ?, ?)",
+        [prescription_ID, medicine_ID, med.dosage]
       );
     }
 

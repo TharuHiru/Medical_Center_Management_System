@@ -29,8 +29,8 @@ function DoctorDashboard() {
     // Fetch assistant details when component mounts
     const getAssistants = async () => {
       try {
-        const data = await fetchAssistants();
-        setAssistants(data);
+        const response = await fetchAssistants();
+        setAssistants(response.data);
       } catch (error) {
         console.error("Error fetching assistants:", error);
       }
@@ -45,8 +45,8 @@ function DoctorDashboard() {
     console.log("Form submitted");
     handleCloseAssistantModal();
     // Refresh the assistant list after adding a new assistant
-    const updatedData = await fetchAssistants();
-    setAssistants(updatedData);
+    const updatedResponse= await fetchAssistants();
+    setAssistants(updatedResponse.data);
   };
 
   return (
@@ -89,7 +89,7 @@ function DoctorDashboard() {
               <tbody>
                 {assistants.length > 0 ? (
                   assistants.map((assistant) => (
-                    <tr key={assistant.NIC}>
+                    <tr key={assistant.assist_ID}>
                       <td>{assistant.NIC}</td>
                       <td>{assistant.Title}</td>
                       <td>{assistant.Firs_tName}</td>

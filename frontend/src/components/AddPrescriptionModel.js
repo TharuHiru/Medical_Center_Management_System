@@ -5,7 +5,7 @@ import { fetchMedicineCategory } from "../services/inventoryService"; // toget t
 import { addPrescription } from "../services/prescriptionService"; // imported the service file
 import { useAuth } from "../context/AuthContext"; 
 
-export default function PrescriptionModal({ show, handleClose,patientId , }) {
+export default function PrescriptionModal({ show, handleClose,patientId}) {
   // the model receives three props
   const { doctorID } = useAuth(); // Get the doctor ID from context
   const [diagnosis, setDiagnosis] = useState("");

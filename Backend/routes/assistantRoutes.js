@@ -5,7 +5,7 @@ const router = express.Router();
 //Get all patients list
 router.get('/fetch-assistants', async (req, res) => {
     try {
-        const [rows] = await pool.query("SELECT NIC,Title,First_Name,Last_Name,Contact_Number,House_No,Address_Line_1,Address_Line_2 FROM assistant");
+        const [rows] = await pool.query("SELECT * FROM assistant");
         
         // Log fetched data
         console.log('Fetched Assistants:', rows);

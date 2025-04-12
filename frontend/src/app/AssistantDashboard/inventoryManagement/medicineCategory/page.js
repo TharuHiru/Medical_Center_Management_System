@@ -133,7 +133,7 @@ const MedicineCategoryPage = () => {
         <Row className="justify-content-center mt-5">
           <Col md={6}>
             <div className="new-category-group">
-              <h4 className="new-category-group-label">Add Brand to a Medicine</h4>
+              <h4 className="new-category-group-label">Add Item to a Medicine</h4>
 
               <select
                 className="form-control mb-3"
@@ -149,7 +149,7 @@ const MedicineCategoryPage = () => {
               </select>
 
               <div className="brand-list mb-3">
-              <h5>Available Brands:</h5>
+              <h5>Available Items:</h5>
               {brands.length > 0 ? (
                 <ul className="list-group">
                   {brands.map((brand, index) => (
@@ -159,20 +159,20 @@ const MedicineCategoryPage = () => {
                   ))}
                 </ul>
               ) : (
-                <p className="text-muted">No brands available for this medicine.</p>
+                <p className="text-muted">No Items available for this medicine.</p>
               )}
             </div>
             <hr></hr>
               <input
                 className="search-input-text form-control mb-3"
                 type="text"
-                placeholder="Enter brand name"
+                placeholder="Enter Item name"
                 value={newBrand}
                 onChange={handleNewBrandChange}
               />
               <div className="text-center">
                 <button className="add-category-btn" onClick={handleAddNewBrand}>
-                  Add Brand
+                  Add Item
                 </button>
               </div>
             </div>

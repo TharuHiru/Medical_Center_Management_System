@@ -6,26 +6,20 @@ const router = express.Router();
 router.post('/register-inventory', async (req, res) => {
     console.log("Received Inventory Data:", req.body);
 
-    const { medicine_id, batch_no, exp_date, stock_quantity, unit_price, buying_price } = req.body;
+    const { medicine_id,brand_ID,exp_date, stock_quantity, unit_price, buying_price } = req.body;
 
     // Check if all required fields are provided
-    if (!medicine_id || !batch_no || !exp_date || !stock_quantity || !unit_price || !buying_price) {
+    if (!medicine_id || !brand_ID || !exp_date || !stock_quantity || !unit_price || !buying_price) {
         return res.status(400).json({ success: false, message: 'Please fill all the values' });
     }
 
     try {
-        // Check if the inventory item with the same batch number already exists
-        const [rows] = await pool.query("SELECT * FROM medicine_inventory WHERE medicine_ID = ? AND batch_no = ?", [medicine_id,batch_no]);
-        if (rows.length > 0) {
-            return res.status(400).json({ success: false, message: 'Batch Number for that Medicine already exists' });
-        }
-
         // Insert new inventory record
-        const query = `INSERT INTO medicine_inventory (medicine_ID, batch_no, exp_date, stock_quantity, unit_price, buying_price,date_added) 
-                       VALUES (?, ?, ?, ?, ?, ? , NOW())`;
-        await pool.query(query, [medicine_id, batch_no, exp_date, stock_quantity, unit_price, buying_price]);
+        const query = `INSERT INTO medicine_inventory (medicine_ID,Brand_ID	,Exp_Date, stock_quantity, unit_price, buying_price,date_added) 
+                       VALUES (?,?, ?, ?, ?, ? , NOW())`;
+        await pool.query(query, [medicine_id,brand_ID,exp_date, stock_quantity, unit_price, buying_price]);
 
-        console.log("Inventory item registered:", medicine_id, batch_no);
+        console.log("Inventory item registered:", medicine_id);
         return res.status(201).json({ success: true, message: 'Inventory added successfully' });
     } catch (error) {
         console.error('Error inserting inventory:', error);
@@ -111,7 +105,7 @@ router.post('/add-medicine-category', async (req, res) => {
     }
 });
 
-//Add new medicine brand
+//Add new medicine Item
 
 router.post('/add-medicine-brand', async (req, res) => {
     console.log("Received Medicine Brand Data:", req.body);
@@ -121,7 +115,7 @@ router.post('/add-medicine-brand', async (req, res) => {
         return res.status(400).json({ success: false, message: 'Please provide a brand name' });
     }
     brand_name = brand_name.toLowerCase();
-    const brand_ID = '001';
+    
 
     try {
         // Check if the category name already exists
@@ -131,7 +125,7 @@ router.post('/add-medicine-brand', async (req, res) => {
         }
 
         // Insert new category 
-        await pool.query("INSERT INTO medicine_category_brand (medicine_ID,Brand_Name,brand_ID) VALUES (?,?,?)", [medicine_ID,brand_name,brand_ID]);
+        await pool.query("INSERT INTO medicine_category_brand (medicine_ID,Brand_Name) VALUES (?,?)", [medicine_ID,brand_name]);
 
         console.log("New medicine category added:", brand_name);
         return res.status(201).json({ success: true, message: 'Medicine category added successfully' });
@@ -147,7 +141,7 @@ router.get('/fetch-brand-names', async (req, res) => {
     let { selectedID } = req.query;
     console.log("Received Medicine ID:", selectedID);
     try {
-        const [rows] = await pool.query("SELECT Brand_Name FROM medicine_category_brand WHERE medicine_ID = ?", [selectedID]);
+        const [rows] = await pool.query("SELECT brand_ID,Brand_Name FROM medicine_category_brand WHERE medicine_ID = ?", [selectedID]);
 
         // Log fetched data
         console.log('Fetched Brand Names:', rows);

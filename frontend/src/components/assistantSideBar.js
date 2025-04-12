@@ -5,7 +5,7 @@ import {
   ListItemIcon, ListItemText, Toolbar, Typography, useMediaQuery,
   useTheme, Collapse,
 } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FaTachometerAlt, FaUser, FaCalendarCheck, FaBoxes } from 'react-icons/fa';
@@ -18,30 +18,45 @@ const AssistSidebar = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [open, setOpen] = useState(false);
   const [inventoryOpen, setInventoryOpen] = useState(false);
+  const [appointmentsOpen, setAppointmentsOpen] = useState(false);
   const pathname = usePathname();
 
   const tabMap = {
     '/AssistantDashboard/dashboard': 'Dashboard',
     '/AssistantDashboard/patientManagement': 'Patients',
-    '/AssistantDashboard/appointmentManagement': 'Appointments',
+    '/AssistantDashboard/appointmentManagement/queue': 'Queue',
+    '/AssistantDashboard/appointmentManagement/prescriptions': 'Prescriptions',
     '/AssistantDashboard/inventoryManagement/inventoryRecords': 'Inventory Records',
     '/AssistantDashboard/inventoryManagement/medicineCategory': 'Medicine Category',
   };
 
   const currentTab = tabMap[pathname] || 'Dashboard';
 
-  const toggleDrawer = () => {
-    setOpen(!open);
-  };
+  const toggleDrawer = () => setOpen(!open);
+  const handleInventoryClick = () => setInventoryOpen(!inventoryOpen);
+  const handleAppointmentsClick = () => setAppointmentsOpen(!appointmentsOpen);
 
-  const handleInventoryClick = () => {
-    setInventoryOpen(!inventoryOpen);
-  };
+  useEffect(() => {
+    // Expand the relevant section if a child path is selected
+    if (pathname.startsWith('/AssistantDashboard/appointmentManagement')) {
+      setAppointmentsOpen(true);
+    }
+    if (pathname.startsWith('/AssistantDashboard/inventoryManagement')) {
+      setInventoryOpen(true);
+    }
+  }, [pathname]);
 
   const links = [
     { href: '/AssistantDashboard/dashboard', text: 'Dashboard', icon: <FaTachometerAlt /> },
     { href: '/AssistantDashboard/patientManagement', text: 'Patients', icon: <FaUser /> },
-    { href: '/AssistantDashboard/appointmentManagement', text: 'Appointments', icon: <FaCalendarCheck /> },
+    {
+      text: 'Appointments',
+      icon: <FaCalendarCheck />,
+      children: [
+        { href: '/AssistantDashboard/appointmentManagement/queue', text: 'Queue' },
+        { href: '/AssistantDashboard/appointmentManagement/prescriptions', text: 'Prescriptions' },
+      ],
+    },
     {
       text: 'Inventory',
       icon: <FaBoxes />,
@@ -116,15 +131,17 @@ const AssistSidebar = () => {
               ) : (
                 <>
                   <ListItemButton
-                    onClick={handleInventoryClick}
+                    onClick={text === 'Appointments' ? handleAppointmentsClick : handleInventoryClick}
                     sx={{ '&:hover': { backgroundColor: '#1a3c42' } }}
                   >
                     <ListItemIcon sx={{ color: 'white' }}>{icon}</ListItemIcon>
                     <ListItemText primary={text} primaryTypographyProps={{ sx: { color: 'white', fontSize: '20px' } }} />
-                    {inventoryOpen ? <ExpandLess sx={{ color: 'white' }} /> : <ExpandMore sx={{ color: 'white' }} />}
+                    {(text === 'Appointments' ? appointmentsOpen : inventoryOpen)
+                      ? <ExpandLess sx={{ color: 'white' }} />
+                      : <ExpandMore sx={{ color: 'white' }} />}
                   </ListItemButton>
 
-                  <Collapse in={inventoryOpen} timeout="auto" unmountOnExit>
+                  <Collapse in={text === 'Appointments' ? appointmentsOpen : inventoryOpen} timeout="auto" unmountOnExit>
                     {children.map(({ href: subHref, text: subText }) => (
                       <ListItemButton
                         key={subText}

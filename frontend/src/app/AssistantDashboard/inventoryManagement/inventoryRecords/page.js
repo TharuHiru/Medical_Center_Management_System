@@ -141,7 +141,7 @@ function AssistantDashboardInventory() {
                 <tr>
                   <th>Inventory ID</th>
                   <th>Medicine Name</th>
-                  <th>Batch_No</th>
+                  <th>Item Name</th>
                   <th>Exp_Date</th>
                   <th>Quantity</th>
                   <th>Unit_Price</th>
@@ -152,11 +152,11 @@ function AssistantDashboardInventory() {
               <tbody>
                 {filteredInventory.length > 0 ? (
                   filteredInventory.map((inventory) => (
-                    <tr key={inventory.medicine_ID}>
-                      <td>{inventory.medicine_ID}</td>
+                    <tr key={inventory.inventory_ID}>
+                      <td>{inventory.inventory_ID}</td>
                       <td>{inventory.medicine_Name}</td>
-                      <td>{inventory.batch_no}</td>
-                      <td>{inventory.exp_date}</td>
+                      <td>{inventory.Brand_Name}</td>
+                      <td>{inventory.Exp_Date}</td>
                       <td>{inventory.stock_quantity}</td>
                       <td>{inventory.unit_price}</td>
                       <td>{inventory.buying_price}</td>

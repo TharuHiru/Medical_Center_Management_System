@@ -46,6 +46,17 @@ router.get('/fetch-inventory', async (req, res) => {
             } else {
                 item.medicine_Name = null; // If no match found
             }
+
+            const [brandRow] = await pool.query(
+                "SELECT Brand_Name FROM medicine_category_brand WHERE brand_ID = ?",
+                [item.Brand_ID]
+            );
+
+            if (brandRow.length > 0) {
+                item.Brand_Name = brandRow[0].Brand_Name;
+            } else {
+                item.Brand_Name = null; // If no match found
+            }
         }
 
         // Log fetched data

@@ -69,20 +69,6 @@ const AssistSidebar = () => {
 
   return (
     <Box>
-      <AppBar position="sticky">
-        <Toolbar>
-          {isMobile && (
-            <IconButton
-              edge="start"
-              onClick={toggleDrawer}
-              sx={{ mr: 2, color: '#ffffff' }}
-            >
-              <MenuIcon />
-            </IconButton>
-          )}
-        </Toolbar>
-      </AppBar>
-
       <Drawer
         sx={{
           width: 240,

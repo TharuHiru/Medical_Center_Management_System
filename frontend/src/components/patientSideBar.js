@@ -1,7 +1,7 @@
 'use client';
 
 import {
-  AppBar, Box, Divider, Drawer, IconButton, List, ListItem, ListItemIcon,
+  AppBar, Box, Divider, Drawer, IconButton, List, ListItemButton, ListItemIcon,
   ListItemText, Toolbar, Typography, useMediaQuery, useTheme,
 } from '@mui/material';
 import React, { useState } from 'react';
@@ -9,18 +9,18 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FaTachometerAlt, FaUser, FaCalendarCheck, FaBoxes } from 'react-icons/fa';
 import MenuIcon from '@mui/icons-material/Menu';
+import '../Styles/sideNavBar.css';
 
-const AssistSidebar = () => {
+const PatientSidebar = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
   const tabMap = {
-    '/AssistantDashboard/dashboard': 'Dashboard',
-    '/AssistantDashboard/patientManagement': 'Patients',
-    '/AssistantDashboard/appointmentManagement': 'Appointments',
-    '/AssistantDashboard/inventoryManagement': 'Inventory',
+    '/patientDashboard/dashboard': 'Dashboard',
+    '/patientDashboard/profile': 'Profile',
+    '/patientDashboard/appoinments': 'Appointments',
   };
 
   const currentTab = tabMap[pathname] || 'Dashboard';
@@ -30,24 +30,14 @@ const AssistSidebar = () => {
   };
 
   const links = [
-    { href: '/AssistantDashboard/dashboard', text: 'Dashboard', icon: <FaTachometerAlt /> },
-    { href: '/AssistantDashboard/patientManagement', text: 'Patients', icon: <FaUser /> },
-    { href: '/AssistantDashboard/appointmentManagement', text: 'Appointments', icon: <FaCalendarCheck /> },
-    { href: '/AssistantDashboard/inventoryManagement', text: 'Inventory', icon: <FaBoxes /> },
+    { href: '/patientDashboard/dashboard', text: 'Dashboard', icon: <FaTachometerAlt /> },
+    { href: '/patientDashboard/profile', text: 'Profile', icon: <FaUser /> },
+    { href: '/patientDashboard/appoinments', text: 'Appointments', icon: <FaCalendarCheck /> },
   ];
 
   return (
     <Box>
-      <AppBar position="sticky">
-        <Toolbar>
-          {isMobile && (
-            <IconButton color="inherit" edge="start" onClick={toggleDrawer} aria-label="menu" sx={{ mr: 2 }}>
-              <MenuIcon />
-            </IconButton>
-          )}
-        </Toolbar>
-      </AppBar>
-
+      {/* Sidebar Drawer */}
       <Drawer
         sx={{
           width: 240,
@@ -55,7 +45,7 @@ const AssistSidebar = () => {
           '& .MuiDrawer-paper': {
             width: 240,
             boxSizing: 'border-box',
-            backgroundColor: '#333',
+            backgroundColor: 'rgb(48, 90, 99)',
             color: 'white',
             paddingTop: '20px',
           },
@@ -68,38 +58,42 @@ const AssistSidebar = () => {
           keepMounted: true,
         }}
       >
-        <Typography variant="h5" sx={{ textAlign: 'center' }}>
+        <Typography variant="h5" sx={{ textAlign: 'center', fontWeight: 'bold' }}>
           {currentTab}
         </Typography>
         <hr />
 
+        {/* Sidebar Links */}
         <List>
           {links.map(({ href, text, icon }) => (
             <React.Fragment key={text}>
-            <Link href={href} passHref legacyBehavior>
-        <ListItem
-          component="a"
-          sx={{
-            backgroundColor: pathname === href ? '#555' : 'transparent', // ✅ highlight selected
-            '&:hover': {
-              backgroundColor: '#444',
-            },
-          }}
-        >
-          <ListItemIcon sx={{ color: 'white' }}>{icon}</ListItemIcon>
-          <ListItemText
-            primary={text}
-            primaryTypographyProps={{
-              sx: {
-                color: 'white',
-                textDecoration: 'none',
-              },
-            }}
-          />
-        </ListItem>
-      </Link>
-
-              
+              <ListItemButton
+                component={Link}
+                href={href}
+                selected={pathname === href} // highlight selected tab
+                sx={{
+                  backgroundColor: pathname === href ? '#1a3c42' : 'inherit',
+                  '&:hover': { backgroundColor: '#1a3c42' },
+                  '&.Mui-selected': {
+                    backgroundColor: '#1a3c42 !important',
+                  },
+                  '&.Mui-selected:hover': {
+                    backgroundColor: '#1a3c42',
+                  },
+                }}
+              >
+                <ListItemIcon sx={{ color: 'white', fontSize: '20px' }}>{icon}</ListItemIcon>
+                <ListItemText
+                  primary={text}
+                  primaryTypographyProps={{
+                    sx: {
+                      color: 'white',
+                      textDecoration: 'none',
+                      fontSize: '20px',
+                    },
+                  }}
+                />
+              </ListItemButton>
               <Divider />
             </React.Fragment>
           ))}
@@ -109,4 +103,4 @@ const AssistSidebar = () => {
   );
 };
 
-export default AssistSidebar;
+export default PatientSidebar;

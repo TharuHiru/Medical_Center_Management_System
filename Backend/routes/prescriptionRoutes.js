@@ -1,6 +1,12 @@
 const express = require('express');
 const pool = require('../config/db');
+const db = require("../config/firebase"); // Firestore database
 const router = express.Router();
+
+// Generate a random prescription ID
+function generatePrescriptionID() {
+  return `P_${Math.floor(100000 + Math.random() * 900000)}`; // P_6-digit random number
+}
 
 //Add  a prescription
 router.post("/addPrescription", async (req, res) => {
@@ -11,17 +17,29 @@ router.post("/addPrescription", async (req, res) => {
   }
 
   const connection = await pool.getConnection();
+  const prescription_ID = generatePrescriptionID();
 
   try {
     await connection.beginTransaction();
 
-    // Insert into prescription table
-    const [result] = await connection.query(
-      "INSERT INTO prescription (Date, Diagnosis, patient_ID, doctor_ID, other) VALUES (?, ?, ?, ?, ?)",
-      [date, diagnosis, patient_ID, doctor_ID, otherNotes]
+    // Get patient's first and last name
+    const [patientRows] = await connection.query(
+      "SELECT firstName, lastName FROM patients WHERE patient_ID = ?",
+      [patient_ID]
     );
 
-    const prescription_ID = result.insertId;
+    if (patientRows.length === 0) {
+      throw new Error("Patient not found");
+    }
+
+    const patientName = `${patientRows[0].firstName} ${patientRows[0].lastName}`;
+
+
+    // Insert into prescription table
+    const [result] = await connection.query(
+      "INSERT INTO prescription (prescription_ID, Date, Diagnosis, patient_ID, doctor_ID, other) VALUES (?,?, ?, ?, ?, ?)",
+      [prescription_ID,date, diagnosis, patient_ID, doctor_ID, otherNotes]
+    );
 
     // Insert each medicine
     for (const med of medicines) {
@@ -41,6 +59,18 @@ router.post("/addPrescription", async (req, res) => {
         [prescription_ID, medicine_ID, med.dosage]
       );
     }
+
+    // Save to Firebase Firestore
+    await db.collection('prescriptions').doc(prescription_ID).set({
+      prescription_ID,
+      patient_ID,
+      patientName,
+      date,
+      diagnosis,
+      otherNotes,
+      medicines, // raw medicine data as received
+      createdAt: new Date()
+    });
 
     await connection.commit();
     res.json({ success: true });

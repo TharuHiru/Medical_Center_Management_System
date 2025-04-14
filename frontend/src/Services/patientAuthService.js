@@ -25,9 +25,9 @@ export const verifyCode = async (fullcode) => {
 };
 
 // **Step 3: Reset Password**
-export const setNewPassword = async (password) => {
+export const setNewPassword = async (password,userName) => {
   try {
-    const response = await axios.post(`${API_URL}/set-password`, {password});
+    const response = await axios.post(`${API_URL}/set-password`, {password,userName});
     return response.data;
   } catch (error) {
     console.error("Error Creating Account:", error);

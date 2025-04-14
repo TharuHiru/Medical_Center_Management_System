@@ -7,6 +7,7 @@ import { toast } from "react-toastify"; // Ensure you have toast for notificatio
 import { setNewPassword } from "../../services/patientAuthService"; // Import setPassword function
 
 const AccountInfo = () => {
+  const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [passwordCopy, setPasswordCopy] = useState('');
 
@@ -22,7 +23,7 @@ const AccountInfo = () => {
 
     try {
       // Call the setPassword function with the password
-      const response = await setNewPassword(password);
+      const response = await setNewPassword(password,userName);
       if (response.success) { // Check response.data.success, not response.status
         toast.success('Password set successfully!');
         router.push('/PatientLogin'); // Redirect to login page
@@ -42,7 +43,20 @@ const AccountInfo = () => {
         <div className="col-md-6 loginForm">
           <h2 className="text-center mb-4">Create Patient Account</h2>
           <form className="temporyLoginForm" onSubmit={handleLoginSubmit}>
-            <p>You are almost there! Let&apos;s create a password.</p>
+            <p>You are almost there! Let&apos;s create a User Name and a Password.</p>
+
+            {/* User name Input */}
+            <div className="mb-3">
+              <label htmlFor="userName" className="form-label">User Name:</label>
+              <input
+                type="text"
+                className="form-control"
+                id="userName"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+                required
+              />
+            </div>
 
             {/* Password Input */}
             <div className="mb-3">

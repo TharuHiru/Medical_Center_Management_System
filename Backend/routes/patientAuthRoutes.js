@@ -98,7 +98,7 @@ router.post('/verify-code', (req, res) => {
 
 // Step 3: Create Account (Set Password)
 router.post('/set-password', async (req, res) => {
-    const { password } = req.body;
+    const { password ,userName} = req.body;
     console.log("Received Password Details:", req.body);
     
     if (!password) {
@@ -124,8 +124,8 @@ router.post('/set-password', async (req, res) => {
 
         // Insert patientId and hashed password into the database
         await pool.query(
-            'INSERT INTO patient_user (patient_ID, password) VALUES (?, ?) ON DUPLICATE KEY UPDATE password = VALUES(password)',
-            [patientId, hashedPassword]
+            'INSERT INTO patient_user (patient_ID,userName, password) VALUES (?, ?,?) ON DUPLICATE KEY UPDATE password = VALUES(password)',
+            [patientId, userName,hashedPassword]
         );
 
         // Clean up: remove verification entry after successful account creation

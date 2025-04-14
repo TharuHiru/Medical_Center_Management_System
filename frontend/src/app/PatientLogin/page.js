@@ -8,7 +8,7 @@ import { useAuth } from "../../context/AuthContext"; // Import AuthContext
 import { patientLogin } from "../../services/patientAuthService";
 
 const PatientLogin = () => {
-  const [patient_ID, setPatientID] = useState("");
+  const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter(); // Initialize the router
   const { login } = useAuth(); // Use login from AuthContext
@@ -17,13 +17,13 @@ const PatientLogin = () => {
     e.preventDefault();
   
     try {
-      // Call the patientLogin service with patient_ID and password
-      const response = await patientLogin(patient_ID, password);
+      // Call the patientLogin service with userName and password
+      const response = await patientLogin(userName, password);
   
       if (response.success) {
         login("patient", patient_ID); // Store patient ID in context
-        console.log("Patient ID stored in context:", patient_ID); // ✅ Log the ID
-        alert(`Login successful! Your Patient ID: ${patient_ID}`); // ✅ Include ID in alert
+        console.log("Patient ID stored in context:", userName); // ✅ Log the ID
+        alert(`Login successful! Your Patient ID: ${userName}`); // ✅ Include ID in alert
         router.push("/patientDashboard/appoinments"); // Redirect to dashboard
       } else {
         alert("Login failed: " + response.error);
@@ -42,13 +42,13 @@ const PatientLogin = () => {
           <h2 className="text-center mb-4">Patient Login</h2>
           <form className="temporyLoginForm" onSubmit={handleLoginSubmit}>
             <div className="mb-3">
-              <label htmlFor="userName" className="form-label">Patient ID :</label>
+              <label htmlFor="userName" className="form-label">User_Name:</label>
               <input
                 type="text"
                 className="form-control"
-                id="patient_ID"
-                value={patient_ID}
-                onChange={(e) => setPatientID(e.target.value)}
+                id="userName"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
                 required
               />
             </div>

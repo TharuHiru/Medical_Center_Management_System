@@ -36,10 +36,10 @@ export const setNewPassword = async (password,userName) => {
 };
 
 //patient login
-export const patientLogin = async (patient_ID, password) => {
+export const patientLogin = async (userName, password) => {
   try {
     const response = await axios.post(`${API_URL}/login`, {
-      patient_ID: patient_ID, // Correct structure
+      userName: userName, // Correct structure
       password: password
     });
     return response.data;

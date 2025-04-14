@@ -1,4 +1,5 @@
 "use client";
+import { userAgent } from "next/server";
 import { createContext, useContext, useEffect, useState } from "react";
 
 // Create authentication context
@@ -14,7 +15,7 @@ export const AuthProvider = ({ children }) => {
   // Load saved user details on page refresh
   useEffect(() => {
     const savedUserType = localStorage.getItem("userType");
-    const savedPatientID = localStorage.getItem("patientID");
+    const savedPatientID = localStorage.getItem("userName");
     const savedDoctorID = localStorage.getItem("doctorID");
 
 
@@ -36,10 +37,10 @@ export const AuthProvider = ({ children }) => {
 
     if (type === "patient" && id) {
       setPatientID(id);
-      localStorage.setItem("patientID", id);
+      localStorage.setItem("userName", id);
     } else {
       setPatientID(null);
-      localStorage.removeItem("patientID");
+      localStorage.removeItem("userName");
     }
 
     if (type === "doctor" && id) {
@@ -56,11 +57,11 @@ export const AuthProvider = ({ children }) => {
     setUserType(null);
     setPatientID(null);
     localStorage.removeItem("userType");
-    localStorage.removeItem("patientID");
+    localStorage.removeItem("userName");
   };
 
   return (
-    <AuthContext.Provider value={{ userType, patientID, doctorID, login, logout }}>
+    <AuthContext.Provider value={{ userType, userName, doctorID, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

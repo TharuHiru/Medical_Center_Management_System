@@ -5,7 +5,8 @@ import { Button, Modal, Form, Row, Col } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { FaUser } from "react-icons/fa";
 import ViewAndPrintQr from "./viewAndPrintQr"; 
-import { registerPatient } from "../services/authService";
+import { useEffect } from "react";
+import { registerPatient , getMasterAccounts} from "../services/authService";
 
 const AddPatientModal = ({ showModal, handleClose }) => {
   const [patientDetails, setPatientDetails] = useState({
@@ -19,11 +20,35 @@ const AddPatientModal = ({ showModal, handleClose }) => {
     addline1: "",
     addline2: "",
     email: "",
+    masterAccountID : ""// Add masterAccountID 
   });
 
   const [loading, setLoading] = useState(false); // state variable for form submission in progress
   const [showQrModal, setShowQrModal] = useState(false); //control the visibility of QR model
   const [newPatient, setNewPatient] = useState(null); // store the new patient data
+  const [masterAccounts, setMasterAccounts] = useState([]); // State to hold master account IDs
+
+  useEffect(() => {
+    const fetchMasterAccounts = async () => {
+      try {
+        const response = await getMasterAccounts(); // API call to fetch master accounts
+        console.log("Fetched Master Accounts:", response);
+        setMasterAccounts(response|| []);
+        console.log("Master Accounts in render:", masterAccounts);
+      } catch (error) {
+        console.error("Error fetching master accounts:", error); // Full error object
+        if (error.response) {
+          console.error("Response Data:", error.response.data);
+          console.error("Status:", error.response.status);
+        }
+        toast.error("Error fetching master accounts.");
+      }
+    };
+
+    if (showModal) {
+      fetchMasterAccounts();
+    }
+  }, [showModal]);
 
   //handlr fprm input data
   const handleInputChange = (e) => {
@@ -106,6 +131,30 @@ const AddPatientModal = ({ showModal, handleClose }) => {
   
       <Modal.Body>
         <Form onSubmit={handleSubmit} className="addAssistForm">
+
+        <Row className="mb-3">
+              <Col md={12}>
+                <Form.Group controlId="formMasterAccount" className="formGroup">
+                  <Form.Label>Select Master Account</Form.Label>
+                  <Form.Control
+                    as="select"
+                    name="masterAccountID"
+                    value={patientDetails.masterAccountID}
+                    onChange={handleInputChange}
+                    className="formControl"
+                  >
+                    <option value="">Select a Master Account</option>
+                    {masterAccounts.length > 0 &&
+                      masterAccounts.map((account) => (
+                        <option key={account.patient_id} value={account.patient_id}>
+                          {account.patient_id}
+                        </option>
+                    ))}
+                  </Form.Control>
+                </Form.Group>
+              </Col>
+            </Row>
+            
           <Row className="mb-3">
             <Col md={6}>
               <Form.Group controlId="formTitle" className="formGroup">
@@ -171,7 +220,7 @@ const AddPatientModal = ({ showModal, handleClose }) => {
                 <Row>
                   <Col md={6}>
                     <Form.Check
-                      type="checkbox"
+                      type="radio"
                       label="Male"
                       name="gender"
                       value="male"
@@ -181,7 +230,7 @@ const AddPatientModal = ({ showModal, handleClose }) => {
                   </Col>
                   <Col md={6}>
                     <Form.Check
-                      type="checkbox"
+                      type="radio"
                       label="Female"
                       name="gender"
                       value="female"
@@ -261,6 +310,7 @@ const AddPatientModal = ({ showModal, handleClose }) => {
               </Form.Group>
             </Col>
           </Row>
+
   
           <Button
             variant="primary"

@@ -17,6 +17,7 @@ export const sendVerification = async (PID) => {
 export const verifyCode = async (fullcode) => {
   try {
     const response = await axios.post(`${API_URL}/verify-code`, { fullcode });
+    console.log("Response from verifyCode:", response.data); // Log the response data
     return response.data;
   } catch (error) {
     console.error("Error verifying code:", error);
@@ -48,3 +49,9 @@ export const patientLogin = async (userName, password) => {
     throw error;
   }
 };
+
+
+
+
+
+

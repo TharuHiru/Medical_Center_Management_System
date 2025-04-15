@@ -1,5 +1,5 @@
 "use client";
-import { userAgent } from "next/server";
+import { userName } from "next/server";
 import { createContext, useContext, useEffect, useState } from "react";
 
 // Create authentication context

@@ -306,4 +306,19 @@ router.post('/register-patient', async (req, res) => {
     }
 });
 
+// Get Master Accounts
+router.get('/master-accounts', async (req, res) => {
+    try {
+        const [rows] = await pool.query("SELECT patient_id from patient_user"); // Fetch all master accounts
+        console.log("Fetched master accounts:", rows); // Log fetched data
+        res.status(200).json(rows); // Send the data back to the client
+    } catch (error) {
+        console.error('Error fetching master accounts:', error);
+        res.status(500).json({ message: 'Server error.' });
+    }
+});
+
+// link master account
+router.post ('/')
+
 module.exports = router;

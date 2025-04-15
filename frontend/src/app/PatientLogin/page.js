@@ -21,7 +21,7 @@ const PatientLogin = () => {
       const response = await patientLogin(userName, password);
   
       if (response.success) {
-        login("patient", patient_ID); // Store patient ID in context
+        login("patient", userName); // Store patient ID in context
         console.log("Patient ID stored in context:", userName); // ✅ Log the ID
         alert(`Login successful! Your Patient ID: ${userName}`); // ✅ Include ID in alert
         router.push("/patientDashboard/appoinments"); // Redirect to dashboard

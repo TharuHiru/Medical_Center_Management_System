@@ -25,7 +25,6 @@ export const registerDoctorStep2 = async (formData) => {
   }
 };;
 
-
 // Doctor Login API Call
 export const doctorLogin = async (UserName, password) => {
   // call the function in the node backend
@@ -89,4 +88,16 @@ export const registerPatient = async (patientDetails) => {
     return error.response?.data || { success: false, message: "Server error!" };
   }
 };
+
+// Get master account details
+export const getMasterAccounts = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/master-accounts`);
+    console.log("Response from getMasterAccounts:", response.data); // Log the response data
+    return response.data;
+  } catch (error) {
+    return error.response?.data || { success: false, message: "Server error!" };
+  }
+};
+
 

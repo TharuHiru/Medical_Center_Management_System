@@ -4,6 +4,9 @@ import React, { useState } from "react";
 import BackNavbar from "../../components/backNavBar"; // Import the Navbar component
 import { useRouter } from "next/navigation"; // Import useRouter for navigation
 import Link from "next/link";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 import { useAuth } from "../../context/AuthContext"; // Import AuthContext
 import { patientLogin } from "../../services/patientAuthService";
 
@@ -21,16 +24,16 @@ const PatientLogin = () => {
       const response = await patientLogin(userName, password);
   
       if (response.success) {
-        login("patient", userName); // Store patient ID in context
-        console.log("Patient ID stored in context:", userName); // ✅ Log the ID
-        alert(`Login successful! Your Patient ID: ${userName}`); // ✅ Include ID in alert
+        login("patient", userName, response.master_ID); // ✅ Passing master_ID
+        console.log("Patient ID stored in context:", userName,response.master_ID); // ✅ Log the ID
+        toast.success(`Login successful! Your Patient ID: ${userName}`); // ✅ Include ID in alert
         router.push("/patientDashboard/appoinments"); // Redirect to dashboard
       } else {
-        alert("Login failed: " + response.error);
+        toast.err("Login failed: " + response.error);
       }
     } catch (error) {
       console.error("Login error:", error);
-      alert("An error occurred during login. Please try again.");
+      toast.err("An error occurred during login. Please try again.");
     }
   };
 

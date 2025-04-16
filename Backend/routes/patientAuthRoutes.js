@@ -148,9 +148,9 @@ router.post('/login', async (req, res) => {
     }
 
     try {
-        // Fetch patient ID and hashed password from the database
+        // Fetch patient account  details from the database
         const [results] = await pool.query(
-            'SELECT userName, password FROM patient_user WHERE userName = ?',
+            'SELECT master_ID,userName, password FROM patient_user WHERE userName = ?',
             [userName]
         );
 
@@ -158,6 +158,7 @@ router.post('/login', async (req, res) => {
             return res.status(404).json({ error: 'Account not found' });
         }
 
+        const master_ID = results[0].master_ID;
         const { password: hashedPassword } = results[0];
 
         // Compare the hashed password
@@ -168,7 +169,7 @@ router.post('/login', async (req, res) => {
         }
 
         // Respond with success if login is successful
-        res.json({ success: true, message: 'Login successful', userName });
+        res.json({ success: true, message: 'Login successful', userName , master_ID});
     } catch (error) {
         console.error("Database error:", error);
         res.status(500).json({ error: 'Database error' });

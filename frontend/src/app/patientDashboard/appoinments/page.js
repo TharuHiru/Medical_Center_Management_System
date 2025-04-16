@@ -1,28 +1,50 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { db } from "../../../lib/firebase";
-import {
-  collection,
-  query,
-  orderBy,
-  onSnapshot,
-  deleteDoc,
-  doc,
-} from "firebase/firestore";
-import { createAppointment } from "../../../services/appointmentService";
+import {collection,query,orderBy,onSnapshot,deleteDoc,doc,} from "firebase/firestore";
+
 import { ToastContainer, toast } from "react-toastify";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+
+import { createAppointment } from "../../../services/appointmentService";
+import { fetchPatientIDs } from "../../../services/patientAuthService";
 import { useAuth } from "../../../context/AuthContext";
-import PatientSidebar  from "../../../components/patientSideBar"; // Make sure this import path is correct
+
+import PatientSidebar  from "../../../components/patientSideBar"; 
 
 export default function AppointmentQueue() {
-  const { userType, patientID } = useAuth();
+  const { userType, patientID ,masterID} = useAuth();
   const [appointments, setAppointments] = useState([]);
   const [patientQueueNumber, setPatientQueueNumber] = useState(null);
   const [nextPosition, setNextPosition] = useState(1);
+  const [patientList, setPatientList] = useState([]);
+  const [selectedPatientID, setSelectedPatientID] = useState('');
+
+  useEffect(() => {
+    const loadPatients = async () => {
+      if (!masterID) {
+        console.warn("masterID not ready, skipping fetch");
+        return;
+      }
+  
+      try {
+        const data = await fetchPatientIDs(masterID);
+        setPatientList(data);
+        if (data.length > 0) {
+          setSelectedPatientID(data[0].patient_ID);
+        }
+      } catch (err) {
+        console.error("Failed to load patient IDs", err);
+        toast.error("Failed to load patient IDs");
+      }
+    };
+  
+    loadPatients();
+  }, [masterID]);
+  
 
   useEffect(() => {
     const q = query(collection(db, "appointments"), orderBy("createdAt", "asc"));
@@ -68,12 +90,13 @@ export default function AppointmentQueue() {
   };
 
   const handleBook = async () => {
-    if (!patientID) {
-      toast.error("Please enter patient details");
+    if (!selectedPatientID) {
+      toast.error("Please select a patient");
       return;
     }
+  
     try {
-      await createAppointment(patientID, new Date().toISOString().split("T")[0]);
+      await createAppointment(selectedPatientID, new Date().toISOString().split("T")[0]);
       toast.success("Appointment booked successfully!");
     } catch (errorMessage) {
       toast.error(errorMessage);
@@ -144,13 +167,18 @@ export default function AppointmentQueue() {
               <p>
                 Next Available: <strong>Position {nextPosition}</strong>
               </p>
-              <input
-                type="text"
-                className="form-control mb-2"
-                placeholder="Patient ID"
-                value={patientID}
-                disabled
-              />
+              <select
+                  className="form-select mb-3"
+                  value={selectedPatientID}
+                  onChange={(e) => setSelectedPatientID(e.target.value)}
+                >
+                  {patientList.map((patient) => (
+                    <option key={patient.patient_ID} value={patient.patient_ID}>
+                      {patient.firstName} {patient.lastName} (ID: {patient.patient_ID})
+                    </option>
+                  ))}
+                </select>
+
               <button className="btn btn-primary w-100" onClick={handleBook}>
                 Book Appointment
               </button>

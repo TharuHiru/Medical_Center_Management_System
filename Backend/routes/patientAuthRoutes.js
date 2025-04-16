@@ -177,4 +177,45 @@ router.post('/login', async (req, res) => {
 });
 
 
+// Fetch patient details using master_ID
+router.get('/fetch-patient-IDs/:master_ID', async (req, res) => {
+    const { master_ID } = req.params;
+    console.log("Received Master ID:", master_ID);
+
+    try {
+        //  Fetch primary patient ID from patient_user
+        const [primary] = await pool.query(
+            'SELECT patient_ID FROM patient_user WHERE master_ID = ?', [master_ID]
+        );
+
+        //  Fetch linked patient IDs from master_patient_links
+        const [linked] = await pool.query(
+            'SELECT patient_ID FROM master_patient_links WHERE master_ID = ?', [master_ID]
+        );
+
+        //  Combine both sets of patient IDs
+        const allPatientIDs = [
+            ...primary.map(p => p.patient_ID),
+            ...linked.map(p => p.patient_ID)
+        ];
+
+        if (allPatientIDs.length === 0) {
+            return res.status(404).json({ error: 'No patients found' });
+        }
+
+        // : Fetch patient details for all patient IDs
+        const [patientDetails] = await pool.query(
+            `SELECT patient_ID, firstName, lastName FROM patients WHERE patient_ID IN (?)`, 
+            [allPatientIDs]
+        );
+
+        // Respond with full list of patient details
+        res.json({ success: true, data: patientDetails });
+    } catch (error) {
+        console.error("Database error:", error);
+        res.status(500).json({ error: 'Database error' });
+    }
+});
+
+
 module.exports = router;

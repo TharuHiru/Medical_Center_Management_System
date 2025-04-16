@@ -51,7 +51,15 @@ export const patientLogin = async (userName, password) => {
 };
 
 
-
+// fetch patient ID for master ID
+export const fetchPatientIDs = async (masterID) => {
+  const response = await axios.get(`${API_URL}/fetch-patient-IDs/${masterID}`);
+  if (response.data.success) {
+    return response.data.data;
+  } else {
+    throw new Error("Failed to fetch patient IDs");
+  }
+};
 
 
 

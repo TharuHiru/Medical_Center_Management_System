@@ -134,14 +134,8 @@ export default function AppointmentQueue() {
       <div className="content-area" style={{ marginLeft: '260px' }}>
       <div className="container mt-4">
         <h2 className="text-center">Today&apos;s Appointment Queue</h2>
-
-        <div className="text-center my-3">
-          {patientQueueNumber ? (
-            <h4 className="text-primary">Your Number: {patientQueueNumber}</h4>
-          ) : (
-            <h5 className="text-danger">You haven&apos;t booked an appointment today.</h5>
-          )}
-        </div>
+        <hr></hr>
+        <br></br>
 
         <div className="row">
           <div className="col-md-8">

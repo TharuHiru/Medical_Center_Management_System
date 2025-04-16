@@ -239,79 +239,104 @@ router.post('/assistant-login', async (req, res) => {
     }
 });
 
-//Route for register patients
-router.post('/register-patient', async (req, res) => {
-    console.log("Received Patient Data:", req.body); // Log incoming data
-    
-    const { title, firstname, lastname, contact, gender, dob, houseNo, addline1, addline2, email } = req.body;
 
-    // Validation: Check required fields
+//Register a patient
+router.post('/register-patient', async (req, res) => {
+
+    console.log("Received Patient Data:", req.body);
+
+    const { title, firstname, lastname, contact, gender, dob, houseNo, addline1, addline2, email, masterAccountID } = req.body;
+
     if (!title || !firstname || !lastname || !contact || !gender || !dob || !houseNo || !addline1 || !addline2 || !email) {
-        console.log("Validation failed: Missing fields"); // Log validation failure
         return res.status(400).json({ message: "All fields are required." });
     }
-    
+
+    const connection = await pool.getConnection(); 
+
     try {
-        // Step 1: Get the last patient ID
-        console.log("Fetching last patient ID...");
+        await connection.beginTransaction(); //  Start transaction
 
-        const [lastPatient] = await pool.query("SELECT patient_ID FROM patients ORDER BY patient_ID DESC LIMIT 1");
-        console.log("Last patient ID fetched:", lastPatient);
-
-        let newPatientID = "PC_ID00001"; // Default for first patient
+        const [lastPatient] = await connection.query("SELECT patient_ID FROM patients ORDER BY patient_ID DESC LIMIT 1");
+        
+        let newPatientID = "PC_ID00001";
         if (lastPatient.length > 0) {
-            // Step 2: Extract and Increment the number
-            const lastID = lastPatient[0].patient_ID;  // e.g., PC_ID00010
-            const lastNumber = parseInt(lastID.substring(5)); // Extract "00010" -> 10
-            const nextNumber = lastNumber + 1;
-            newPatientID = `PC_ID${String(nextNumber).padStart(5, '0')}`; // Format it
-
-            console.log("Generated new patient ID:", newPatientID);
+            const lastID = lastPatient[0].patient_ID;
+            const nextNumber = parseInt(lastID.substring(5)) + 1;
+            newPatientID = `PC_ID${String(nextNumber).padStart(5, '0')}`;
         }
-        
-        // Step 3: Generate QR Code
-        console.log("Generating QR code...");
-        const qrData = `https://yourwebsite.com/patient-card/${newPatientID}`; // URL encoded in QR
-        const qrCodeImage = await QRCode.toDataURL(qrData); // Generate base64 QR code
-        console.log("QR Code generated");
 
-        const assist_ID = "1"; // For Now Hardcorded the Assistant ID. This should be get from the session
+        const qrData = `https://yourwebsite.com/patient-card/${newPatientID}`;
+        const qrCodeImage = await QRCode.toDataURL(qrData);
 
-        // Step 4: Insert new patient into database
-        console.log("Inserting new patient into database...");
+        const assist_ID = "1"; // Hardcoded for now
 
-        const query = `INSERT INTO patients (patient_ID,assist_ID, title, firstName, lastName, contactNo, gender, DOB, house_no, addr_line_1, addr_line_2, email) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`;
-        
-        console.log("Database query:", query);
-        console.log("Inserting patient data:", [newPatientID,assist_ID, title, firstname, lastname, contact, gender, dob, houseNo, addline1, addline2, email]);
+        // First INSERT
+        const insertPatientQuery = `
+            INSERT INTO patients 
+            (patient_ID, assist_ID, title, firstName, lastName, contactNo, gender, DOB, house_no, addr_line_1, addr_line_2, email) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+        await connection.query(insertPatientQuery, [
+            newPatientID, assist_ID, title, firstname, lastname, contact, gender, dob, houseNo, addline1, addline2, email
+        ]);
 
-        await pool.query(query, [newPatientID,assist_ID, title, firstname, lastname, contact, gender, dob, houseNo, addline1, addline2, email]);
+        // Second INSERT only if masterAccountID is provided
+        if (masterAccountID !== "") {
+            const [masterIDResult] = await connection.query(
+                "SELECT master_ID FROM patient_user WHERE patient_ID = ?", [masterAccountID]
+            );
 
-        console.log("Patient registered successfully");
+            if (masterIDResult.length === 0) {
+                throw new Error("Master account not found");
+            }
 
-        // Step 5: Respond with success
+            const masterID = masterIDResult[0].master_ID;
+
+            const insertLinkQuery = `
+                INSERT INTO master_patient_links (master_ID, patient_ID)
+                VALUES (?, ?)
+            `;
+            await connection.query(insertLinkQuery, [masterID, newPatientID]);
+        }
+
+        await connection.commit(); // ✅ COMMIT both INSERTs together
+        console.log("Transaction committed");
+
         return res.status(201).json({ 
-            success: true, 
+            success: true,
             message: 'Patient registered successfully.', 
             patientID: newPatientID,
             name: `${title} ${firstname} ${lastname}`,
-            qrCode: qrCodeImage, 
-            qrPage: qrData 
+            qrCode: qrCodeImage,
+            qrPage: qrData
         });
-    
+
     } catch (error) {
-        console.error('Error occurred while registering patient:', error); // Log detailed error
-        return res.status(500).json({ message: 'Server error.' });
+        await connection.rollback(); // ROLLBACK if anything fails
+        console.error("Transaction failed, rolled back:", error.message);
+        return res.status(500).json({ message: 'Server error during registration.' });
+    } finally {
+        connection.release(); // Free up connection
     }
 });
+
 
 // Get Master Accounts
 router.get('/master-accounts', async (req, res) => {
     try {
-        const [rows] = await pool.query("SELECT patient_id from patient_user"); // Fetch all master accounts
-        console.log("Fetched master accounts:", rows); // Log fetched data
-        res.status(200).json(rows); // Send the data back to the client
+        const [rows] = await pool.query(`
+            SELECT 
+                pu.patient_id, 
+                p.firstName, 
+                p.lastName
+            FROM 
+                patient_user pu
+            JOIN 
+                patients p ON pu.patient_id = p.patient_ID
+        `);
+
+        console.log("Fetched master accounts with names:", rows);
+        res.status(200).json(rows); // Send enriched data back
     } catch (error) {
         console.error('Error fetching master accounts:', error);
         res.status(500).json({ message: 'Server error.' });

@@ -28,15 +28,15 @@ const AddPatientModal = ({ showModal, handleClose }) => {
   const [newPatient, setNewPatient] = useState(null); // store the new patient data
   const [masterAccounts, setMasterAccounts] = useState([]); // State to hold master account IDs
 
+  //GET THE MASTER ACCOUNTS
   useEffect(() => {
     const fetchMasterAccounts = async () => {
       try {
         const response = await getMasterAccounts(); // API call to fetch master accounts
-        console.log("Fetched Master Accounts:", response);
-        setMasterAccounts(response|| []);
-        console.log("Master Accounts in render:", masterAccounts);
-      } catch (error) {
-        console.error("Error fetching master accounts:", error); // Full error object
+        setMasterAccounts(response|| []); // Set the master accounts in state
+      } 
+      catch (error) {
+        toast.error("Error fetching master accounts"); // Full error object
         if (error.response) {
           console.error("Response Data:", error.response.data);
           console.error("Status:", error.response.status);
@@ -50,7 +50,7 @@ const AddPatientModal = ({ showModal, handleClose }) => {
     }
   }, [showModal]);
 
-  //handlr fprm input data
+  //handle form input data
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setPatientDetails({ ...patientDetails, [name]: value });
@@ -65,14 +65,16 @@ const AddPatientModal = ({ showModal, handleClose }) => {
     return true;
   };
 
-  // handle submit method
+  // handle form submit method
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return; // validate the form
     setLoading(true); // set loading state to true
 
+    //Run API call to register the patient
     try {
-      const response = await registerPatient(patientDetails);//call the v=backend API
+      const response = await registerPatient(patientDetails);
+      console.log("patient details:", patientDetails); // Debugging log
   
       if (response.success) {
         toast.success("Patient registered successfully!");
@@ -132,6 +134,7 @@ const AddPatientModal = ({ showModal, handleClose }) => {
       <Modal.Body>
         <Form onSubmit={handleSubmit} className="addAssistForm">
 
+        {/*Select box to link with an existing master Account*/}
         <Row className="mb-3">
               <Col md={12}>
                 <Form.Group controlId="formMasterAccount" className="formGroup">
@@ -147,14 +150,15 @@ const AddPatientModal = ({ showModal, handleClose }) => {
                     {masterAccounts.length > 0 &&
                       masterAccounts.map((account) => (
                         <option key={account.patient_id} value={account.patient_id}>
-                          {account.patient_id}
+                          {account.patient_id} - {account.firstName} {account.lastName}
                         </option>
                     ))}
                   </Form.Control>
                 </Form.Group>
               </Col>
             </Row>
-            
+          
+          {/*Other Details to register a patient*/}
           <Row className="mb-3">
             <Col md={6}>
               <Form.Group controlId="formTitle" className="formGroup">

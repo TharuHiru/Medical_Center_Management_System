@@ -23,6 +23,13 @@ export default function AppointmentQueue() {
   const [patientList, setPatientList] = useState([]);
   const [selectedPatientID, setSelectedPatientID] = useState('');
 
+  //Get patient names to view in the Queue
+  const getPatientName = (id) => {
+  const patient = patientList.find((p) => p.patient_ID === id);
+  return patient ? `${patient.firstName} ${patient.lastName}` : "Unknown";
+};
+
+//Load the patients IDs using the master ID
   useEffect(() => {
     const loadPatients = async () => {
       if (!masterID) {
@@ -48,6 +55,7 @@ export default function AppointmentQueue() {
   //Get all the patient ID s for that particular account as a list
   const patientIDsOwnedByUser = patientList.map(p => p.patient_ID);
 
+  //Get the queue number of the selected patient
   useEffect(() => {
     const selectedPatientAppt = appointments.find(
       (appt) => appt.patient_ID === selectedPatientID && appt.status === "pending"
@@ -55,6 +63,7 @@ export default function AppointmentQueue() {
     setPatientQueueNumber(selectedPatientAppt ? selectedPatientAppt.queueNumber : null);
   }, [appointments, selectedPatientID]);
 
+  //Real-time listener for appointments
   useEffect(() => {
     const q = query(collection(db, "appointments"), orderBy("createdAt", "asc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -76,6 +85,7 @@ export default function AppointmentQueue() {
     return () => unsubscribe();
   }, [patientID]);
 
+  //Deleting an appointment
   const handleRemove = async (appointmentID) => {
     Swal.fire({
       title: "Are you sure?",
@@ -98,6 +108,7 @@ export default function AppointmentQueue() {
     });
   };
 
+  //Handling booking an appintment
   const handleBook = async () => {
     if (!selectedPatientID) {
       toast.error("Please select a patient");
@@ -112,6 +123,7 @@ export default function AppointmentQueue() {
     }
   };
 
+  //Handle logout function
   const logout = () => {
     console.log("Logged out");
   };
@@ -151,6 +163,7 @@ export default function AppointmentQueue() {
                         }`}
                     >
                       <span className="fw-bold">{index + 1}</span>
+                      <span> <small>{getPatientName(appt.id)}</small></span>
                       <span>
                         {appt.status === "pending" ? (
                           <strong>Not yet seen by the doctor</strong>

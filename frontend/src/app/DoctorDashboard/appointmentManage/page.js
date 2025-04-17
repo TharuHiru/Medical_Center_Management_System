@@ -8,11 +8,14 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import DoctorNavBar from '../../../components/doctorSideBar';
+import PrescriptionModal from "../../../components/AddPrescriptionModel";
 import { db } from "../../../lib/firebase"; // Ensure correct Firebase import
 import { collection, query, orderBy, onSnapshot, doc, deleteDoc } from "firebase/firestore";
 
 function DoctorQueue() {
   const [appointments, setAppointments] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+    const [appointmentID , setAppointmentID] = useState(''); 
 
   // ✅ Logout function (Dummy Function)
   const logout = () => {
@@ -36,6 +39,8 @@ function DoctorQueue() {
       const response = await admitPatient(appointment.id, appointment.appointmentDate);
       if (response.success) {
         toast.success("Patient admitted successfully!");
+        console.log("Admitted Patient appointment:", response.appointmentID);
+        setAppointmentID(response.appointmentID); 
       } else {
         toast.error(response.error || "Failed to admit patient.");
       }
@@ -84,9 +89,18 @@ function DoctorQueue() {
                   </button>
                 )}
                 {appt.status === "in progress" && (
-                  <button className="btn btn-danger" onClick={() => handleRemove(appt.id)}>
-                    Remove
-                  </button>
+                  <>
+                    <button className="btn btn-danger" onClick={() => handleRemove(appt.id)}>
+                      Remove
+                    </button>
+                    <button className="loginBtn" onClick={() => setShowModal(true)}>Add Prescription</button>
+                    <PrescriptionModal
+                      show={showModal}
+                      handleClose={() => setShowModal(false)}
+                      patientId={appt.id}
+                      appointmentID = {appointmentID}  // Pass the selected patient's ID
+                    />
+                  </>
                 )}
               </div>
             ))}

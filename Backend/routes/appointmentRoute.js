@@ -51,29 +51,61 @@ router.get("/doctor-view", async (req, res) => {
   }
 });
 
-// ✅ Admit a patient (Firestore Transaction)
+// ✅ Admit a patient (Firestore & MySQL Atomic Transaction)
 router.put("/admit", async (req, res) => {
   const { patientID, appointmentDate } = req.body;
-  console.log(req.body);
+  console.log(req.body)
   if (!patientID || !appointmentDate) {
     return res.status(400).json({ success: false, error: "Missing required fields" });
   }
 
   const appointmentRef = db.collection("appointments").doc(patientID);
+  const connection = await pool.getConnection();
+
+  // Generate random appointment ID like A_123456
+  const appointmentID = `A_${Math.floor(100000 + Math.random() * 900000)}`;
 
   try {
-    // Update the status to 'in progress' when admitted
-    await appointmentRef.update({
-      status: "in progress",
-      admittedAt: new Date().toISOString(),
+    // Start MySQL transaction
+    await connection.beginTransaction();
+
+    // Firestore transaction
+    await db.runTransaction(async (transaction) => {
+      transaction.update(appointmentRef, { status: "in progress" });
+
+      // MySQL Query
+      const sql = `INSERT INTO appointment (appoint_ID,patient_ID, date, time)VALUES (?,?, ?, ?)`;
+
+      // Convert date formats correctly
+      const sqlDate = new Date(appointmentDate).toISOString().split("T")[0]; // YYYY-MM-DD
+      const now = new Date();
+      const sqlTime = now.toTimeString().slice(0, 8); // Gets local time HH:mm:ss
+
+      const [result] = await connection.execute(sql, [appointmentID,patientID, sqlDate, sqlTime]);
+
+      if (result.affectedRows === 0) {
+        throw new Error("MySQL insert failed.");
+      }
     });
 
-    res.status(200).json({ success: true, message: "Patient admitted successfully!" });
+    // Commit MySQL transaction
+    await connection.commit();
+    res.status(200).json({ success: true, message: "Patient admitted successfully!", appointmentID });
   } catch (error) {
     console.error("Error admitting patient:", error.message);
+
+    // Rollback MySQL transaction on failure
+    await connection.rollback();
+
     res.status(500).json({ success: false, error: error.message });
+  } finally {
+    // Release MySQL connection back to the pool
+    connection.release();
   }
 });
+
+module.exports = router;
+
 
 // ✅ Remove a patient from the queue after seen by doctor (Firestore Delete)
 router.delete("/remove", async (req, res) => {

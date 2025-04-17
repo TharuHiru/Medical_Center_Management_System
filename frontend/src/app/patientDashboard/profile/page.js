@@ -76,13 +76,52 @@ export default function ProfilePage() {
                             {patient.firstName} {patient.lastName}
                           </h5>
                           <br></br>
-                          <p><strong>Patient ID:</strong> {patient.patient_ID}</p>
-                          <p><strong>Name : </strong> {patient.title} {patient.firstName} {patient.lastName}</p>
-                          <p><strong>Contact : </strong> {patient.contactNo}</p>
-                          <p><strong>Gender : </strong> {patient.gender}</p>
-                          <p><strong>Date Of Birth : </strong> {patient.DOB}</p>
-                          <p><strong>Address : </strong> {patient.house_no} , {patient.addr_line_1} , {patient.addr_line_2}</p>
-                          <p><strong>Email : </strong> {patient.email}</p>
+                          <table>
+                            <tbody>
+                              <tr>
+                                <td>Patient ID:</td>
+                                <td>
+                                  <input type="text" className="form-control" readOnly value={patient.patient_ID} />
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Name :</td>
+                                <td>
+                                  <input type="text" className="form-control" readOnly value={`${patient.title} ${patient.firstName} ${patient.lastName}`} />
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Contact No:</td>
+                                <td>
+                                  <input type="text" className="form-control" readOnly value={patient.contactNo} />
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Gender :</td>
+                                <td>
+                                  <input type="text" className="form-control" readOnly value={patient.gender} />
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Date Of Birth :</td>
+                                <td>
+                                  <input type="text" className="form-control" readOnly value={patient.DOB} />
+                                </td>
+                              </tr>
+                              <tr>
+                              <td>Address : </td>
+                                <td>
+                                  <input type="text" className="form-control" readOnly value={`${patient.house_no}, ${patient.addr_line_1}, ${patient.addr_line_2}`} />
+                                </td> 
+                              </tr>
+                              <tr>
+                              <td>Email : </td>
+                                <td>
+                                  <input type="text" className="form-control" readOnly value={patient.email} />
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
                         </div>
                       </div>
                     </div>

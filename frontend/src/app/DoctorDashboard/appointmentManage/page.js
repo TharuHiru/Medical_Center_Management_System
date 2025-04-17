@@ -98,7 +98,7 @@ function DoctorQueue() {
                       show={showModal}
                       handleClose={() => setShowModal(false)}
                       patientId={appt.id}
-                      appointmentID = {appointmentID}  // Pass the selected patient's ID
+                      appointmentID = {appt.appointment_ID}  // Pass the selected patient's ID
                     />
                   </>
                 )}

@@ -53,6 +53,7 @@ export default function PrescriptionModal({ show, handleClose,patientId,appointm
             diagnosis,
             otherNotes: others,
             patient_ID: patientId,
+            appointment_ID : appointmentID ,
             doctor_ID: doctorID, // 👈 Use context-based doctorID
             medicines: prescribedMedicines.map((med) => ({
               medicine_Name: med.name,

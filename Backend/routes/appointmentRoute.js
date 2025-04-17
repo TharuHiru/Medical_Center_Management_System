@@ -71,7 +71,7 @@ router.put("/admit", async (req, res) => {
 
     // Firestore transaction
     await db.runTransaction(async (transaction) => {
-      transaction.update(appointmentRef, { status: "in progress" });
+      transaction.update(appointmentRef, { status: "in progress" , appointment_ID : appointmentID});
 
       // MySQL Query
       const sql = `INSERT INTO appointment (appoint_ID,patient_ID, date, time)VALUES (?,?, ?, ?)`;

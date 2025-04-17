@@ -1,6 +1,7 @@
 const express = require('express');
 const pool = require('../config/db');
 const db = require("../config/firebase"); // Firestore database
+const { app } = require('firebase-admin');
 const router = express.Router();
 
 // Generate a random prescription ID
@@ -10,9 +11,10 @@ function generatePrescriptionID() {
 
 //Add  a prescription
 router.post("/addPrescription", async (req, res) => {
-  const { date, diagnosis, otherNotes, patient_ID, doctor_ID, medicines } = req.body;
+  const { date, diagnosis, otherNotes, patient_ID, doctor_ID, medicines , appointment_ID } = req.body;
+  console.log(req.body);
 
-  if (!date || !diagnosis || !patient_ID || !doctor_ID || !Array.isArray(medicines) || medicines.length === 0) {
+  if (!diagnosis || !patient_ID || !Array.isArray(medicines) || medicines.length === 0) {
     return res.status(400).json({ success: false, message: "Missing or invalid input data" });
   }
 
@@ -33,12 +35,12 @@ router.post("/addPrescription", async (req, res) => {
     }
 
     const patientName = `${patientRows[0].firstName} ${patientRows[0].lastName}`;
-
+    const status = "pending"; 
 
     // Insert into prescription table
     const [result] = await connection.query(
-      "INSERT INTO prescription (prescription_ID, Date, Diagnosis, patient_ID, doctor_ID, other) VALUES (?,?, ?, ?, ?, ?)",
-      [prescription_ID,date, diagnosis, patient_ID, doctor_ID, otherNotes]
+      "INSERT INTO prescription (prescription_ID, Date, Diagnosis, patient_ID, doctor_ID, other , appointment_ID,status) VALUES (?,?, ?, ?, ?, ?,?,?)",
+      [prescription_ID,date, diagnosis, patient_ID, doctor_ID, otherNotes,appointment_ID,status]
     );
 
     // Insert each medicine

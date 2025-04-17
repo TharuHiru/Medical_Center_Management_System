@@ -205,7 +205,7 @@ router.get('/fetch-patient-IDs/:master_ID', async (req, res) => {
 
         // : Fetch patient details for all patient IDs
         const [patientDetails] = await pool.query(
-            `SELECT patient_ID, firstName, lastName FROM patients WHERE patient_ID IN (?)`, 
+            `SELECT * FROM patients WHERE patient_ID IN (?)`, 
             [allPatientIDs]
         );
 

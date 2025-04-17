@@ -1,23 +1,18 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { db } from "../../../lib/firebase";
-import { collection, query, orderBy, onSnapshot, deleteDoc, doc } from "firebase/firestore";
-import { createAppointment } from "../../../services/appointmentService";
 import { ToastContainer, toast } from "react-toastify";
-import Swal from "sweetalert2";
-import "sweetalert2/dist/sweetalert2.min.css";
-import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "../../../context/AuthContext";
 import PatientSidebar from "../../../components/patientSideBar";
 import { fetchPatientIDs } from "../../../services/patientAuthService";
 
 export default function ProfilePage() {
   const { masterID } = useAuth();
-
   const [patientList, setPatientList] = useState([]);
-  const [selectedPatientID, setSelectedPatientID] = useState("");
+  const [activeTab, setActiveTab] = useState("");
 
+  //Get the Master ID
   useEffect(() => {
     const loadPatients = async () => {
       if (!masterID) {
@@ -27,10 +22,10 @@ export default function ProfilePage() {
 
       try {
         const data = await fetchPatientIDs(masterID);
-        console.log("Fetched Patients:", data);
         setPatientList(data);
+        console.log("Patient List:", data);
         if (data.length > 0) {
-          setSelectedPatientID(data[0].patient_ID);
+          setActiveTab(data[0].patient_ID); // Default to first tab
         }
       } catch (err) {
         console.error("Failed to load patient IDs", err);
@@ -41,36 +36,64 @@ export default function ProfilePage() {
     loadPatients();
   }, [masterID]);
 
-  //Handle logout function
   const logout = () => {
     console.log("Logged out");
   };
 
-  const patientIDsOwnedByUser = patientList.map((p) => p.patient_ID);
-
   return (
-    <div>
-      <PatientSidebar  onLogout={logout} />
-      <div className="content-area" style={{ marginLeft: '260px' }}>
-      <div className="container mt-4">
-        <h3>Patients List</h3>
-        {patientList.length === 0 ? (
-          <p>No patients found.</p>
-        ) : (
-          <ul className="list-group">
-            {patientList.map((patient) => (
-              <li key={patient.patient_ID} className="list-group-item">
-                Patient ID: {patient.patient_ID}
-                {/* If there's a name or other info, show it here too */}
-                {patient.name && <span> - {patient.name}</span>}
-              </li>
-            ))}
-          </ul>
-        )}
+    <>
+      <PatientSidebar onLogout={logout} />
+      <div className="content-area" style={{ marginLeft: "260px" }}>
+        <div className="container mt-4">
+          <h3 className="mb-4">Family Patient Profiles</h3>
+
+          {patientList.length === 0 ? (
+            <p>No patients found.</p>
+          ) : (
+            <>
+              <ul className="nav nav-tabs">
+                {patientList.map((patient) => (
+                  <li className="nav-item" key={patient.patient_ID}>
+                    <button
+                      className={`nav-link ${
+                        activeTab === patient.patient_ID ? "active" : ""
+                      }`}
+                      onClick={() => setActiveTab(patient.patient_ID)}
+                    >
+                      {patient.firstName} {patient.lastName}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="tab-content mt-3">
+                {patientList.map((patient) =>
+                  activeTab === patient.patient_ID ? (
+                    <div className="tab-pane active" key={patient.patient_ID}>
+                      <div className="card">
+                        <div className="card-body">
+                          <h5 className="card-title">
+                            {patient.firstName} {patient.lastName}
+                          </h5>
+                          <br></br>
+                          <p><strong>Patient ID:</strong> {patient.patient_ID}</p>
+                          <p><strong>Name : </strong> {patient.title} {patient.firstName} {patient.lastName}</p>
+                          <p><strong>Contact : </strong> {patient.contactNo}</p>
+                          <p><strong>Gender : </strong> {patient.gender}</p>
+                          <p><strong>Date Of Birth : </strong> {patient.DOB}</p>
+                          <p><strong>Address : </strong> {patient.house_no} , {patient.addr_line_1} , {patient.addr_line_2}</p>
+                          <p><strong>Email : </strong> {patient.email}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null
+                )}
+              </div>
+            </>
+          )}
+        </div>
         <ToastContainer />
       </div>
-    </div>
-    </div>
+    </>
   );
-  
 }

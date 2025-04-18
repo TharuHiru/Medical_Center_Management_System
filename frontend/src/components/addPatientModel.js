@@ -7,6 +7,7 @@ import { FaUser } from "react-icons/fa";
 import ViewAndPrintQr from "./viewAndPrintQr"; 
 import { useEffect } from "react";
 import { registerPatient , getMasterAccounts} from "../services/authService";
+import '../Styles/loginForms.css';
 
 const AddPatientModal = ({ showModal, handleClose }) => {
   const [patientDetails, setPatientDetails] = useState({
@@ -125,7 +126,7 @@ const AddPatientModal = ({ showModal, handleClose }) => {
   return (
     <>
     <Modal show={showModal} onHide={handleClose} backdrop="static" keyboard={false}>
-      <Modal.Header closeButton>
+      <Modal.Header closeButton className="model-head">
         <Modal.Title className="addAssistTitle">
           <FaUser size={30} /> &nbsp; Add New Patient
         </Modal.Title>

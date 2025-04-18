@@ -5,6 +5,11 @@ import { fetchMedicineCategory } from "../services/inventoryService"; // toget t
 import { addPrescription , fetchPatientAllergies } from "../services/prescriptionService"; // imported the service file
 import AllergiesModel from '../components/editAllergies.js'; 
 import { useAuth } from "../context/AuthContext"; 
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { FaTimes , FaPlus ,FaPrescriptionBottleAlt } from 'react-icons/fa';
+import '../Styles/loginForms.css';
 
 export default function PrescriptionModal({ show, handleClose,patientId,appointmentID}) {
   // the model receives three props
@@ -93,14 +98,14 @@ export default function PrescriptionModal({ show, handleClose,patientId,appointm
           const result = await addPrescription(prescriptionPayload);
       
           if (result.success) {
-            alert(result.message);
+            toast.success(result.message);
             handleClose();
           } else {
-            alert(result.message);
+            toast.err(result.message);
           }
       
         } catch (error) {
-          console.error("Error while preparing prescription payload:", error);
+          toast.err("Error while preparing prescription payload:", error);
         }
       };
 
@@ -117,30 +122,53 @@ export default function PrescriptionModal({ show, handleClose,patientId,appointm
   return (
     <>
     <Modal show={show} onHide={handleClose}>
-      <Modal.Header closeButton>
-        <Modal.Title>Add Prescription</Modal.Title>
-      </Modal.Header>
-      
+      <Modal.Header closeButton className="model-head">
+        <Modal.Title className="addAssistTitle">
+          <FaPrescriptionBottleAlt style={{ marginRight: "10px" }} />
+            Add Prescription</Modal.Title>
+      </Modal.Header>     
           <Modal.Body>
-          <p>Patient ID: {patientId}</p>
-          <p>Appointment ID: {appointmentID}</p>
-
-          <label>Allergies:</label>
-            <input
-              type="textarea"
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+          <tbody>
+            <tr>
+              <td><strong>Patient ID: </strong> {patientId}</td>
+              <td><strong>Appointment ID: </strong> {appointmentID}</td>
+            </tr>
+            </tbody>
+          </table>
+          <br></br>
+          
+          {/*Allergies section*/}
+          <div className="genderBoxBorder">
+          <table>
+          <tbody>
+          <tr>
+          <td style={{ width: "80%" }}>
+            <strong className = "genderLabel" >Allergies:</strong>
+              <textarea
               readOnly
               value={allergies || 'No allergies found'}
-              className="form-control"
+              className="form-control allergy-box"
+              rows={3} 
+              style={{ width: "100%" }}
             />
+          </td>
+          <td style={{ verticalAlign: "bottom", paddingLeft: "10px" }}>
             <button
-              className="btn btn-primary mt-2 mb-3"
-              onClick={() => setShowAllergiesModal(true)}
-            >
+              className="btn btn-primary allergy-btn mt-2 mb-3"
+              onClick={() => setShowAllergiesModal(true)}>
               Edit Allergies
-          </button>
+            </button>
+          </td>
+          </tr>
+          </tbody>
+          </table>
+          </div>
+
+          {/*Rest of the form*/}
             <Form>
               <Form.Group className="mb-3">
-                <Form.Label>Diagnosis</Form.Label>
+                <strong>Diagnosis</strong>
                 <Form.Control
                   type="text"
                   value={diagnosis}
@@ -149,7 +177,7 @@ export default function PrescriptionModal({ show, handleClose,patientId,appointm
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Label>Other Notes</Form.Label>
+                <strong>Other Notes</strong>
                 <Form.Control
                   as="textarea"
                   rows={2}
@@ -157,13 +185,13 @@ export default function PrescriptionModal({ show, handleClose,patientId,appointm
                   onChange={(e) => setOthers(e.target.value)}
                 />
               </Form.Group>
-
-              <h5>Medicines</h5>
-              <Table striped bordered hover size="sm">
+              {/* Medicine Adding section*/}
+              <strong >Medicines</strong>
+              <Table striped bordered hover >
                 <thead>
                   <tr>
-                    <th>Medicine</th>
-                    <th>Dosage</th>
+                    <td>Medicine</td>
+                    <td>Dosage</td>
                   </tr>
                 </thead>
                 <tbody>
@@ -199,15 +227,15 @@ export default function PrescriptionModal({ show, handleClose,patientId,appointm
                           size="sm"
                           onClick={() => removeMedicine(index)}
                         >
-                          ❌
+                          <FaTimes /> 
                         </Button>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </Table>
-              <Button variant="success" onClick={addMedicine}>
-                ➕ Add Medicine
+              <Button className="allergy-btn" onClick={addMedicine}>
+                <FaPlus></FaPlus> Add Medicine
               </Button>
             </Form>
           </Modal.Body>
@@ -215,20 +243,22 @@ export default function PrescriptionModal({ show, handleClose,patientId,appointm
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleSubmit}>
+          <Button className = " submit-btn" variant="primary" onClick={handleSubmit}>
             Save Prescription
           </Button>
       </Modal.Footer>
     </Modal>
   
    {/* Allergies Edit Modal */}
-   <AllergiesModel
-   show={showAllergiesModal}
-   handleClose={() => setShowAllergiesModal(false)}
-   patientId={patientId}
-   initialAllergies={allergies}
-   onSave={handleSaveAllergies}
- />
+   {showAllergiesModal && (
+  <AllergiesModel
+    show={true}
+    handleClose={() => setShowAllergiesModal(false)}
+    patientId={patientId}
+    initialAllergies={allergies}
+    onSave={handleSaveAllergies}
+  />
+)}
 </>
 );
 };

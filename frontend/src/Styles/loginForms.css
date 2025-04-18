@@ -17,14 +17,15 @@ body{
     padding: 12px;
     border-radius: 5px;
     border: transparent;
-    background-color: #2c6a75;
+    background-color: #2c6a75 !important;
+    border-color: transparent !important;
     color: white;
     transition: background-color 0.3s;
     margin-top: 15px;
   }
   
   .loginBtn:hover{
-    background-color: rgb(63, 119, 131);
+    background-color: rgb(31, 59, 65) !important;
   }
 
   .loginBtn:active{
@@ -46,11 +47,16 @@ body{
 
 .addAssistTitle{
   font-size: 24px;
-  color: #2c6a75;;
+  color: #ffffff !important;
 }
 
 .addAssisttextbox {
   margin-bottom: 15px;
+}
+
+.model-head{
+  color : white !important;
+  background-color:#2c6a75 !important ;
 }
 
 .genderBoxBorder {
@@ -70,5 +76,37 @@ body{
   padding: 0 8px;          /* Adds space around text */
 }
 
+.allergy-box{
+  margin-top:10px
+}
+
+.submit-btn{
+  background-color: #2c6a75 !important;
+  font-size: medium !important;
+  border-color: transparent !important;
+}
+
+.submit-btn:hover{
+  background-color: #1b434a !important;
+}
+
+.allergy-btn{
+  background-color: #ffffff !important;
+  border-color: #2c6a75 !important;
+  color: #2c6a75 !important; 
+}
+
+.allergy-btn:hover{
+  background-color: #2c6a75 !important;
+  color : white !important;
+}
+
+.model-head .btn-close {
+  filter: invert(1); /* turns the black X icon white */
+}
+
+.model-head .btn-close:hover {
+  background-color: transparent;
+}
 
 

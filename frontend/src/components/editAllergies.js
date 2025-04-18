@@ -3,6 +3,9 @@
 import { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { editPatientAllergies } from "../services/prescriptionService";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function AllergiesModel({ show, handleClose, patientId, initialAllergies, onSave }) {
   const [allergyText, setAllergyText] = useState("");
@@ -17,15 +20,15 @@ export default function AllergiesModel({ show, handleClose, patientId, initialAl
     try {
       const response = await editPatientAllergies(patientId, allergyText);
       if (response.success) {
-        alert("Allergies updated successfully!");
-        onSave(allergyText); // 👈 Send updated allergy back to parent
+        toast.success("Allergies updated successfully!");
+        onSave(allergyText); // Send updated allergy back to prescription model
         handleClose();
       } else {
-        alert("Failed to update allergies.");
+        toast.err("Failed to update allergies.");
       }
     } catch (error) {
       console.error("Error editing allergies:", error);
-      alert("An error occurred while updating allergies.");
+      toast.err("An error occurred while updating allergies.");
     }
   };
 

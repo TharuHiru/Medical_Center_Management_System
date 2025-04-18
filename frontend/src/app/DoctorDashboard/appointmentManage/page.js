@@ -99,21 +99,21 @@ function DoctorQueue() {
                         setShowModal(true);
                       }} >Add Prescription
                     </button>
-                          
-                    <PrescriptionModal
-                      show={showModal}
-                      handleClose={() => {
-                        setShowModal(false);
-                        setSelectedAppointment(null); // Reset after closing
-                      }}
-                      patientId={selectedAppointment?.id}
-                      appointmentID={selectedAppointment?.appointment_ID}
-                    />
-                  </>
+                    </>
                 )}
               </div>
             ))}
           </div>
+                <PrescriptionModal
+                  show={showModal}
+                  handleClose={() => {
+                    setShowModal(false);
+                    setSelectedAppointment(null); // Reset after closing
+                  }}
+                  patientId={selectedAppointment?.id}
+                  appointmentID={selectedAppointment?.appointment_ID}
+                />
+                    
         </div>
       </div>
     </div>

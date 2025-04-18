@@ -121,7 +121,7 @@ const AddInventoryModal = ({ showModal, handleClose }) => {
 
   return (
     <Modal show={showModal} onHide={handleClose} backdrop="static" keyboard={false}>
-      <Modal.Header closeButton>
+      <Modal.Header closeButton className="model-head">
         <Modal.Title className='addAssistTitle'>
           <FaUser size={30} /> &nbsp; Add New Inventory Record
         </Modal.Title>

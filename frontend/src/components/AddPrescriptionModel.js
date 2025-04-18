@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Modal, Button, Form, Table } from "react-bootstrap";
 import { fetchMedicineCategory } from "../services/inventoryService"; // toget the medicine categories
 import { addPrescription , fetchPatientAllergies } from "../services/prescriptionService"; // imported the service file
+import AllergiesModel from '../components/editAllergies.js'; 
 import { useAuth } from "../context/AuthContext"; 
 
 export default function PrescriptionModal({ show, handleClose,patientId,appointmentID}) {
@@ -13,6 +14,7 @@ export default function PrescriptionModal({ show, handleClose,patientId,appointm
   const [prescribedMedicines, setPrescribedMedicines] = useState([]);
   const [inventory, setMedicineCategories] = useState([]);
   const [allergies, setAllergies] = useState("");
+  const [showAllergiesModal, setShowAllergiesModal] = useState(false); 
 
   //get categories
   useEffect(() => {
@@ -65,6 +67,9 @@ export default function PrescriptionModal({ show, handleClose,patientId,appointm
     }
   }, [show, patientId]);
 
+  const handleSaveAllergies = (newAllergies) => {
+    setAllergies(newAllergies); // update allergies shown in parent
+  };
   
       // Collect your final payload
       const handleSubmit = async () => {
@@ -110,6 +115,7 @@ export default function PrescriptionModal({ show, handleClose,patientId,appointm
       }, [show]);
 
   return (
+    <>
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
         <Modal.Title>Add Prescription</Modal.Title>
@@ -119,8 +125,19 @@ export default function PrescriptionModal({ show, handleClose,patientId,appointm
           <p>Patient ID: {patientId}</p>
           <p>Appointment ID: {appointmentID}</p>
 
-          <label>Allergies : </label>
-          <input type="text" readOnly value={allergies || 'No allergies found'} className="form-control" />
+          <label>Allergies:</label>
+            <input
+              type="textarea"
+              readOnly
+              value={allergies || 'No allergies found'}
+              className="form-control"
+            />
+            <button
+              className="btn btn-primary mt-2 mb-3"
+              onClick={() => setShowAllergiesModal(true)}
+            >
+              Edit Allergies
+          </button>
             <Form>
               <Form.Group className="mb-3">
                 <Form.Label>Diagnosis</Form.Label>
@@ -203,5 +220,15 @@ export default function PrescriptionModal({ show, handleClose,patientId,appointm
           </Button>
       </Modal.Footer>
     </Modal>
-  );
+  
+   {/* Allergies Edit Modal */}
+   <AllergiesModel
+   show={showAllergiesModal}
+   handleClose={() => setShowAllergiesModal(false)}
+   patientId={patientId}
+   initialAllergies={allergies}
+   onSave={handleSaveAllergies}
+ />
+</>
+);
 };

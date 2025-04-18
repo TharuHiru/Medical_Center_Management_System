@@ -30,3 +30,14 @@ export const fetchPatientAllergies = async (patientId) => {
     return { success: false, message: "Failed to fetch patient allergies" };
   }
 };
+
+// Edit alleries of the patient
+export const editPatientAllergies = async (patientId, allergies) => {
+  try {
+    const response = await axios.put(`${API_URL}/editPatientAllergies/${patientId}`, { allergies });
+    return response.data;
+  } catch (error) {
+    console.error("Error editing patient allergies:", error);
+    return { success: false, message: "Failed to edit patient allergies" };
+  }
+};

@@ -114,4 +114,25 @@ router.get("/getPatientAllergies/:patientId", async (req, res) => {
   }
 });
 
+// Edit the allergies of the patient
+router.put("/editPatientAllergies/:patientId", async (req, res) => {
+  const patientId = req.params.patientId;
+  const { allergies } = req.body;
+
+  if (!patientId || !allergies) {
+    return res.status(400).json({ success: false, message: "Missing patient ID or allergies" });
+  }
+
+  try {
+    const connection = await pool.getConnection();
+    await connection.query("UPDATE patients SET allergies = ? WHERE patient_ID = ?", [allergies, patientId]);
+    connection.release();
+    res.json({ success: true, message: "Allergies updated successfully" });
+
+  } catch (error) {
+    console.error("Error updating allergies:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
 module.exports = router;

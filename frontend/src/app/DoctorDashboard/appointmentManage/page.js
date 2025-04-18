@@ -14,8 +14,8 @@ import { collection, query, orderBy, onSnapshot, doc, deleteDoc } from "firebase
 
 function DoctorQueue() {
   const [appointments, setAppointments] = useState([]);
-    const [showModal, setShowModal] = useState(false);
-    const [appointmentID , setAppointmentID] = useState(''); 
+  const [showModal, setShowModal] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
 
   // ✅ Logout function (Dummy Function)
   const logout = () => {
@@ -93,12 +93,21 @@ function DoctorQueue() {
                     <button className="btn btn-danger" onClick={() => handleRemove(appt.id)}>
                       Remove
                     </button>
-                    <button className="loginBtn" onClick={() => setShowModal(true)}>Add Prescription</button>
+                    <button className="loginBtn" 
+                      onClick={() => {
+                        setSelectedAppointment(appt);
+                        setShowModal(true);
+                      }} >Add Prescription
+                    </button>
+                          
                     <PrescriptionModal
                       show={showModal}
-                      handleClose={() => setShowModal(false)}
-                      patientId={appt.id}
-                      appointmentID = {appt.appointment_ID}  // Pass the selected patient's ID
+                      handleClose={() => {
+                        setShowModal(false);
+                        setSelectedAppointment(null); // Reset after closing
+                      }}
+                      patientId={selectedAppointment?.id}
+                      appointmentID={selectedAppointment?.appointment_ID}
                     />
                   </>
                 )}

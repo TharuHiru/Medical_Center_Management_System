@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Modal, Button, Form, Table } from "react-bootstrap";
 import { fetchMedicineCategory } from "../services/inventoryService"; // toget the medicine categories
-import { addPrescription } from "../services/prescriptionService"; // imported the service file
+import { addPrescription , fetchPatientAllergies } from "../services/prescriptionService"; // imported the service file
 import { useAuth } from "../context/AuthContext"; 
 
 export default function PrescriptionModal({ show, handleClose,patientId,appointmentID}) {
@@ -12,6 +12,7 @@ export default function PrescriptionModal({ show, handleClose,patientId,appointm
   const [others, setOthers] = useState("");
   const [prescribedMedicines, setPrescribedMedicines] = useState([]);
   const [inventory, setMedicineCategories] = useState([]);
+  const [allergies, setAllergies] = useState("");
 
   //get categories
   useEffect(() => {
@@ -26,7 +27,7 @@ export default function PrescriptionModal({ show, handleClose,patientId,appointm
       getCategories();
     }, []);
 
-    //Adds a blank medicine object to prescription list
+  //Adds a blank medicine object to prescription list
   const addMedicine = () => {
     setPrescribedMedicines([...prescribedMedicines, { name: "", dosage: "" , unitCount: "" }]);
   };
@@ -42,6 +43,28 @@ export default function PrescriptionModal({ show, handleClose,patientId,appointm
   const removeMedicine = (index) => {
     setPrescribedMedicines(prescribedMedicines.filter((_, i) => i !== index));
   };
+  
+  //Fetch allergies when patient ID changes and model opens
+  useEffect(() => {
+    if (show && patientId) {
+      const fetchAllergies = async () => {
+        try {
+          const response = await fetchPatientAllergies(patientId);
+          if (response.success) {
+            setAllergies(response.allergies);
+          } else {
+            setAllergies("No allergies found");
+            console.error("Error fetching allergies:", response.message);
+          }
+        } catch (error) {
+          setAllergies("Error fetching");
+          console.error("Error fetching allergies:", error);
+        }
+      };
+      fetchAllergies();
+    }
+  }, [show, patientId]);
+
   
       // Collect your final payload
       const handleSubmit = async () => {
@@ -76,6 +99,16 @@ export default function PrescriptionModal({ show, handleClose,patientId,appointm
         }
       };
 
+      // reset the model data when closes
+      useEffect(() => {
+        if (show) {
+          setDiagnosis("");
+          setOthers("");
+          setPrescribedMedicines([]);
+          setAllergies("");
+        }
+      }, [show]);
+
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
@@ -85,6 +118,9 @@ export default function PrescriptionModal({ show, handleClose,patientId,appointm
           <Modal.Body>
           <p>Patient ID: {patientId}</p>
           <p>Appointment ID: {appointmentID}</p>
+
+          <label>Allergies : </label>
+          <input type="text" readOnly value={allergies || 'No allergies found'} className="form-control" />
             <Form>
               <Form.Group className="mb-3">
                 <Form.Label>Diagnosis</Form.Label>

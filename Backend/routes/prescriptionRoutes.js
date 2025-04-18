@@ -86,4 +86,32 @@ router.post("/addPrescription", async (req, res) => {
   }
 });
 
+
+// Get the allergies of the patient
+router.get("/getPatientAllergies/:patientId", async (req, res) => {
+  const patientId = req.params.patientId;
+
+  if (!patientId) {
+    return res.status(400).json({ success: false, message: "Missing patient ID" });
+  }
+
+  try {
+    const connection = await pool.getConnection();
+    const [rows] = await connection.query("SELECT allergies FROM patients WHERE patient_ID = ?",[patientId]);
+
+    connection.release();
+
+    if (rows.length === 0) {
+      return res.status(404).json({ success: false, message: "Patient not found" });
+    }
+
+    console.log(rows[0].allergies);
+    res.json({ success: true, allergies: rows[0].allergies });
+
+  } catch (error) {
+    console.error("Error fetching patient allergies:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
 module.exports = router;

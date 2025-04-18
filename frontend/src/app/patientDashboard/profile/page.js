@@ -5,12 +5,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "../../../context/AuthContext";
 import PatientSidebar from "../../../components/patientSideBar";
-import { fetchPatientIDs } from "../../../services/patientAuthService";
+import { fetchPatientIDs,fetchPatientAppointments } from "../../../services/patientAuthService";
 
 export default function ProfilePage() {
   const { masterID } = useAuth();
   const [patientList, setPatientList] = useState([]);
   const [activeTab, setActiveTab] = useState("");
+  const [appointmentsByPatient, setAppointmentsByPatient] = useState({});
 
   //Get the Master ID
   useEffect(() => {
@@ -33,12 +34,33 @@ export default function ProfilePage() {
       }
     };
 
+    
+
     loadPatients();
   }, [masterID]);
 
   const logout = () => {
     console.log("Logged out");
   };
+
+  useEffect(() => {
+    const loadAppointments = async () => {
+      if (!activeTab) return;
+  
+      try {
+        const data = await fetchPatientAppointments(activeTab);
+        setAppointmentsByPatient((prev) => ({
+          ...prev,
+          [activeTab]: data
+        }));
+      } catch (err) {
+        console.error("Failed to load appointments", err);
+        toast.error("Failed to load appointment details");
+      }
+    };
+  
+    loadAppointments();
+  }, [activeTab]);
 
   return (
     <>
@@ -131,6 +153,34 @@ export default function ProfilePage() {
             </>
           )}
         </div>
+
+        <h5 className="mt-4">Appointments</h5>
+{appointmentsByPatient[activeTab]?.length > 0 ? (
+  <table className="table table-striped">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Doctor</th>
+        <th>Reason</th>
+      </tr>
+    </thead>
+    <tbody>
+      {appointmentsByPatient[activeTab].map((appt, index) => (
+        <tr key={index}>
+          <td>{appt.date}</td>
+          <td>{appt.time}</td>
+          <td>{appt.doctorName}</td>
+          <td>{appt.reason}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+) : (
+  <p>No appointments found.</p>
+)}
+
+
         <ToastContainer />
       </div>
     </>

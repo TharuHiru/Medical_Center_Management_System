@@ -217,5 +217,27 @@ router.get('/fetch-patient-IDs/:master_ID', async (req, res) => {
     }
 });
 
+//Get appointment details for a specific patient
+router.get('/fetch-appointment-details/:patient_ID', async (req, res) => {
+    const { patient_ID } = req.params;
+    console.log("Received Patient ID for Appointments:", patient_ID);
+
+    try {
+        // Fetch appointment details for the given patient ID
+        const [appointments] = await pool.query(
+            'SELECT * FROM appointment WHERE patient_ID = ?', [patient_ID]
+        );
+
+        if (appointments.length === 0) {
+            return res.status(404).json({ error: 'No appointments found for this patient' });
+        }
+
+        // Respond with appointment details
+        res.json({ success: true, data: appointments });
+    } catch (error) {
+        console.error("Database error:", error);
+        res.status(500).json({ error: 'Database error' });
+    }
+});
 
 module.exports = router;

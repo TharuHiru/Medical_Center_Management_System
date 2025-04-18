@@ -227,17 +227,30 @@ router.get('/fetch-appointment-details/:patient_ID', async (req, res) => {
         const [appointments] = await pool.query(
             'SELECT * FROM appointment WHERE patient_ID = ?', [patient_ID]
         );
-
+    
         if (appointments.length === 0) {
             return res.status(404).json({ error: 'No appointments found for this patient' });
         }
-
-        // Respond with appointment details
-        res.json({ success: true, data: appointments });
+    
+        // Fetch prescription details for each appointment using prescription_ID
+        const detailedAppointments = await Promise.all(
+            appointments.map(async (appointment) => {
+                const [prescriptions] = await pool.query(
+                    'SELECT * FROM prescription WHERE appointment_ID = ?', [appointment.appoint_ID]
+                );
+                appointment.prescription = prescriptions[0] || null;
+                return appointment;
+            })
+        );
+        console.log("Detailed Appointments:", detailedAppointments);
+    
+        // Respond with appointment and prescription details
+        res.json({ success: true, data: detailedAppointments });
+        
     } catch (error) {
         console.error("Database error:", error);
         res.status(500).json({ error: 'Database error' });
     }
-});
+});    
 
 module.exports = router;

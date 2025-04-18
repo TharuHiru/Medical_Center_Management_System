@@ -5,15 +5,16 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "../../../context/AuthContext";
 import PatientSidebar from "../../../components/patientSideBar";
-import { fetchPatientIDs,fetchPatientAppointments } from "../../../services/patientAuthService";
+import { fetchPatientIDs, fetchPatientAppointments } from "../../../services/patientAuthService";
 
 export default function ProfilePage() {
   const { masterID } = useAuth();
   const [patientList, setPatientList] = useState([]);
   const [activeTab, setActiveTab] = useState("");
   const [appointmentsByPatient, setAppointmentsByPatient] = useState({});
+  const [selectedAppointmentIndex, setSelectedAppointmentIndex] = useState(0);
+  const [collapsedAppointments, setCollapsedAppointments] = useState({}); // Track collapsed states
 
-  //Get the Master ID
   useEffect(() => {
     const loadPatients = async () => {
       if (!masterID) {
@@ -24,17 +25,14 @@ export default function ProfilePage() {
       try {
         const data = await fetchPatientIDs(masterID);
         setPatientList(data);
-        console.log("Patient List:", data);
         if (data.length > 0) {
-          setActiveTab(data[0].patient_ID); // Default to first tab
+          setActiveTab(data[0].patient_ID);
         }
       } catch (err) {
         console.error("Failed to load patient IDs", err);
         toast.error("Failed to load patient IDs");
       }
     };
-
-    
 
     loadPatients();
   }, [masterID]);
@@ -44,23 +42,35 @@ export default function ProfilePage() {
   };
 
   useEffect(() => {
+    setSelectedAppointmentIndex(0);
+  }, [activeTab]);
+
+  useEffect(() => {
     const loadAppointments = async () => {
       if (!activeTab) return;
-  
+
       try {
         const data = await fetchPatientAppointments(activeTab);
         setAppointmentsByPatient((prev) => ({
           ...prev,
-          [activeTab]: data
+          [activeTab]: data,
         }));
       } catch (err) {
         console.error("Failed to load appointments", err);
         toast.error("Failed to load appointment details");
       }
     };
-  
+
     loadAppointments();
   }, [activeTab]);
+
+  // Function to toggle collapse state
+  const toggleCollapse = (date) => {
+    setCollapsedAppointments((prevState) => ({
+      ...prevState,
+      [date]: !prevState[date], // Toggle the collapse state for the specific date
+    }));
+  };
 
   return (
     <>
@@ -97,49 +107,84 @@ export default function ProfilePage() {
                           <h5 className="card-title">
                             {patient.firstName} {patient.lastName}
                           </h5>
-                          <br></br>
+                          <br />
                           <table>
                             <tbody>
                               <tr>
                                 <td>Patient ID:</td>
                                 <td>
-                                  <input type="text" className="form-control" readOnly value={patient.patient_ID} />
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    readOnly
+                                    value={patient.patient_ID}
+                                  />
                                 </td>
                               </tr>
                               <tr>
                                 <td>Name :</td>
                                 <td>
-                                  <input type="text" className="form-control" readOnly value={`${patient.title} ${patient.firstName} ${patient.lastName}`} />
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    readOnly
+                                    value={`${patient.title} ${patient.firstName} ${patient.lastName}`}
+                                  />
                                 </td>
                               </tr>
                               <tr>
                                 <td>Contact No:</td>
                                 <td>
-                                  <input type="text" className="form-control" readOnly value={patient.contactNo} />
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    readOnly
+                                    value={patient.contactNo}
+                                  />
                                 </td>
                               </tr>
                               <tr>
                                 <td>Gender :</td>
                                 <td>
-                                  <input type="text" className="form-control" readOnly value={patient.gender} />
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    readOnly
+                                    value={patient.gender}
+                                  />
                                 </td>
                               </tr>
                               <tr>
                                 <td>Date Of Birth :</td>
                                 <td>
-                                  <input type="text" className="form-control" readOnly value={patient.DOB} />
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    readOnly
+                                    value={patient.DOB}
+                                  />
                                 </td>
                               </tr>
                               <tr>
-                              <td>Address : </td>
+                                <td>Address : </td>
                                 <td>
-                                  <input type="text" className="form-control" readOnly value={`${patient.house_no}, ${patient.addr_line_1}, ${patient.addr_line_2}`} />
-                                </td> 
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    readOnly
+                                    value={`${patient.house_no}, ${patient.addr_line_1}, ${patient.addr_line_2}`}
+                                  />
+                                </td>
                               </tr>
                               <tr>
-                              <td>Email : </td>
+                                <td>Email : </td>
                                 <td>
-                                  <input type="text" className="form-control" readOnly value={patient.email} />
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    readOnly
+                                    value={patient.email}
+                                  />
                                 </td>
                               </tr>
                             </tbody>
@@ -152,34 +197,43 @@ export default function ProfilePage() {
               </div>
             </>
           )}
+
+          <h5 className="mt-4">Appointments</h5>
+          {appointmentsByPatient[activeTab]?.length > 0 ? (
+            <>
+              {appointmentsByPatient[activeTab].map((appt, index) => {
+                const formattedDate = new Date(appt.date).toLocaleDateString();
+                return (
+                  <div key={index} className="mb-3">
+                    <button
+                      className="btn btn-secondary w-100 text-left"
+                      onClick={() => toggleCollapse(formattedDate)}
+                    >
+                      {collapsedAppointments[formattedDate] ? "▲" : "▼"}{" "}
+                      {formattedDate} - {appt.time}
+                    </button>
+
+                    <div
+                      className={`mt-2 ${collapsedAppointments[formattedDate] ? "collapse" : ""}`}
+                    >
+                      <div className="card">
+                        <div className="card-body">
+                          <h6><strong>Appointment Details</strong></h6>
+                          <p><strong>Date:</strong> {formattedDate}</p>
+                          <p><strong>Time:</strong> {appt.time}</p>
+                          <p><strong>Doctor:</strong> {appt.doctorName || "N/A"}</p>
+                          <p><strong>Reason:</strong> {appt.reason || "N/A"}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </>
+          ) : (
+            <p>No appointments found.</p>
+          )}
         </div>
-
-        <h5 className="mt-4">Appointments</h5>
-{appointmentsByPatient[activeTab]?.length > 0 ? (
-  <table className="table table-striped">
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Time</th>
-        <th>Doctor</th>
-        <th>Reason</th>
-      </tr>
-    </thead>
-    <tbody>
-      {appointmentsByPatient[activeTab].map((appt, index) => (
-        <tr key={index}>
-          <td>{appt.date}</td>
-          <td>{appt.time}</td>
-          <td>{appt.doctorName}</td>
-          <td>{appt.reason}</td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-) : (
-  <p>No appointments found.</p>
-)}
-
 
         <ToastContainer />
       </div>

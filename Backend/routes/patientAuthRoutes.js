@@ -221,36 +221,51 @@ router.get('/fetch-patient-IDs/:master_ID', async (req, res) => {
 router.get('/fetch-appointment-details/:patient_ID', async (req, res) => {
     const { patient_ID } = req.params;
     console.log("Received Patient ID for Appointments:", patient_ID);
-
+  
     try {
-        // Fetch appointment details for the given patient ID
-        const [appointments] = await pool.query(
-            'SELECT * FROM appointment WHERE patient_ID = ?', [patient_ID]
-        );
-    
-        if (appointments.length === 0) {
-            return res.status(404).json({ error: 'No appointments found for this patient' });
-        }
-    
-        // Fetch prescription details for each appointment using prescription_ID
-        const detailedAppointments = await Promise.all(
-            appointments.map(async (appointment) => {
-                const [prescriptions] = await pool.query(
-                    'SELECT * FROM prescription WHERE appointment_ID = ?', [appointment.appoint_ID]
-                );
-                appointment.prescription = prescriptions[0] || null;
-                return appointment;
-            })
-        );
-        console.log("Detailed Appointments:", detailedAppointments);
-    
-        // Respond with appointment and prescription details
-        res.json({ success: true, data: detailedAppointments });
-        
+      const [appointments] = await pool.query(
+        'SELECT * FROM appointment WHERE patient_ID = ?', [patient_ID]
+      );
+  
+      if (appointments.length === 0) {
+        return res.status(404).json({ error: 'No appointments found for this patient' });
+      }
+  
+      const detailedAppointments = await Promise.all(
+        appointments.map(async (appointment) => {
+          const [prescriptions] = await pool.query(
+            'SELECT * FROM prescription WHERE appointment_ID = ?', [appointment.appoint_ID]
+          );
+          const prescription = prescriptions[0] || null;
+  
+          let medicines = [];
+          if (prescription) {
+            const [medicineRows] = await pool.query(
+              `SELECT pm.*, m.medicine_Name AS medicine_name 
+               FROM prescription_medicine pm 
+               JOIN medicine_category m ON pm.medicine_ID = m.medicine_ID 
+               WHERE pm.prescription_ID = ?`,
+              [prescription.prescription_ID]
+            );
+            console.log(prescription.prescription_ID);
+            medicines = medicineRows;
+          }
+  
+          appointment.prescription = prescription;
+          appointment.medicines = medicines;
+  
+          return appointment;
+        })
+      );
+  
+      console.dir(detailedAppointments, { depth: null });
+      res.json({ success: true, data: detailedAppointments });
+  
     } catch (error) {
-        console.error("Database error:", error);
-        res.status(500).json({ error: 'Database error' });
+      console.error("Database error:", error);
+      res.status(500).json({ error: 'Database error' });
     }
-});    
+  });
+       
 
 module.exports = router;

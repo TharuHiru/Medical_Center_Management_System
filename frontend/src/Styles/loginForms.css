@@ -1,5 +1,5 @@
 body{
-    background-image: url("/form-background.jpg");
+    background-image: url("/form-background.jpg") !important;
   }
 
   .loginForm{

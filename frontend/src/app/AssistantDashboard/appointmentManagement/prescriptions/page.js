@@ -19,6 +19,27 @@ export default function AppointmentQueue() {
   const billingRef = useRef(null);
   const [showBillingForm, setShowBillingForm] = useState(false);
 
+  const [prescriptionRows, setPrescriptionRows] = useState([
+    { medicine_ID: "", dosage: "", units: 1 }
+  ]);
+  
+  const handleRowChange = (index, field, value) => {
+    const updatedRows = [...prescriptionRows];
+    updatedRows[index][field] = value;
+    setPrescriptionRows(updatedRows);
+  };
+  
+  const addRow = () => {
+    setPrescriptionRows([...prescriptionRows, { medicine_ID: "", dosage: "", units: 1 }]);
+  };
+  
+  const removeRow = (index) => {
+    const updatedRows = [...prescriptionRows];
+    updatedRows.splice(index, 1);
+    setPrescriptionRows(updatedRows);
+  };
+  
+
   useEffect(() => {
     const q = query(collection(db, "prescriptions"), orderBy("createdAt", "asc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -213,38 +234,73 @@ export default function AppointmentQueue() {
                       <h4 className="text-center mb-4">Billing Details</h4>
                       <form>
                         <div className="mb-3">
-                          <label htmlFor="billAmount" className="form-label">Service Charge : </label>
-                          <input type="number" className="form-control" id="billAmount" required />
+                          <label htmlFor="serviceCharge" className="form-label">Service Charge:</label>
+                          <input type="number" className="form-control" id="serviceCharge" required />
                         </div>
-                        <div className="mb-3">
-                          <label htmlFor="paymentMethod" className="form-label">Medicine</label>
-                          <select
-                            className="form-select"
-                            id="paymentMethod"
-                            value={selectedMedicine}
-                            onChange={(e) => setSelectedMedicine(e.target.value)}
-                            required
-                          >
-                            <option value="">Select Medicine</option>
-                            {medicines.length > 0 ? (
-                              medicines.map((medicine) => (
-                                <option key={medicine.medicine_ID} value={medicine.medicine_ID}>
-                                  {medicine.medicine_Name}
-                                </option>
-                              ))
-                            ) : (
-                              <option value="">No medicines available</option>
-                            )}
-                          </select>
+
+                        <h5 className="text-center mt-4">Medicines</h5>
+                        <table className="table table-bordered">
+                          <thead className="table-light">
+                            <tr>
+                              <th>Medicine</th>
+                              <th>Dosage</th>
+                              <th>Units</th>
+                              <th>Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {prescriptionRows.map((row, index) => (
+                              <tr key={index}>
+                                <td>
+                                  <select
+                                    className="form-select"
+                                    value={row.medicine_ID}
+                                    onChange={(e) => handleRowChange(index, "medicine_ID", e.target.value)}
+                                  >
+                                    <option value="">Select Medicine</option>
+                                    {medicines.map((med) => (
+                                      <option key={med.medicine_ID} value={med.medicine_ID}>
+                                        {med.medicine_Name}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </td>
+                                <td>
+                                  <input
+                                    type="text"
+                                    className="form-control"
+                                    value={row.dosage}
+                                    onChange={(e) => handleRowChange(index, "dosage", e.target.value)}
+                                  />
+                                </td>
+                                <td>
+                                  <input
+                                    type="number"
+                                    className="form-control"
+                                    value={row.units}
+                                    onChange={(e) => handleRowChange(index, "units", e.target.value)}
+                                  />
+                                </td>
+                                <td>
+                                  <button
+                                    type="button"
+                                    className="btn btn-danger btn-sm"
+                                    onClick={() => removeRow(index)}
+                                  >
+                                    Remove
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+
+                        <div className="mb-3 text-end">
+                          <button type="button" className="btn btn-outline-primary" onClick={addRow}>
+                            + Add Medicine
+                          </button>
                         </div>
-                        <div className="mb-3">
-                          <label htmlFor="NoOfUnits" className="form-label">No Of Units : </label>
-                          <input type="number" className="form-control" id="NoOfUnits" rows="3"></input>
-                        </div>
-                        <div className="mb-3">
-                          <label htmlFor="notes" className="form-label">Full Amount : </label>
-                          <input type="Number" className="form-control" id="notes" rows="3" readOnly></input>
-                        </div>
+
                         <div className="text-center">
                           <button type="submit" className="btn btn-success">Submit Billing</button>
                         </div>
@@ -253,6 +309,7 @@ export default function AppointmentQueue() {
                   </div>
                 </div>
               </div>
+
             )}
           </div>
         </div>

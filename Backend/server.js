@@ -42,7 +42,7 @@ const patientRoutes = require('./routes/patientRoutes');
 const inventoryRoutes = require('./routes/inventoryRoutes');
 const assistantRoutes = require('./routes/assistantRoutes'); 
 const patientAuthRoutes = require('./routes/patientAuthRoutes');
-
+const billingRoutes = require('./routes/billingRoutes');
 const appointmentRoutes = require('./routes/appointmentRoute');
 const prescriptionRoutes = require('./routes/prescriptionRoutes');
 
@@ -52,7 +52,7 @@ app.use('/api/patients', patientRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/assistant', assistantRoutes); 
 app.use('/api/patientAuth', patientAuthRoutes);
-
+app.use('/api/billing', billingRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/prescriptions', prescriptionRoutes);
 

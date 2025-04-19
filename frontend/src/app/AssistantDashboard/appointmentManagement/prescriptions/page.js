@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import AssistNavBar from "../../../../components/assistantSideBar";
 import {fetchMedicineCategory,} from "../../../../services/inventoryService";
-
+import {fetchInventoryByMedicineID,} from "../../../../services/billingService";
 
 export default function AppointmentQueue() {
   const [prescriptions, setPrescriptions] = useState([]);
@@ -23,6 +23,7 @@ export default function AppointmentQueue() {
     { medicine_ID: "", dosage: "", units: 1 }
   ]);
   
+  //row cgange handler
   const handleRowChange = (index, field, value) => {
     const updatedRows = [...prescriptionRows];
     updatedRows[index][field] = value;
@@ -39,7 +40,7 @@ export default function AppointmentQueue() {
     setPrescriptionRows(updatedRows);
   };
   
-
+//Real tiime firebase listening for prescriptions
   useEffect(() => {
     const q = query(collection(db, "prescriptions"), orderBy("createdAt", "asc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -71,10 +72,10 @@ export default function AppointmentQueue() {
   }, [showBillingForm]);
   
 
-  // Fetch medicines from Firebase or your API
+  // Fetch medicines from SQL
   const fetchMedicines = async () => {
     try {
-      const response = await fetchMedicineCategory(); // Your API or Firebase call here
+      const response = await fetchMedicineCategory(); 
       if (response.success) {
         setMedicines(response.data); // Set the fetched medicines in the state
       } else {
@@ -82,6 +83,20 @@ export default function AppointmentQueue() {
       }
     } catch (error) {
       alert("Error fetching medicines: " + error.message);
+    }
+  };
+
+  // fetch the inventory details from SQL
+  const fetchInventoryByMedicineID = async (medicineID) => {
+    try {
+      const response = await fetchMedicineCategory(medicineID); // API call to fetch inventory details
+      if (response.success) {
+        return response.data; // Return the fetched inventory details
+      } else {
+        alert("Failed to load inventory details");
+      }
+    } catch (error) {
+      alert("Error fetching inventory details: " + error.message);
     }
   };
 
@@ -243,7 +258,7 @@ export default function AppointmentQueue() {
                           <thead className="table-light">
                             <tr>
                               <th>Medicine</th>
-                              <th>Dosage</th>
+                              <th>Inventory</th>
                               <th>Units</th>
                               <th>Actions</th>
                             </tr>

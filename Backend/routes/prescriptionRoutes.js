@@ -1,7 +1,6 @@
 const express = require('express');
 const pool = require('../config/db');
 const db = require("../config/firebase"); // Firestore database
-const { app } = require('firebase-admin');
 const router = express.Router();
 
 // Generate a random prescription ID

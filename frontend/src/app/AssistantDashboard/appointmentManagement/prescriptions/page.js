@@ -1,4 +1,5 @@
-"use client";
+'use client';
+
 import React, { useState, useEffect, useRef } from "react";
 import { db } from "../../../../lib/firebase";
 import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
@@ -6,12 +7,15 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import AssistNavBar from "../../../../components/assistantSideBar";
+import {fetchMedicineCategory,} from "../../../../services/inventoryService";
+
 
 export default function AppointmentQueue() {
   const [prescriptions, setPrescriptions] = useState([]);
   const [selectedPrescription, setSelectedPrescription] = useState(null);
   const printRef = useRef();
-
+  const [selectedMedicine, setSelectedMedicine] = useState("");
+  const [medicines, setMedicines] = useState([]);
   const billingRef = useRef(null);
   const [showBillingForm, setShowBillingForm] = useState(false);
 
@@ -24,19 +28,43 @@ export default function AppointmentQueue() {
     return () => unsubscribe();
   }, []);
 
-    useEffect(() => {
-        if (selectedPrescription && printRef.current) {
-        printRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-    }, [selectedPrescription]);
+  useEffect(() => {
+    if (selectedPrescription && printRef.current) {
+      printRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [selectedPrescription]);
 
-    useEffect(() => {
-      if (showBillingForm && billingRef.current) {
+  useEffect(() => {
+    if (showBillingForm) {
+      fetchMedicines(); 
+      if (billingRef.current) {
         billingRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
       }
-    }, [showBillingForm]);
-    
-    const handlePrint = () => {
+    }
+  }, [showBillingForm]);
+
+  useEffect(() => {
+    if (showBillingForm) {
+      fetchMedicines(); // LET'S GET THOSE MEDS
+    }
+  }, [showBillingForm]);
+  
+
+  // Fetch medicines from Firebase or your API
+  const fetchMedicines = async () => {
+    try {
+      const response = await fetchMedicineCategory(); // Your API or Firebase call here
+      if (response.success) {
+        setMedicines(response.data); // Set the fetched medicines in the state
+      } else {
+        alert("Failed to load medicines");
+      }
+    } catch (error) {
+      alert("Error fetching medicines: " + error.message);
+    }
+  };
+
+  const handlePrint = () => {
     const printContents = printRef.current.innerHTML;
     const originalContents = document.body.innerHTML;
 
@@ -67,9 +95,7 @@ export default function AppointmentQueue() {
                     prescriptions.map((prescription, index) => (
                       <div
                         key={prescription.id}
-                        className={`list-group-item d-flex justify-content-between align-items-center mb-2 rounded ${
-                         "list-group-item-success"
-                        }`}
+                        className={`list-group-item d-flex justify-content-between align-items-center mb-2 rounded list-group-item-success`}
                       >
                         <span className="fw-bold">{index + 1}</span>
                         <span>{prescription.id}</span>
@@ -160,7 +186,7 @@ export default function AppointmentQueue() {
                   </div>
                 </div>
 
-                {/* Action Buttons - Outside the printRef */}
+                {/* Action Buttons */}
                 <div className="text-center mt-4">
                   <button className="btn btn-success me-3" onClick={handlePrint}>
                     Print Prescription
@@ -178,41 +204,56 @@ export default function AppointmentQueue() {
               </>
             )}
 
-            {/*Billing form section*/}
+            {/* Billing form section */}
             {showBillingForm && (
-            <div className="container mt-5" ref={billingRef}>
-              <div className="row justify-content-center">
-                <div className="col-md-10">
-                  <div className="card shadow p-4 rounded">
-                    <h4 className="text-center mb-4">Billing Details</h4>
-                    <form>
-                      <div className="mb-3">
-                        <label htmlFor="billAmount" className="form-label">Service Charge : </label>
-                        <input type="number" className="form-control" id="billAmount" required />
-                      </div>
-                      <div className="mb-3">
-                        <label htmlFor="paymentMethod" className="form-label">Medicine</label>
-                        <select className="form-select" id="paymentMethod" required>
-                        </select>
-                      </div>
-                      <div className="mb-3">
-                        <label htmlFor="NoOfUnits" className="form-label">No Of Units : </label>
-                        <input type="number" className="form-control" id="NoOfUnits" rows="3"></input>
-                      </div>
-                      <div className="mb-3">
-                        <label htmlFor="notes" className="form-label">Full Amount : </label>
-                        <input type="Number" className="form-control" id="notes" rows="3" readOnly></input>
-                      </div>
-                      <div className="text-center">
-                        <button type="submit" className="btn btn-success">Submit Billing</button>
-                      </div>
-                    </form>
+              <div className="container mt-5" ref={billingRef}>
+                <div className="row justify-content-center">
+                  <div className="col-md-10">
+                    <div className="card shadow p-4 rounded">
+                      <h4 className="text-center mb-4">Billing Details</h4>
+                      <form>
+                        <div className="mb-3">
+                          <label htmlFor="billAmount" className="form-label">Service Charge : </label>
+                          <input type="number" className="form-control" id="billAmount" required />
+                        </div>
+                        <div className="mb-3">
+                          <label htmlFor="paymentMethod" className="form-label">Medicine</label>
+                          <select
+                            className="form-select"
+                            id="paymentMethod"
+                            value={selectedMedicine}
+                            onChange={(e) => setSelectedMedicine(e.target.value)}
+                            required
+                          >
+                            <option value="">Select Medicine</option>
+                            {medicines.length > 0 ? (
+                              medicines.map((medicine) => (
+                                <option key={medicine.medicine_ID} value={medicine.medicine_ID}>
+                                  {medicine.medicine_Name}
+                                </option>
+                              ))
+                            ) : (
+                              <option value="">No medicines available</option>
+                            )}
+                          </select>
+                        </div>
+                        <div className="mb-3">
+                          <label htmlFor="NoOfUnits" className="form-label">No Of Units : </label>
+                          <input type="number" className="form-control" id="NoOfUnits" rows="3"></input>
+                        </div>
+                        <div className="mb-3">
+                          <label htmlFor="notes" className="form-label">Full Amount : </label>
+                          <input type="Number" className="form-control" id="notes" rows="3" readOnly></input>
+                        </div>
+                        <div className="text-center">
+                          <button type="submit" className="btn btn-success">Submit Billing</button>
+                        </div>
+                      </form>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
-
+            )}
           </div>
         </div>
       </div>

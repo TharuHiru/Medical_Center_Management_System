@@ -82,6 +82,7 @@ export default function PrescriptionModal({ show, handleClose,patientId,appointm
           const today = new Date().toISOString().split("T")[0];
   
           const prescriptionPayload = {
+            status: "pending",
             date: today,
             diagnosis,
             otherNotes: others,

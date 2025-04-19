@@ -11,7 +11,7 @@ function generatePrescriptionID() {
 
 //Add  a prescription
 router.post("/addPrescription", async (req, res) => {
-  const { date, diagnosis, otherNotes, patient_ID, doctor_ID, medicines , appointment_ID } = req.body;
+  const { status,date, diagnosis, otherNotes, patient_ID, doctor_ID, medicines , appointment_ID } = req.body;
   console.log(req.body);
 
   if (!diagnosis || !patient_ID || !Array.isArray(medicines) || medicines.length === 0) {
@@ -64,6 +64,7 @@ router.post("/addPrescription", async (req, res) => {
 
     // Save to Firebase Firestore
     await db.collection('prescriptions').doc(prescription_ID).set({
+      status,
       prescription_ID,
       patient_ID,
       patientName,

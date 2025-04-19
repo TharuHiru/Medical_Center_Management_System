@@ -12,6 +12,9 @@ export default function AppointmentQueue() {
   const [selectedPrescription, setSelectedPrescription] = useState(null);
   const printRef = useRef();
 
+  const billingRef = useRef(null);
+  const [showBillingForm, setShowBillingForm] = useState(false);
+
   useEffect(() => {
     const q = query(collection(db, "prescriptions"), orderBy("createdAt", "asc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -27,6 +30,12 @@ export default function AppointmentQueue() {
         }
     }, [selectedPrescription]);
 
+    useEffect(() => {
+      if (showBillingForm && billingRef.current) {
+        billingRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, [showBillingForm]);
+    
     const handlePrint = () => {
     const printContents = printRef.current.innerHTML;
     const originalContents = document.body.innerHTML;
@@ -59,9 +68,7 @@ export default function AppointmentQueue() {
                       <div
                         key={prescription.id}
                         className={`list-group-item d-flex justify-content-between align-items-center mb-2 rounded ${
-                          prescription.status === "pending"
-                            ? "list-group-item-warning"
-                            : "list-group-item-success"
+                         "list-group-item-success"
                         }`}
                       >
                         <span className="fw-bold">{index + 1}</span>
@@ -158,6 +165,9 @@ export default function AppointmentQueue() {
                   <button className="btn btn-success me-3" onClick={handlePrint}>
                     Print Prescription
                   </button>
+                  <button className="btn btn-danger me-3" onClick={() => setShowBillingForm(true)}>
+                      Go to Billing
+                    </button>
                   <button
                     className="btn btn-secondary"
                     onClick={() => setSelectedPrescription(null)}
@@ -167,6 +177,42 @@ export default function AppointmentQueue() {
                 </div>
               </>
             )}
+
+            {/*Billing form section*/}
+            {showBillingForm && (
+            <div className="container mt-5" ref={billingRef}>
+              <div className="row justify-content-center">
+                <div className="col-md-10">
+                  <div className="card shadow p-4 rounded">
+                    <h4 className="text-center mb-4">Billing Details</h4>
+                    <form>
+                      <div className="mb-3">
+                        <label htmlFor="billAmount" className="form-label">Service Charge : </label>
+                        <input type="number" className="form-control" id="billAmount" required />
+                      </div>
+                      <div className="mb-3">
+                        <label htmlFor="paymentMethod" className="form-label">Medicine</label>
+                        <select className="form-select" id="paymentMethod" required>
+                        </select>
+                      </div>
+                      <div className="mb-3">
+                        <label htmlFor="NoOfUnits" className="form-label">No Of Units : </label>
+                        <input type="number" className="form-control" id="NoOfUnits" rows="3"></input>
+                      </div>
+                      <div className="mb-3">
+                        <label htmlFor="notes" className="form-label">Full Amount : </label>
+                        <input type="Number" className="form-control" id="notes" rows="3" readOnly></input>
+                      </div>
+                      <div className="text-center">
+                        <button type="submit" className="btn btn-success">Submit Billing</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           </div>
         </div>
       </div>

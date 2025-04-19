@@ -1,36 +1,30 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import "../../../Styles/AssistantDashboard.css";
 import "../../../Styles/loginForms.css";
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import DoctorNavBar from '../../../components/doctorSideBar';
+import DoctorNavBar from "../../../components/doctorSideBar";
 import { FaEye, FaSearch } from "react-icons/fa";
-import { fetchPatients, updatePatient } from "../../../services/patientService";
-import PrescriptionModal from "../../../components/AddPrescriptionModel";
-import '../../../Styles/loginForms.css';
-
+import { fetchPatients } from "../../../services/patientService";
+import PatientProfileView from "../../../components/patientProfile";
 
 function AssistantDashboardPatient() {
   const router = useRouter();
 
-  // Function to handle logout
   const logout = () => {
     console.log("Logged out");
     router.push("/login");
   };
 
-  // State to store patient data
   const [patients, setPatients] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPatient, setSelectedPatient] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const availableMedicines = ["Paracetamol", "Ibuprofen", "Amoxicillin"];
 
-  // Fetch patients from the service
+  const patientDetailsRef = useRef(null);  // Ref to scroll to patient details
+
   useEffect(() => {
     const getPatients = async () => {
       try {
@@ -43,7 +37,6 @@ function AssistantDashboardPatient() {
     getPatients();
   }, []);
 
-  // Filter patients based on search input
   const filteredPatients = patients.filter((patient) => {
     return Object.values(patient).some(
       (value) =>
@@ -52,28 +45,11 @@ function AssistantDashboardPatient() {
     );
   });
 
-  // Handle clicking the eye icon to show patient details
   const handleViewPatient = (patient) => {
     setSelectedPatient(patient);
-  };
 
-  // Handle editing the patient details
-  const handleEditPatient = async (e) => {
-    e.preventDefault();
-
-    try {
-        const response = await updatePatient(selectedPatient); // Call the updatePatient function
-    
-        if (response.success) { // Check if the API response indicates success
-          console.log("Patient updated:", response);
-          toast.success("Patient details updated successfully"); // Success toast
-        } else {
-          toast.error(response.message || "Failed to update patient details"); // Error toast if API fails
-        }
-      } catch (error) {
-        console.error("Failed to update patient:", error);
-        toast.error("Failed to update patient details"); // Error toast for exception
-      }
+    // Scroll to the patient details section
+    patientDetailsRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -139,7 +115,7 @@ function AssistantDashboardPatient() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="11">No patients found</td>
+                    <td colSpan="12">No patients found</td>
                   </tr>
                 )}
               </tbody>
@@ -147,106 +123,13 @@ function AssistantDashboardPatient() {
           </div>
         </div>
 
-        {/* Patient Details on the Right Side */}
         {selectedPatient && (
-          <div className="col-md-6 loginForm">
-            <h3>Patient Details</h3>
-            <form onSubmit={handleEditPatient} className="temporyLoginForm">
-              <div className="mb-3">
-                <label className="form-label">Patient ID:</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={selectedPatient.patient_ID}
-                  readOnly
-                  onChange={(e) =>
-                    setSelectedPatient({
-                      ...selectedPatient,
-                      patient_ID: e.target.value,
-                    })
-                  }
-                />
+          <div className="container" ref={patientDetailsRef}>
+            <div className="row justify-content-center">
+              <div className="col-md-10 mt-5" style={{ maxWidth: '80%' }}>
+                <PatientProfileView patient={selectedPatient} />
               </div>
-              <div className="mb-3">
-                <label className="form-label">Title:</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={selectedPatient.title}
-                  onChange={(e) =>
-                    setSelectedPatient({
-                      ...selectedPatient,
-                      title: e.target.value,
-                    })
-                  }
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">First Name:</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={selectedPatient.firstName}
-                  onChange={(e) =>
-                    setSelectedPatient({
-                      ...selectedPatient,
-                      firstName: e.target.value,
-                    })
-                  }
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Last Name:</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={selectedPatient.lastName}
-                  onChange={(e) =>
-                    setSelectedPatient({
-                      ...selectedPatient,
-                      lastName: e.target.value,
-                    })
-                  }
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Contact:</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={selectedPatient.contactNo}
-                  onChange={(e) =>
-                    setSelectedPatient({
-                      ...selectedPatient,
-                      contactNo: e.target.value,
-                    })
-                  }
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Email:</label>
-                <input
-                  type="email"
-                  className="form-control"
-                  value={selectedPatient.email}
-                  onChange={(e) =>
-                    setSelectedPatient({
-                      ...selectedPatient,
-                      email: e.target.value,
-                    })
-                  }
-                />
-              </div>
-              <button type="submit" className="loginBtn">
-                Update Patient
-              </button>
-              <button className = "loginBtn" onClick={() => setShowModal(true)}>Add Prescription</button>
-              <PrescriptionModal
-                show={showModal}
-                handleClose={() => setShowModal(false)}
-                patientId={selectedPatient?.patient_ID} // Pass the selected patient's ID
-              />
-            </form>
+            </div>
           </div>
         )}
       </div>

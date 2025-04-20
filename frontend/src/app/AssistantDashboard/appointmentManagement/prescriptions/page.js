@@ -7,15 +7,13 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import AssistNavBar from "../../../../components/assistantSideBar";
-import {fetchMedicineCategory,} from "../../../../services/inventoryService";
-import {fetchInventoryByMedicineID,} from "../../../../services/billingService";
+import BillingForm from "../../../../components/billingForm";
+
 
 export default function AppointmentQueue() {
   const [prescriptions, setPrescriptions] = useState([]);
   const [selectedPrescription, setSelectedPrescription] = useState(null);
   const printRef = useRef();
-  const [selectedMedicine, setSelectedMedicine] = useState("");
-  const [medicines, setMedicines] = useState([]);
   const billingRef = useRef(null);
   const [showBillingForm, setShowBillingForm] = useState(false);
 
@@ -23,17 +21,19 @@ export default function AppointmentQueue() {
     { medicine_ID: "", dosage: "", units: 1 }
   ]);
   
-  //row cgange handler
+  //row change handler
   const handleRowChange = (index, field, value) => {
     const updatedRows = [...prescriptionRows];
     updatedRows[index][field] = value;
     setPrescriptionRows(updatedRows);
   };
   
+  //Adding a new row to the table
   const addRow = () => {
     setPrescriptionRows([...prescriptionRows, { medicine_ID: "", dosage: "", units: 1 }]);
   };
   
+  //Removing a row from the table
   const removeRow = (index) => {
     const updatedRows = [...prescriptionRows];
     updatedRows.splice(index, 1);
@@ -50,56 +50,22 @@ export default function AppointmentQueue() {
     return () => unsubscribe();
   }, []);
 
+  // Scroll to the selected prescription when it changes
   useEffect(() => {
     if (selectedPrescription && printRef.current) {
       printRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, [selectedPrescription]);
 
+  // Scroll to the billing form when it is shown
   useEffect(() => {
     if (showBillingForm) {
-      fetchMedicines(); 
       if (billingRef.current) {
         billingRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     }
   }, [showBillingForm]);
-
-  useEffect(() => {
-    if (showBillingForm) {
-      fetchMedicines(); // LET'S GET THOSE MEDS
-    }
-  }, [showBillingForm]);
   
-
-  // Fetch medicines from SQL
-  const fetchMedicines = async () => {
-    try {
-      const response = await fetchMedicineCategory(); 
-      if (response.success) {
-        setMedicines(response.data); // Set the fetched medicines in the state
-      } else {
-        alert("Failed to load medicines");
-      }
-    } catch (error) {
-      alert("Error fetching medicines: " + error.message);
-    }
-  };
-
-  // fetch the inventory details from SQL
-  const fetchInventoryByMedicineID = async (medicineID) => {
-    try {
-      const response = await fetchMedicineCategory(medicineID); // API call to fetch inventory details
-      if (response.success) {
-        return response.data; // Return the fetched inventory details
-      } else {
-        alert("Failed to load inventory details");
-      }
-    } catch (error) {
-      alert("Error fetching inventory details: " + error.message);
-    }
-  };
-
   const handlePrint = () => {
     const printContents = printRef.current.innerHTML;
     const originalContents = document.body.innerHTML;
@@ -116,6 +82,7 @@ export default function AppointmentQueue() {
 
   return (
     <>
+      {/* Prescription to be billed section */}
       <div className="d-flex">
         <AssistNavBar onLogout={logout} />
         <div className="content-area flex-grow-1 p-4">
@@ -157,7 +124,6 @@ export default function AppointmentQueue() {
             {/* Prescription details section */}
             {selectedPrescription && (
               <>
-                {/* Print Area */}
                 <div className="container mt-5" ref={printRef}>
                   <div className="row justify-content-center">
                     <div className="col-md-10">
@@ -222,7 +188,7 @@ export default function AppointmentQueue() {
                   </div>
                 </div>
 
-                {/* Action Buttons */}
+                {/* Print Button and goto billing button section */}
                 <div className="text-center mt-4">
                   <button className="btn btn-success me-3" onClick={handlePrint}>
                     Print Prescription
@@ -242,90 +208,15 @@ export default function AppointmentQueue() {
 
             {/* Billing form section */}
             {showBillingForm && (
-              <div className="container mt-5" ref={billingRef}>
-                <div className="row justify-content-center">
-                  <div className="col-md-10">
-                    <div className="card shadow p-4 rounded">
-                      <h4 className="text-center mb-4">Billing Details</h4>
-                      <form>
-                        <div className="mb-3">
-                          <label htmlFor="serviceCharge" className="form-label">Service Charge:</label>
-                          <input type="number" className="form-control" id="serviceCharge" required />
-                        </div>
-
-                        <h5 className="text-center mt-4">Medicines</h5>
-                        <table className="table table-bordered">
-                          <thead className="table-light">
-                            <tr>
-                              <th>Medicine</th>
-                              <th>Inventory</th>
-                              <th>Units</th>
-                              <th>Actions</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {prescriptionRows.map((row, index) => (
-                              <tr key={index}>
-                                <td>
-                                  <select
-                                    className="form-select"
-                                    value={row.medicine_ID}
-                                    onChange={(e) => handleRowChange(index, "medicine_ID", e.target.value)}
-                                  >
-                                    <option value="">Select Medicine</option>
-                                    {medicines.map((med) => (
-                                      <option key={med.medicine_ID} value={med.medicine_ID}>
-                                        {med.medicine_Name}
-                                      </option>
-                                    ))}
-                                  </select>
-                                </td>
-                                <td>
-                                  <input
-                                    type="text"
-                                    className="form-control"
-                                    value={row.dosage}
-                                    onChange={(e) => handleRowChange(index, "dosage", e.target.value)}
-                                  />
-                                </td>
-                                <td>
-                                  <input
-                                    type="number"
-                                    className="form-control"
-                                    value={row.units}
-                                    onChange={(e) => handleRowChange(index, "units", e.target.value)}
-                                  />
-                                </td>
-                                <td>
-                                  <button
-                                    type="button"
-                                    className="btn btn-danger btn-sm"
-                                    onClick={() => removeRow(index)}
-                                  >
-                                    Remove
-                                  </button>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-
-                        <div className="mb-3 text-end">
-                          <button type="button" className="btn btn-outline-primary" onClick={addRow}>
-                            + Add Medicine
-                          </button>
-                        </div>
-
-                        <div className="text-center">
-                          <button type="submit" className="btn btn-success">Submit Billing</button>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-            )}
+                <BillingForm
+                  prescriptionRows={prescriptionRows}
+                  handleRowChange={handleRowChange}
+                  removeRow={removeRow}
+                  addRow={addRow}
+                  billingRef={billingRef}
+                  prescriptionId={selectedPrescription?.id}
+                />
+              )}
           </div>
         </div>
       </div>

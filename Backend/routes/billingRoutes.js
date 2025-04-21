@@ -11,7 +11,7 @@ router.get('/getInventoryByMedicineID/:medicine_ID', async (req, res) => {
     
     try {
         // Fetch inventory details based on the medicine ID
-        const [inventory] = await pool.query("SELECT * FROM medicine_inventory WHERE medicine_ID = ?", [medicine_ID]);
+        const [inventory] = await pool.query("SELECT inventory_ID FROM medicine_inventory WHERE medicine_ID = ?", [medicine_ID]);
     
         if (inventory.length === 0) {
         return res.status(404).json({ success: false, message: 'Inventory not found' });

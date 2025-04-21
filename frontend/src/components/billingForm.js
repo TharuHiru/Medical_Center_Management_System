@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { fetchMedicineCategory } from "../services/inventoryService";
+import {fetchInventoryByMedicineID} from "../services/billingService";
 
 export default function BillingForm({
   prescriptionRows,
@@ -10,6 +11,7 @@ export default function BillingForm({
   prescriptionId,
 }) {
   const [medicines, setMedicines] = useState([]);
+  const [inventoryList, setInventoryList] = useState([]); // each index will hold an array of inventories
 
   // Fetch medicines when the component mounts
   useEffect(() => {
@@ -29,6 +31,39 @@ export default function BillingForm({
     fetchMedicines(); // Call the API when the component mounts
   }, []);
 
+  const handleMedicineChange = async (index, medicine_ID) => {
+    handleRowChange(index, "medicine_ID", medicine_ID);
+  
+    if (medicine_ID) {
+      try {
+        const response = await fetchInventoryByMedicineID(medicine_ID);
+  
+        if (response.success && Array.isArray(response.data)) {
+          setInventoryList((prev) => {
+            const updated = [...prev];
+            updated[index] = response.data; // store array of inventory entries
+            return updated;
+          });
+        } else {
+          setInventoryList((prev) => {
+            const updated = [...prev];
+            updated[index] = null;
+            return updated;
+          });
+          alert("Failed to load inventory");
+        }
+      } catch (error) {
+        alert("Error fetching inventory: " + error.message);
+      }
+    } else {
+      setInventoryList((prev) => {
+        const updated = [...prev];
+        updated[index] = null;
+        return updated;
+      });
+    }
+  };  
+  
   return (
     <div className="container mt-5" ref={billingRef}>
       <div className="row justify-content-center">
@@ -56,13 +91,12 @@ export default function BillingForm({
                   {prescriptionRows.map((row, index) => (
                     <tr key={index}>
                       <td>
-                        <select
-                          className="form-select"
-                          value={row.medicine_ID}
-                          onChange={(e) =>
-                            handleRowChange(index, "medicine_ID", e.target.value)
-                          }
-                        >
+                      <select
+                            className="form-select"
+                            value={row.medicine_ID}
+                            onChange={(e) => handleMedicineChange(index, e.target.value)}
+                          >
+
                           <option value="">Select Medicine</option>
                           {medicines.map((med) => (
                             <option key={med.medicine_ID} value={med.medicine_ID}>
@@ -70,18 +104,27 @@ export default function BillingForm({
                             </option>
                           ))}
                         </select>
-                      </td>
-                      <td>
-                        <input
-                          type="text"
-                          className="form-control"
-                          value={row.dosage}
-                          onChange={(e) =>
-                            handleRowChange(index, "dosage", e.target.value)
-                          }
-                        />
-                      </td>
-                      <td>
+                        <td>
+                            {Array.isArray(inventoryList[index]) ? (
+                              <select
+                                className="form-select"
+                                value={row.inventory_ID || ""}
+                                onChange={(e) =>
+                                  handleRowChange(index, "inventory_ID", e.target.value)
+                                }
+                              >
+                                <option value="">Select inventory</option>
+                                {inventoryList[index].map((inv) => (
+                                  <option key={inv.inventory_ID} value={inv.inventory_ID}>
+                                    Brand: {inv.inventory_ID}
+                                  </option>
+                                ))}
+                              </select>
+                            ) : (
+                              "Select medicine"
+                            )}
+                          </td>
+
                         <input
                           type="number"
                           className="form-control"

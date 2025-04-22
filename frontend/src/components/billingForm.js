@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { fetchMedicineCategory } from "../services/inventoryService";
-import {fetchInventoryByMedicineID} from "../services/billingService";
+import { fetchInventoryByMedicineID } from "../services/billingService";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function BillingForm({
   prescriptionRows,
@@ -11,7 +14,7 @@ export default function BillingForm({
   prescriptionId,
 }) {
   const [medicines, setMedicines] = useState([]);
-  const [inventoryList, setInventoryList] = useState([]); // each index will hold an array of inventories
+  const [inventoryList, setInventoryList] = useState([]); // To hold inventory for each medicine
 
   // Fetch medicines when the component mounts
   useEffect(() => {
@@ -21,33 +24,34 @@ export default function BillingForm({
         if (response.success) {
           setMedicines(response.data); // Set medicines in the state
         } else {
-          alert("Failed to load medicines");
+          toast.err("Failed to load medicines");
         }
       } catch (error) {
-        alert("Error fetching medicines: " + error.message);
+        toast.err("Error fetching medicines: " + error.message);
       }
     };
 
     fetchMedicines(); // Call the API when the component mounts
   }, []);
 
+  // Handle medicine selection
   const handleMedicineChange = async (index, medicine_ID) => {
     handleRowChange(index, "medicine_ID", medicine_ID);
-  
+
     if (medicine_ID) {
       try {
         const response = await fetchInventoryByMedicineID(medicine_ID);
-  
+
         if (response.success && Array.isArray(response.data)) {
           setInventoryList((prev) => {
             const updated = [...prev];
-            updated[index] = response.data; // store array of inventory entries
+            updated[index] = response.data; // store inventory for the selected medicine
             return updated;
           });
         } else {
           setInventoryList((prev) => {
             const updated = [...prev];
-            updated[index] = null;
+            updated[index] = [];
             return updated;
           });
           alert("Failed to load inventory");
@@ -58,12 +62,18 @@ export default function BillingForm({
     } else {
       setInventoryList((prev) => {
         const updated = [...prev];
-        updated[index] = null;
+        updated[index] = [];
         return updated;
       });
     }
-  };  
-  
+  };
+
+  // Handle inventory selection and units
+  const handleInventorySelection = (index, inventory_ID, units) => {
+    handleRowChange(index, "inventory_ID", inventory_ID);
+    handleRowChange(index, "units", units);
+  };
+
   return (
     <div className="container mt-5" ref={billingRef}>
       <div className="row justify-content-center">
@@ -72,7 +82,9 @@ export default function BillingForm({
             <h4 className="text-center mb-4">Billing Details</h4>
             <form>
               <div className="mb-3">
-                <label htmlFor="serviceCharge" className="form-label">Service Charge:</label>
+                <label htmlFor="serviceCharge" className="form-label">
+                  Service Charge:
+                </label>
                 <input type="number" className="form-control" id="serviceCharge" required />
               </div>
 
@@ -91,12 +103,11 @@ export default function BillingForm({
                   {prescriptionRows.map((row, index) => (
                     <tr key={index}>
                       <td>
-                      <select
-                            className="form-select"
-                            value={row.medicine_ID}
-                            onChange={(e) => handleMedicineChange(index, e.target.value)}
-                          >
-
+                        <select
+                          className="form-select"
+                          value={row.medicine_ID}
+                          onChange={(e) => handleMedicineChange(index, e.target.value)}
+                        >
                           <option value="">Select Medicine</option>
                           {medicines.map((med) => (
                             <option key={med.medicine_ID} value={med.medicine_ID}>
@@ -104,27 +115,38 @@ export default function BillingForm({
                             </option>
                           ))}
                         </select>
-                        <td>
-                            {Array.isArray(inventoryList[index]) ? (
-                              <select
-                                className="form-select"
-                                value={row.inventory_ID || ""}
-                                onChange={(e) =>
-                                  handleRowChange(index, "inventory_ID", e.target.value)
-                                }
-                              >
-                                <option value="">Select inventory</option>
-                                {inventoryList[index].map((inv) => (
-                                  <option key={inv.inventory_ID} value={inv.inventory_ID}>
-                                    Brand: {inv.inventory_ID}
-                                  </option>
-                                ))}
-                              </select>
-                            ) : (
-                              "Select medicine"
-                            )}
-                          </td>
+                      </td>
+                      <td>
+                        {/* Inventory Selection Table */}
+                        {Array.isArray(inventoryList[index]) && inventoryList[index].length > 0 ? (
+                          <table className="table table-bordered mt-3">
+                            <thead className="table-light">
+                              <tr>
+                                <th>Inventory ID</th>
+                                <th>Brand Name</th>
+                                <th>Quantity</th>
+                                <th>Exp Date</th>
+                                <th>Unit Price</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {inventoryList[index].map((inv) => (
+                                <tr key={inv.inventory_ID}>
+                                  <td>{inv.inventory_ID}</td>
+                                  <td>{inv.brand_Name}</td> {/* corrected to match field casing */}
+                                  <td>{inv.stock_quantity}</td>
+                                  <td>{inv.Exp_Date}</td>
+                                  <td>{inv.unit_price}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        ) : (
+                          <div className="text-muted mt-2">No records found</div>
+                        )}
+                      </td>
 
+                      <td>
                         <input
                           type="number"
                           className="form-control"

@@ -70,9 +70,11 @@ export default function BillingForm({
 
   // Handle inventory selection and units
   const handleInventorySelection = (index, inventory_ID, units) => {
+    console.log("Selected:", inventory_ID);
     handleRowChange(index, "inventory_ID", inventory_ID);
     handleRowChange(index, "units", units);
   };
+  
 
   return (
     <div className="container mt-5" ref={billingRef}>
@@ -117,9 +119,8 @@ export default function BillingForm({
                         </select>
                       </td>
                       <td>
-                        {/* Inventory Selection Table */}
                         {Array.isArray(inventoryList[index]) && inventoryList[index].length > 0 ? (
-                          <table className="table table-bordered mt-3">
+                          <table className="table table-hover table-sm table-bordered mt-2 mb-0">
                             <thead className="table-light">
                               <tr>
                                 <th>Inventory ID</th>
@@ -131,9 +132,18 @@ export default function BillingForm({
                             </thead>
                             <tbody>
                               {inventoryList[index].map((inv) => (
-                                <tr key={inv.inventory_ID}>
+                                <tr
+                                  key={inv.inventory_ID}
+                                  onClick={() => handleInventorySelection(index, inv.inventory_ID, row.units)}
+                                  style={{
+                                    cursor: "pointer",
+                                    backgroundColor:
+    	                              String(row.inventory_ID) === String(inv.inventory_ID) ? "#cce5ff" : "transparent",
+
+                                  }}
+                                >
                                   <td>{inv.inventory_ID}</td>
-                                  <td>{inv.brand_Name}</td> {/* corrected to match field casing */}
+                                  <td>{inv.Brand_Name}</td>
                                   <td>{inv.stock_quantity}</td>
                                   <td>{inv.Exp_Date}</td>
                                   <td>{inv.unit_price}</td>
@@ -145,7 +155,6 @@ export default function BillingForm({
                           <div className="text-muted mt-2">No records found</div>
                         )}
                       </td>
-
                       <td>
                         <input
                           type="number"

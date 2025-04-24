@@ -1,5 +1,4 @@
 "use client";
-import { userName } from "next/server";
 import { createContext, useContext, useEffect, useState } from "react";
 
 // Create authentication context
@@ -11,6 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [patientID, setPatientID] = useState(null); // Stores patient ID only for patient login
   const [doctorID, setDoctorID] = useState(null);
   const [masterID , setMasterID] = useState(null);
+  const [userName, setUserName] = useState(null);
 
   // Load saved user details on page refresh
   useEffect(() => {
@@ -18,6 +18,7 @@ export const AuthProvider = ({ children }) => {
     const savedPatientID = localStorage.getItem("userName");
     const savedDoctorID = localStorage.getItem("doctorID");
     const savedMasterID = localStorage.getItem("masterID");
+    const savedUserName = localStorage.getItem("userName");
 
     if (savedUserType === "patient" && savedMasterID) {
       setMasterID(savedMasterID);
@@ -30,38 +31,47 @@ export const AuthProvider = ({ children }) => {
     }
     if (savedUserType === "doctor" && savedDoctorID) 
       setDoctorID(savedDoctorID);
+    if (savedUserName) setUserName(savedUserName);
+    if (savedUserName) setUserName(savedUserName);
 
   }, []);
 
   // Login function
-  const login = (type, id = null,masterIDVal = null) => {
+  const login = (type, id = null, masterIDVal = null, userDetails = null) => {
     setUserType(type);
     localStorage.setItem("userType", type);
-
+  
     if (type === "patient" && id) {
       setPatientID(id);
       localStorage.setItem("userName", id);
-
+  
       if (masterIDVal) {
         setMasterID(masterIDVal);
         localStorage.setItem("masterID", masterIDVal);
       }
-
     } else {
       setPatientID(null);
       localStorage.removeItem("userName");
       setMasterID(null);
       localStorage.removeItem("masterID");
     }
-
+  
     if (type === "doctor" && id) {
       setDoctorID(id);
       localStorage.setItem("doctorID", id);
+  
+      // ✅ Use userDetails instead of data
+      if (userDetails?.firstName) {
+        const fullName = `${userDetails.firstName} ${userDetails.lastName}`;
+        setUserName(fullName);
+        localStorage.setItem("userName", fullName);
+      }
     } else {
       setDoctorID(null);
       localStorage.removeItem("doctorID");
     }
   };
+  
 
   // Logout function
   const logout = () => {

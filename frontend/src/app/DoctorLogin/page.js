@@ -19,17 +19,19 @@ function DoctorLoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
-      const data = await doctorLogin(UserName, password); // API call
-
+      const data = await doctorLogin(UserName, password);
+  
       if (data.success) {
         toast.success("Logged in successfully!");
         localStorage.setItem("doctorToken", data.token);
-
-        login("doctor", data.user._id); // ✅ store doctor ID in context
-        console.log("Response Data: ", data); // ✅ See full response here
-
+  
+        // ✅ Send full user details to AuthContext
+        login("doctor", data.user._id, null, data.user);
+  
+        console.log("Response Data: ", data);
+  
         router.push(`/DoctorDashboard/assistantManage?firstname=${data.user.firstName}&lastname=${data.user.lastName}`);
       } else {
         console.error("Login Failed:", data.message);
@@ -41,8 +43,6 @@ function DoctorLoginPage() {
     }
   };
   
-  
-
   return (
     <div>
       <BackNavbar />

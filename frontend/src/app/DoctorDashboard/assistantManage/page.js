@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from "next/navigation";
 import '../../../Styles/AssistantDashboard.css';
 import '../../../Styles/loginForms.css';
+import { useAuth } from "../../../context/AuthContext";
 import DoctorNavBar from '../../../components/doctorSideBar';
 import { FaUser } from 'react-icons/fa'; // Import icons
 import { fetchAssistants } from '../../../services/doctorAssistantService';
@@ -14,8 +15,7 @@ function DoctorDashboard() {
   const searchParams = useSearchParams();
   const firstName = searchParams.get("firstname");
   const lastName = searchParams.get("lastname");
-  const username = `${firstName} ${lastName}`;
-
+  const { userName } = useAuth();
   // Function to handle logout
   const logout = () => {
     console.log('Logged out');
@@ -54,7 +54,7 @@ function DoctorDashboard() {
       <DoctorNavBar onLogout={logout} />
       <div className="content-area">
         <div className="greeting-container">
-          <h5 className="assistant-name">Hello, {username}</h5>
+          <h5 className="assistant-name">Hello, {userName}</h5>
           <p className="greeting-text">Welcome back!</p>
         </div>
 

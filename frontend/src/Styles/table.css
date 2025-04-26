@@ -1,0 +1,42 @@
+
+.table-bordered {
+    border: 1px solid #dcdbdb !important ;/* Light border color */
+    border-radius: 5px; /* Optional: Add rounded corners */
+  }
+  
+  .table-bordered th,
+  .table-bordered td {
+    padding: 10px; /* Add padding to each cell */
+  }
+  
+  .table-hover tbody tr:hover {
+    background-color: #f1f1f1; 
+  }
+  
+ 
+  .table-hover {
+    cursor: pointer;
+  }
+  
+  .table-hover tbody tr {
+    transition: background-color 0.3s ease; 
+  }
+  
+  .table-hover tbody tr.selected {
+    background-color: #e0f7fa; /* Highlight selected row */
+  }
+  
+  .table-hover tbody tr:not(.selected):hover {
+    background-color: #e0f7fa;
+  }
+  
+
+  .table-light th {
+    background-color: #f8f9fa;
+    color: #6c757d; /* Light grey text color */
+    font-weight: bold;
+  }
+  
+  .text-muted {
+    color: #6c757d; 
+  }

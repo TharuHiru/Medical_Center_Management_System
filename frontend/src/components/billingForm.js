@@ -5,6 +5,8 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
+import "../Styles/table.css"
+
 export default function BillingForm({
   prescriptionRows,
   handleRowChange,
@@ -14,7 +16,8 @@ export default function BillingForm({
   prescriptionId,
 }) {
   const [medicines, setMedicines] = useState([]);
-  const [inventoryList, setInventoryList] = useState([]); // To hold inventory for each medicine
+  const [inventoryList, setInventoryList] = useState([]); 
+  const [selectedInventory, setSelectedInventory] = useState({});
 
   // Fetch medicines when the component mounts
   useEffect(() => {
@@ -24,23 +27,23 @@ export default function BillingForm({
         if (response.success) {
           setMedicines(response.data); // Set medicines in the state
         } else {
-          toast.err("Failed to load medicines");
+          toast.error("Failed to load medicines");
         }
       } catch (error) {
-        toast.err("Error fetching medicines: " + error.message);
+        toast.error("Error fetching medicines: " + error.message);
       }
     };
 
     fetchMedicines(); // Call the API when the component mounts
   }, []);
 
-  // Handle medicine selection
+  // Handle medicine selection from the combo box
   const handleMedicineChange = async (index, medicine_ID) => {
-    handleRowChange(index, "medicine_ID", medicine_ID);
+    handleRowChange(index, "medicine_ID", medicine_ID); // get the selected medicine ID
 
     if (medicine_ID) {
       try {
-        const response = await fetchInventoryByMedicineID(medicine_ID);
+        const response = await fetchInventoryByMedicineID(medicine_ID); // get inventory for the selected medicine ID
 
         if (response.success && Array.isArray(response.data)) {
           setInventoryList((prev) => {
@@ -68,13 +71,15 @@ export default function BillingForm({
     }
   };
 
-  // Handle inventory selection and units
-  const handleInventorySelection = (index, inventory_ID, units) => {
-    console.log("Selected:", inventory_ID);
+  // Handle inventory selection from the inventory table
+  const handleInventorySelection = (index, inventory_ID) => {
+    console.log(`Selected inventory for row ${index}:`, inventory_ID);
     handleRowChange(index, "inventory_ID", inventory_ID);
-    handleRowChange(index, "units", units);
+    setSelectedInventory((prev) => ({
+      ...prev,
+      [index]: inventory_ID,  // Store the selected inventory for the row
+    }));
   };
-  
 
   return (
     <div className="container mt-5" ref={billingRef}>
@@ -120,7 +125,7 @@ export default function BillingForm({
                       </td>
                       <td>
                         {Array.isArray(inventoryList[index]) && inventoryList[index].length > 0 ? (
-                          <table className="table table-hover table-sm table-bordered mt-2 mb-0">
+                          <table className="table-hover table-sm table-bordered mt-2 mb-0">
                             <thead className="table-light">
                               <tr>
                                 <th>Inventory ID</th>
@@ -134,13 +139,8 @@ export default function BillingForm({
                               {inventoryList[index].map((inv) => (
                                 <tr
                                   key={inv.inventory_ID}
-                                  onClick={() => handleInventorySelection(index, inv.inventory_ID, row.units)}
-                                  style={{
-                                    cursor: "pointer",
-                                    backgroundColor:
-    	                              String(row.inventory_ID) === String(inv.inventory_ID) ? "#cce5ff" : "transparent",
-
-                                  }}
+                                  onClick={() => handleInventorySelection(index, inv.inventory_ID)}
+                                  className={selectedInventory[index] === inv.inventory_ID ? "selected" : ""}
                                 >
                                   <td>{inv.inventory_ID}</td>
                                   <td>{inv.Brand_Name}</td>

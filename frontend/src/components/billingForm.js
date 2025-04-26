@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { fetchMedicineCategory } from "../services/inventoryService";
-import { fetchInventoryByMedicineID } from "../services/billingService";
+import { fetchInventoryByMedicineID , savePaymentData } from "../services/billingService";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -83,13 +83,14 @@ export default function BillingForm({
   const handleAddRow = () => {
     // Reset prescriptionRows state with a new row and empty fields for each medicine
     const newRow = {
-      medicine_ID: "", // Initially set the medicine_ID to an empty string
+      medicine_ID: "", 
       units: "",
-      inventory_ID: "", // Empty inventory ID for a new row
+      inventory_ID: "", 
     };
 
     // Add the new row to prescriptionRows
-    addRow([newRow]); // empty row
+    addRow([newRow]); 
+
     // Reset inventory list to empty for this new row
     setInventoryList((prev) => [...prev, []]); // emply list
   };
@@ -197,14 +198,19 @@ export default function BillingForm({
               </table>
 
               <div className="mb-3 text-end">
-                <button type="button" className="btn btn-outline-primary" onClick={handleAddRow}>
+                <button type="button" className="btn btn-outline-primary  " onClick={handleAddRow}>
                   + Add Medicine
                 </button>
               </div>
             </form>
+            <div className="text-center mt-4">
+              <button type="submit" className="btn btn-primary loginBtn">
+                Submit and print the Bill
+              </button>
           </div>
         </div>
       </div>
     </div>
+  </div>
   );
 }

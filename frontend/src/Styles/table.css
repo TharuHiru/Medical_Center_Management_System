@@ -23,7 +23,7 @@
   }
   
   .table-hover tbody tr.selected {
-    background-color: #e0f7fa; /* Highlight selected row */
+    background-color: #86ccd561;
   }
   
   .table-hover tbody tr:not(.selected):hover {
@@ -40,3 +40,24 @@
   .text-muted {
     color: #6c757d; 
   }
+
+  .loginBtn {
+    font-size: 16px;
+    padding: 12px;
+    border-radius: 5px;
+    border: transparent;
+    background-color: #2c6a75 !important;
+    border-color: transparent !important;
+    color: white;
+    transition: background-color 0.3s;
+    margin-top: 15px;
+  }
+
+  .loginBtn:hover{
+    background-color: rgb(31, 59, 65) !important;
+  }
+
+  .loginBtn:active{
+    background-color: rgb(48, 90, 99)!important;
+  }
+  

@@ -30,6 +30,27 @@ router.get('/getInventoryByMedicineID/:medicine_ID', async (req, res) => {
     }
 });
 
+//Add payment and billing
+router.post('/addPayment', async (req, res) => {
+    const { patient_ID, appointment_ID, amount, paymentMethod } = req.body;
+    console.log("Received Payment Data:", req.body);
+    
+    try {
+        // Insert payment details into the database
+        const [result] = await pool.query(
+            `INSERT INTO payments (patient_ID, appointment_ID, amount, paymentMethod)
+            VALUES (?, ?, ?, ?)`,
+            [patient_ID, appointment_ID, amount, paymentMethod]
+        );
+    
+        console.log("Inserted Payment ID:", result.insertId);
+        return res.status(200).json({ success: true, message: 'Payment added successfully', paymentID: result.insertId });
+    } catch (error) {
+        console.error('Error adding payment:', error);
+        return res.status(500).json({ success: false, message: 'Server error.' });
+    }
+});
+
 
 module.exports = router;
 

@@ -1,3 +1,4 @@
+import { ErrorRounded } from "@mui/icons-material";
 import axios from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL_BILLING;
@@ -12,3 +13,15 @@ export const fetchInventoryByMedicineID = async (medicine_ID) => {
     throw error;
   }
 };
+
+//Save payment and billing data
+export const savePaymentData = async (billing_details) => {
+  try {
+    const response = await axios.get (`${API_URL}/savePatmentBill/${billing_details}`)
+    return response.data;
+  }
+  catch (error){
+    console.error("Error save the bill and payment details");
+    throw error;
+  }
+}

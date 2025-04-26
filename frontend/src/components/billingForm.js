@@ -4,8 +4,7 @@ import { fetchInventoryByMedicineID } from "../services/billingService";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-
-import "../Styles/table.css"
+import "../Styles/table.css";
 
 export default function BillingForm({
   prescriptionRows,
@@ -16,7 +15,7 @@ export default function BillingForm({
   prescriptionId,
 }) {
   const [medicines, setMedicines] = useState([]);
-  const [inventoryList, setInventoryList] = useState([]); 
+  const [inventoryList, setInventoryList] = useState([]);
   const [selectedInventory, setSelectedInventory] = useState({});
 
   // Fetch medicines when the component mounts
@@ -39,16 +38,16 @@ export default function BillingForm({
 
   // Handle medicine selection from the combo box
   const handleMedicineChange = async (index, medicine_ID) => {
-    handleRowChange(index, "medicine_ID", medicine_ID); // get the selected medicine ID
+    handleRowChange(index, "medicine_ID", medicine_ID); // Update the selected medicine ID for the row
 
     if (medicine_ID) {
       try {
-        const response = await fetchInventoryByMedicineID(medicine_ID); // get inventory for the selected medicine ID
+        const response = await fetchInventoryByMedicineID(medicine_ID); // Get inventory for the selected medicine ID
 
         if (response.success && Array.isArray(response.data)) {
           setInventoryList((prev) => {
             const updated = [...prev];
-            updated[index] = response.data; // store inventory for the selected medicine
+            updated[index] = response.data; // Store inventory for the selected medicine
             return updated;
           });
         } else {
@@ -57,10 +56,10 @@ export default function BillingForm({
             updated[index] = [];
             return updated;
           });
-          alert("Failed to load inventory");
+          toast.error("Failed to load inventory");
         }
       } catch (error) {
-        alert("Error fetching inventory: " + error.message);
+        toast.error("Error fetching inventory: " + error.message);
       }
     } else {
       setInventoryList((prev) => {
@@ -73,12 +72,32 @@ export default function BillingForm({
 
   // Handle inventory selection from the inventory table
   const handleInventorySelection = (index, inventory_ID) => {
-    console.log(`Selected inventory for row ${index}:`, inventory_ID);
     handleRowChange(index, "inventory_ID", inventory_ID);
     setSelectedInventory((prev) => ({
       ...prev,
-      [index]: inventory_ID,  // Store the selected inventory for the row
+      [index]: inventory_ID,  // Store the selected inventory ID for the row
     }));
+  };
+
+  // Add a new row when "Add Medicine" is clicked
+  const handleAddRow = () => {
+    // Reset prescriptionRows state with a new row and empty fields for each medicine
+    const newRow = {
+      medicine_ID: "", // Initially set the medicine_ID to an empty string
+      units: "",
+      inventory_ID: "", // Empty inventory ID for a new row
+    };
+
+    // Add the new row to prescriptionRows
+    addRow([newRow]); // empty row
+    // Reset inventory list to empty for this new row
+    setInventoryList((prev) => [...prev, []]); // emply list
+  };
+
+  // Remove a row
+  const handleRemoveRow = (index) => {
+    removeRow(index); // Remove the row by its index
+    setInventoryList((prev) => prev.filter((_, i) => i !== index)); // Remove corresponding inventory for this row
   };
 
   return (
@@ -112,7 +131,7 @@ export default function BillingForm({
                       <td>
                         <select
                           className="form-select"
-                          value={row.medicine_ID}
+                          value={row.medicine_ID || ""} // Ensure the value is an empty string if no medicine is selected
                           onChange={(e) => handleMedicineChange(index, e.target.value)}
                         >
                           <option value="">Select Medicine</option>
@@ -160,16 +179,14 @@ export default function BillingForm({
                           type="number"
                           className="form-control"
                           value={row.units}
-                          onChange={(e) =>
-                            handleRowChange(index, "units", e.target.value)
-                          }
+                          onChange={(e) => handleRowChange(index, "units", e.target.value)}
                         />
                       </td>
                       <td>
                         <button
                           type="button"
                           className="btn btn-danger btn-sm"
-                          onClick={() => removeRow(index)}
+                          onClick={() => handleRemoveRow(index)}
                         >
                           Remove
                         </button>
@@ -180,7 +197,7 @@ export default function BillingForm({
               </table>
 
               <div className="mb-3 text-end">
-                <button type="button" className="btn btn-outline-primary" onClick={addRow}>
+                <button type="button" className="btn btn-outline-primary" onClick={handleAddRow}>
                   + Add Medicine
                 </button>
               </div>

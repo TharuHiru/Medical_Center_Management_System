@@ -92,6 +92,7 @@ router.post('/savePatmentBill', async (req, res) => {
                 [newAvailableUnits, medicine.inventory_ID]
             );
         }
+
         // Now update the full amount in the payments table
         const finalFullAmount = parseFloat(serviceCharge) + parseFloat(totalMedicineCost);
         await connection.query(
@@ -100,17 +101,28 @@ router.post('/savePatmentBill', async (req, res) => {
             WHERE payment_ID = ?`,
             [finalFullAmount, paymentID]
         );
-                await connection.commit();
-                console.log("Inserted Payment ID:", paymentID);
-                res.status(200).json({ success: true, message: 'Payment and billing added successfully', paymentID: paymentID });
 
-            } catch (error) {
-                await connection.rollback();
-                console.error('Error adding payment and billing:', error.message);
-                res.status(500).json({ success: false, message: error.message });
-            } finally {
-                connection.release();
-            }
-        });
+        // Commit MySQL transaction
+        await connection.commit();
 
-        module.exports = router;
+        // Delete the prescription document from Firebase Firestore
+        const prescriptionRef = db.collection('prescriptions').doc(prescriptionId);
+        await prescriptionRef.delete();
+        console.log('Prescription document deleted from Firestore');
+
+        // If everything is successful, send a response
+        console.log("Inserted Payment ID:", paymentID);
+        res.status(200).json({ success: true, message: 'Payment and billing added successfully, and prescription deleted from Firestore', paymentID: paymentID });
+
+    } catch (error) {
+        await connection.rollback(); // Rollback MySQL transaction in case of error
+        console.error('Error adding payment and billing:', error.message);
+
+        // If an error happens during the Firestore deletion, you can log it here but still send a response for the MySQL part.
+        res.status(500).json({ success: false, message: error.message });
+    } finally {
+        connection.release(); // Release connection back to the pool
+    }
+});
+
+module.exports = router;

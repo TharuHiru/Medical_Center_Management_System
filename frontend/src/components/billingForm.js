@@ -101,13 +101,38 @@ export default function BillingForm({
     setInventoryList((prev) => prev.filter((_, i) => i !== index)); // Remove corresponding inventory for this row
   };
 
+  // send the billing details to the backend
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent default form submission
+
+    const billingDetails = {
+      serviceCharge: e.target.serviceCharge.value,
+      prescriptionId: prescriptionId,
+      medicines: prescriptionRows.map((row) => ({
+        inventory_ID: row.inventory_ID,
+        units: row.units,
+      })),
+    };
+
+    try {
+      const response = await savePaymentData(billingDetails); // Save billing details to the backend
+      if (response.success) {
+        toast.success("Billing details saved successfully!");
+      } else {
+        toast.error("Failed to save billing details");
+      }
+    } catch (error) {
+      toast.error("Error saving billing details: " + error.message);
+    }
+  };
+
   return (
     <div className="container mt-5" ref={billingRef}>
       <div className="row justify-content-center">
         <div className="col-md-10">
           <div className="card shadow p-4 rounded">
             <h4 className="text-center mb-4">Billing Details</h4>
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className="mb-3">
                 <label htmlFor="serviceCharge" className="form-label">
                   Service Charge:
@@ -202,12 +227,12 @@ export default function BillingForm({
                   + Add Medicine
                 </button>
               </div>
-            </form>
-            <div className="text-center mt-4">
-              <button type="submit" className="btn btn-primary loginBtn">
-                Submit and print the Bill
-              </button>
-          </div>
+              <div className="text-center mt-4">
+                <button type="submit" className="btn btn-primary loginBtn">
+                  Submit and print the Bill
+                </button>
+              </div>
+          </form>
         </div>
       </div>
     </div>

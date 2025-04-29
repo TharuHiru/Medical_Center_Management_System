@@ -22,6 +22,8 @@ export default function AppointmentQueue() {
   const [nextPosition, setNextPosition] = useState(1);
   const [patientList, setPatientList] = useState([]);
   const [selectedPatientID, setSelectedPatientID] = useState('');
+  const [doctorAvailable, setDoctorAvailable] = useState(false);
+
 
   //Get patient names to view in the Queue
   const getPatientName = (id) => {
@@ -51,6 +53,21 @@ export default function AppointmentQueue() {
   
     loadPatients();
   }, [masterID]);
+
+  //Listen to doctor availability
+  useEffect(() => {
+    const unsub = onSnapshot(doc(db, "doctorAvailability", "today"), (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setDoctorAvailable(data.available === true); // expects a field named isAvailable: true/false
+      } else {
+        setDoctorAvailable(false);
+      }
+    });
+  
+    return () => unsub();
+  }, []);
+  
 
   //Get all the patient ID s for that particular account as a list
   const patientIDsOwnedByUser = patientList.map(p => p.patient_ID);
@@ -198,9 +215,14 @@ export default function AppointmentQueue() {
                   ))}
                 </select>
 
-              <button className="btn btn-primary w-100" onClick={handleBook}>
-                Book Appointment
-              </button>
+                <button
+                  className="btn btn-primary w-100"
+                  onClick={handleBook}
+                  disabled={!doctorAvailable}
+                >
+                  {doctorAvailable ? "Book Appointment" : "Doctor Unavailable"}
+                </button>
+
             </div>
           </div>
         </div>

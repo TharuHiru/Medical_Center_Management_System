@@ -111,6 +111,9 @@ const AssistSidebar = () => {
             </React.Fragment>
           ))}
         </List>
+        <Box className="logout-container">
+          <button className="logout-button">Log Out</button>
+        </Box>
       </Drawer>
     </Box>
   );

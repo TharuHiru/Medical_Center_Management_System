@@ -9,7 +9,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FaTachometerAlt, FaUser, FaCalendarCheck, FaBoxes } from 'react-icons/fa';
-import MenuIcon from '@mui/icons-material/Menu';
+import '../Styles/sideNavBar.css';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 
@@ -159,6 +159,9 @@ const AssistSidebar = () => {
             </React.Fragment>
           ))}
         </List>
+          <Box className="logout-container">
+            <button className="logout-button">Log Out</button>
+          </Box>
       </Drawer>
     </Box>
   );

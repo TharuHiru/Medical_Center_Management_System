@@ -100,25 +100,11 @@ export default function AppointmentQueue() {
   return (
     <>
       <AssistNavBar onLogout={logout} />
+      <div className="content-area" style={{ marginLeft: '260px' }}>
       <div className="content-area"></div>
       <div className="container mt-4">
-        <h2 className="text-center">Today&apos;s Appointment Queue</h2>
-
-        <div className="card p-3 mb-3">
-            <h5>Doctor Availability</h5>
-            <input
-              type="time"
-              className="form-control mb-2"
-              value={availableUntil}
-              onChange={(e) => setAvailableUntil(e.target.value)}
-            />
-            <button className="btn btn-success mb-2" onClick={handleSetAvailability}>
-              Mark Available
-            </button>
-            <button className="btn btn-danger" onClick={handleClearAvailability}>
-              Mark Unavailable
-            </button>
-        </div>
+      <h2 className="text-center">Today&apos;s Appointment Queue</h2>
+      <br></br>
 
         <div className="row">
           {/* Queue View */}
@@ -146,6 +132,24 @@ export default function AppointmentQueue() {
               ))}
             </div>
           </div>
+
+        <div className="col-md-4">
+        <div className="card p-3 mb-3">
+            <h5>Doctor Availability</h5>
+            <input
+              type="time"
+              className="form-control mb-2"
+              value={availableUntil}
+              onChange={(e) => setAvailableUntil(e.target.value)}
+            />
+            <button className="btn btn-success mb-2" onClick={handleSetAvailability}>
+              Mark Available
+            </button>
+            <button className="btn btn-danger" onClick={handleClearAvailability}>
+              Mark Unavailable
+            </button>
+        </div>
+        </div>
 
           {/* Booking Panel */}
           <div className="col-md-4">
@@ -175,6 +179,7 @@ export default function AppointmentQueue() {
               </button>
             </div>
           </div>
+        </div>
         </div>
       </div>
       <ToastContainer />

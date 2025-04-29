@@ -10,6 +10,7 @@ import { usePathname } from 'next/navigation';
 import { FaTachometerAlt, FaUser, FaCalendarCheck, FaBoxes } from 'react-icons/fa';
 import MenuIcon from '@mui/icons-material/Menu';
 import '../Styles/sideNavBar.css';
+import { Button } from 'bootstrap/dist/js/bootstrap.bundle.min';
 
 const PatientSidebar = () => {
   const theme = useTheme();
@@ -98,6 +99,8 @@ const PatientSidebar = () => {
             </React.Fragment>
           ))}
         </List>
+
+        <button> LogOut </button>
       </Drawer>
     </Box>
   );

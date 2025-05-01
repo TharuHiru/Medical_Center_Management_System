@@ -38,6 +38,16 @@ const PatientSidebar = () => {
 
   return (
     <Box>
+    <AppBar position="sticky">
+            <Toolbar>
+              {isMobile && (
+                <IconButton color="inherit" edge="start" onClick={toggleDrawer} aria-label="menu" sx={{ mr: 2 }}>
+                  <MenuIcon />
+                </IconButton>
+              )}
+            </Toolbar>
+          </AppBar>
+          
       {/* Sidebar Drawer */}
       <Drawer
         sx={{

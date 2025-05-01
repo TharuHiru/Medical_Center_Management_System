@@ -12,6 +12,7 @@ import { FaTachometerAlt, FaUser, FaCalendarCheck, FaBoxes } from 'react-icons/f
 import '../Styles/sideNavBar.css';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
+import MenuIcon from '@mui/icons-material/Menu';
 
 const AssistSidebar = () => {
   const theme = useTheme();
@@ -69,6 +70,15 @@ const AssistSidebar = () => {
 
   return (
     <Box>
+    <AppBar position="sticky">
+                <Toolbar>
+                  {isMobile && (
+                    <IconButton color="inherit" edge="start" onClick={toggleDrawer} aria-label="menu" sx={{ mr: 2 }}>
+                      <MenuIcon />
+                    </IconButton>
+                  )}
+                </Toolbar>
+              </AppBar>
       <Drawer
         sx={{
           width: 240,

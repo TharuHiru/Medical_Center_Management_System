@@ -78,7 +78,7 @@ function AssistantDashboard() {
         <div className="row justify-content-center">
           <div className="col-md-8 col-lg-6">
             <div className="card p-4 shadow-sm rounded">
-              <h5 className="mb-3 text-center">Doctor Availability</h5>
+              <h5 className="mb-3 text-center">Notes</h5>
 
               <div className="mt-3">
                 <h6>Notes</h6>

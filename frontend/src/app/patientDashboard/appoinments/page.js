@@ -104,7 +104,6 @@ export default function AppointmentQueue() {
         } else {
           // Queue not started — check doctor availability
           const doctorRef = doc(db, "doctorAvailability", today);
-  
           unsubscribeDoctor = onSnapshot(doctorRef, (docSnap) => {
             if (docSnap.exists()) {
               const { note } = docSnap.data();

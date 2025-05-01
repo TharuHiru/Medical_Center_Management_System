@@ -39,32 +39,28 @@ function AssistantDashboard() {
     return () => unsubscribe(); // Clean up the listener on unmount
   }, []);
 
-  // set available time
-  const handleSetAvailability = async () => {
+  // Add a note for a day
+  const handleSaveNote = async () => {
     if (!unavailableDate) return toast.error("Select a date");
+    if (!unavailableDate || !note.trim()) {
+      return toast.error("Please enter a note");
+    }
     await setDoc(doc(db, "doctorAvailability", unavailableDate), {
-      available: true,
       note: note,
-    });
-    toast.success("Doctor marked available");
+    }, { merge: true }); // Don't overwrite other data
+    setNote ("");
+    setUnavailableDate("");
+    toast.success("Note saved for the doctor");
   };
 
-  
-  const handleClearAvailability = async () => {
-    if (!unavailableDate) return toast.error("Select a date");
-    await setDoc(doc(db, "doctorAvailability", unavailableDate), {
-      available: false,
-      note: note,
-    });
-    toast.success("Doctor marked unavailable");
-  };
-
+  //remove an existing note
   const handleRemoveAvailability = async (date) => {
     await deleteDoc(doc(db, "doctorAvailability", date));
-    toast.success(`Availability removed for ${date}`);
+    toast.success(`Note removed for ${date}`);
     setAvailabilityList((prev) => prev.filter((item) => item.id !== date));
-  };
+  };  
 
+  //logout logic
   const logout = () => {
     router.push("/login");
   };
@@ -72,22 +68,22 @@ function AssistantDashboard() {
   return (
     <div className="dashboard-container">
       <AssistNavBar onLogout={logout} />
-
       <div className="content-area container mt-4">
         <div className="text-center mb-4">
           <h5 className="assistant-name">Hello, {username}</h5>
           <p className="greeting-text">Welcome back!</p>
         </div>
 
+        {/* Note adding Tab */}
         <div className="row justify-content-center">
           <div className="col-md-8 col-lg-6">
             <div className="card p-4 shadow-sm rounded">
               <h5 className="mb-3 text-center">Doctor Availability</h5>
 
-              <div className="mt-5">
-                <h6 className="text-center">Marked Availability Dates</h6>
+              <div className="mt-3">
+                <h6>Notes</h6>
                 {availabilityList.length === 0 ? (
-                  <p className="text-center text-muted">No upcoming availability records.</p>
+                  <p className="text-center text-muted">No Upcoming Notes.</p>
                 ) : (
                   <div className="list-group">
                     {availabilityList.map((item) => {
@@ -96,10 +92,11 @@ function AssistantDashboard() {
                         <div key={item.id} className="list-group-item d-flex justify-content-between align-items-center">
                           <div>
                             <strong>{item.id}</strong><br />
-                            Status: <span className={item.available ? "text-success" : "text-danger"}>
-                              {item.available ? "Available" : "Unavailable"}
-                            </span><br />
-                            {item.note && <small>Note: {item.note}</small>}
+                            {item.note ? (
+                              <small>Note: {item.note}</small>
+                            ) : (
+                              <small className="text-muted">No notes</small>
+                            )}
                           </div>
                           {!isPast && (
                             <button className="btn btn-sm btn-outline-danger" onClick={() => handleRemoveAvailability(item.id)}>
@@ -113,8 +110,8 @@ function AssistantDashboard() {
                 )}
               </div>
 
-              <div className="mb-3">
-                <label>Select Date to Mark</label>
+              <div className="mb-3 mt-4">
+                <label>Select a Date </label>
                 <input
                   type="date"
                   className="form-control"
@@ -122,7 +119,6 @@ function AssistantDashboard() {
                   onChange={(e) => setUnavailableDate(e.target.value)}
                 />
               </div>
-
               <div className="mb-3">
                 <label>Note (optional)</label>
                 <textarea
@@ -133,19 +129,13 @@ function AssistantDashboard() {
                   placeholder="e.g., Doctor only available for emergencies"
                 />
               </div>
-
               <div className="row">
-                <div className="col-6">
-                  <button className="btn btn-success w-100" onClick={handleSetAvailability}>
-                    Mark Available
-                  </button>
-                </div>
-                <div className="col-6">
-                  <button className="btn btn-danger w-100" onClick={handleClearAvailability}>
-                    Mark Unavailable
-                  </button>
-                </div>
+              <div className="col-12">
+                <button className="btn btn-primary w-100" onClick={handleSaveNote}>
+                  Save Note
+                </button>
               </div>
+             </div>
             </div>
           </div>
         </div>

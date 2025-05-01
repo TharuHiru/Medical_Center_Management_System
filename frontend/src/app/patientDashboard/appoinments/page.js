@@ -1,7 +1,15 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { db } from "../../../lib/firebase";
-import {collection,query,orderBy,onSnapshot,deleteDoc,doc,} from "firebase/firestore";
+import {
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+  deleteDoc,
+  doc,
+  getDocs,
+} from "firebase/firestore";
 
 import { ToastContainer, toast } from "react-toastify";
 import Swal from "sweetalert2";
@@ -12,33 +20,28 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { createAppointment } from "../../../services/appointmentService";
 import { fetchPatientIDs } from "../../../services/patientAuthService";
 import { useAuth } from "../../../context/AuthContext";
-
-import PatientSidebar  from "../../../components/patientSideBar"; 
+import PatientSidebar from "../../../components/patientSideBar";
 
 export default function AppointmentQueue() {
-  const { userType, patientID ,masterID} = useAuth();
+  const { userType, patientID, masterID } = useAuth();
   const [appointments, setAppointments] = useState([]);
   const [patientQueueNumber, setPatientQueueNumber] = useState(null);
   const [nextPosition, setNextPosition] = useState(1);
   const [patientList, setPatientList] = useState([]);
-  const [selectedPatientID, setSelectedPatientID] = useState('');
+  const [selectedPatientID, setSelectedPatientID] = useState("");
   const [doctorAvailable, setDoctorAvailable] = useState(false);
+  const [todayUnavailableNote, setTodayUnavailableNote] = useState(null);
 
-
-  //Get patient names to view in the Queue
+  // Get patient names to view in the Queue
   const getPatientName = (id) => {
-  const patient = patientList.find((p) => p.patient_ID === id);
-  return patient ? `${patient.firstName} ${patient.lastName}` : "Unknown";
-};
+    const patient = patientList.find((p) => p.patient_ID === id);
+    return patient ? `${patient.firstName} ${patient.lastName}` : "Unknown";
+  };
 
-//Load the patients IDs using the master ID
+  // Fetch list of patients under this master user
   useEffect(() => {
     const loadPatients = async () => {
-      if (!masterID) {
-        console.warn("masterID not ready, skipping fetch");
-        return;
-      }
-  
+      if (!masterID) return;
       try {
         const data = await fetchPatientIDs(masterID);
         setPatientList(data);
@@ -50,37 +53,85 @@ export default function AppointmentQueue() {
         toast.error("Failed to load patient IDs");
       }
     };
-  
+
     loadPatients();
   }, [masterID]);
 
-  //Listen to doctor availability
+  // Fetch doctor's availability for today and upcoming
   useEffect(() => {
-    const unsub = onSnapshot(doc(db, "doctorAvailability", "today"), (docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        setDoctorAvailable(data.available === true); // expects a field named isAvailable: true/false
+    const fetchUnavailableDates = async () => {
+      const today = new Date().toISOString().split("T")[0];
+      const querySnapshot = await getDocs(collection(db, "doctorAvailability"));
+      let todayNote = null;
+
+      querySnapshot.forEach((docSnap) => {
+        const date = docSnap.id;
+        const { available, note } = docSnap.data();
+
+        if (date === today) {
+          if (!available) {
+            todayNote = note || "Doctor is not available today.";
+          }
+        }
+      });
+
+      setTodayUnavailableNote(todayNote);
+    };
+
+    fetchUnavailableDates();
+  }, []);
+
+  // Listen to real-time doctor availability for today
+  useEffect(() => {
+    const today = new Date().toISOString().split("T")[0];
+    const queueStatusRef = doc(db, "queueStatus", today);
+    let unsubscribeDoctor = null;
+  
+    const unsubscribeQueue = onSnapshot(queueStatusRef, (queueDoc) => {
+      if (queueDoc.exists()) {
+        const { started } = queueDoc.data();
+  
+        if (started === true) {
+          // Queue started — allow booking
+          setDoctorAvailable(true);
+          setTodayUnavailableNote(null);
+  
+          // Clean up doctor availability listener if active
+          if (unsubscribeDoctor) {
+            unsubscribeDoctor();
+            unsubscribeDoctor = null;
+          }
+        } else {
+          // Queue not started — check doctor availability
+          const doctorRef = doc(db, "doctorAvailability", today);
+  
+          unsubscribeDoctor = onSnapshot(doctorRef, (docSnap) => {
+            if (docSnap.exists()) {
+              const { note } = docSnap.data();
+              setDoctorAvailable(false);
+              setTodayUnavailableNote(note || "Doctor is not available today.");
+            } else {
+              setDoctorAvailable(false);
+              setTodayUnavailableNote("The queue is not active");
+            }
+          });
+        }
       } else {
+        // No queueStatus document
         setDoctorAvailable(false);
+        setTodayUnavailableNote("The queue will be started soon. Please wait.");
       }
     });
   
-    return () => unsub();
+    // Clean up both listeners on unmount
+    return () => {
+      unsubscribeQueue();
+      if (unsubscribeDoctor) unsubscribeDoctor();
+    };
   }, []);
   
 
-  //Get all the patient ID s for that particular account as a list
-  const patientIDsOwnedByUser = patientList.map(p => p.patient_ID);
-
-  //Get the queue number of the selected patient
-  useEffect(() => {
-    const selectedPatientAppt = appointments.find(
-      (appt) => appt.patient_ID === selectedPatientID && appt.status === "pending"
-    );
-    setPatientQueueNumber(selectedPatientAppt ? selectedPatientAppt.queueNumber : null);
-  }, [appointments, selectedPatientID]);
-
-  //Real-time listener for appointments
+  // Real-time appointment queue
   useEffect(() => {
     const q = query(collection(db, "appointments"), orderBy("createdAt", "asc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -92,17 +143,42 @@ export default function AppointmentQueue() {
       setAppointments(data);
       setNextPosition(data.length + 1);
 
-      const patientAppointment = data.find((appt) => appt.id === patientID);
-      if (patientAppointment && patientAppointment.status === "pending") {
-        setPatientQueueNumber(patientAppointment.queueNumber);
-      } else {
-        setPatientQueueNumber(null);
-      }
+      const patientAppointment = data.find(
+        (appt) => appt.id === patientID && appt.status === "pending"
+      );
+      setPatientQueueNumber(patientAppointment ? patientAppointment.queueNumber : null);
     });
+
     return () => unsubscribe();
   }, [patientID]);
 
-  //Deleting an appointment
+  // Get current user's patient IDs
+  const patientIDsOwnedByUser = patientList.map((p) => p.patient_ID);
+
+  // Determine if selected patient is in queue
+  useEffect(() => {
+    const selectedPatientAppt = appointments.find(
+      (appt) => appt.patient_ID === selectedPatientID && appt.status === "pending"
+    );
+    setPatientQueueNumber(selectedPatientAppt ? selectedPatientAppt.queueNumber : null);
+  }, [appointments, selectedPatientID]);
+
+  // Book appointment
+  const handleBook = async () => {
+    if (!selectedPatientID) {
+      toast.error("Please select a patient");
+      return;
+    }
+
+    try {
+      await createAppointment(selectedPatientID, new Date().toISOString().split("T")[0]);
+      toast.success("Appointment booked successfully!");
+    } catch (errorMessage) {
+      toast.error(errorMessage);
+    }
+  };
+
+  // Remove appointment
   const handleRemove = async (appointmentID) => {
     Swal.fire({
       title: "Are you sure?",
@@ -125,63 +201,53 @@ export default function AppointmentQueue() {
     });
   };
 
-  //Handling booking an appintment
-  const handleBook = async () => {
-    if (!selectedPatientID) {
-      toast.error("Please select a patient");
-      return;
-    }
-  
-    try {
-      await createAppointment(selectedPatientID, new Date().toISOString().split("T")[0]);
-      toast.success("Appointment booked successfully!");
-    } catch (errorMessage) {
-      toast.error(errorMessage);
-    }
-  };
-
-  //Handle logout function
   const logout = () => {
     console.log("Logged out");
   };
 
   return (
     <>
-      <PatientSidebar  onLogout={logout} />
-      <div className="content-area" style={{ marginLeft: '260px' }}>
-      <div className="container mt-4">
-        <h2 className="text-center">Today&apos;s Appointment Queue</h2>
-        <hr></hr>
-        <br></br>
+      <PatientSidebar onLogout={logout} />
+      <div className="content-area" style={{ marginLeft: "260px" }}>
+        {todayUnavailableNote && (
+          <div className="alert alert-danger mt-3">
+            <strong>Doctor Notice:</strong> {todayUnavailableNote}
+          </div>
+        )}
 
-        <div className="row">
-          <div className="col-md-8">
-            <div className="list-group">
-              {appointments.map((appt, index) => {
-                  const isUserAppointment = patientIDsOwnedByUser.includes(appt.id); // check if belongs to current user
+        <div className="container mt-4">
+          <h2 className="text-center">Today&apos;s Appointment Queue</h2>
+          <hr />
+          <div className="row">
+            <div className="col-md-8">
+              <div className="list-group">
+                {appointments.map((appt, index) => {
+                  const isUserAppointment = patientIDsOwnedByUser.includes(appt.id);
                   return (
                     <div
                       key={appt.id}
                       className={`list-group-item d-flex justify-content-between align-items-center 
-                        ${
-                          isUserAppointment
-                            ? "list-group-item-primary"
-                            : appt.status === "in progress"
-                            ? "list-group-item-warning"
-                            : appt.status === "pending"
-                            ? "list-group-item-danger"
-                            : "list-group-item-success"
-                        }`}
+                      ${
+                        isUserAppointment
+                          ? "list-group-item-primary"
+                          : appt.status === "in progress"
+                          ? "list-group-item-warning"
+                          : appt.status === "pending"
+                          ? "list-group-item-danger"
+                          : "list-group-item-success"
+                      }`}
                     >
                       <span className="fw-bold">{index + 1}</span>
-                      <span> <small>{getPatientName(appt.id)}</small></span>
+                      <span>
+                        <small>{getPatientName(appt.id)}</small>
+                      </span>
                       <span>
                         {appt.status === "pending" ? (
-                          <strong>Not yet seen by the doctor</strong>
+                          <strong>Not yet seen</strong>
                         ) : appt.status === "in progress" ? (
                           <strong>In Progress</strong>
                         ) : (
-                          <strong>Seen by the doctor</strong>
+                          <strong>Seen</strong>
                         )}
                       </span>
                       {isUserAppointment && appt.status === "pending" && (
@@ -195,15 +261,16 @@ export default function AppointmentQueue() {
                     </div>
                   );
                 })}
+              </div>
             </div>
-          </div>
-          <div className="col-md-4">
-            <div className="card p-3">
-              <h5>Book the Next Available Position</h5>
-              <p>
-                Next Available: <strong>Position {nextPosition}</strong>
-              </p>
-              <select
+
+            <div className="col-md-4">
+              <div className="card p-3">
+                <h5>Book the Next Available Position</h5>
+                <p>
+                  Next Available: <strong>Position {nextPosition}</strong>
+                </p>
+                <select
                   className="form-select mb-3"
                   value={selectedPatientID}
                   onChange={(e) => setSelectedPatientID(e.target.value)}
@@ -214,19 +281,23 @@ export default function AppointmentQueue() {
                     </option>
                   ))}
                 </select>
-
                 <button
                   className="btn btn-primary w-100"
                   onClick={handleBook}
-                  disabled={!doctorAvailable}
+                  disabled={!doctorAvailable || patientQueueNumber !== null}
                 >
-                  {doctorAvailable ? "Book Appointment" : "Doctor Unavailable"}
+                  {
+                    !doctorAvailable
+                      ? "Doctor Unavailable"
+                      : patientQueueNumber !== null
+                      ? "Already in Queue"
+                      : "Book Appointment"
+                  }
                 </button>
-
+              </div>
             </div>
           </div>
-        </div>
-        <ToastContainer />
+          <ToastContainer />
         </div>
       </div>
     </>

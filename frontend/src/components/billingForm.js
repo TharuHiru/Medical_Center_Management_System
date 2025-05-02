@@ -6,14 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../Styles/table.css";
 
-export default function BillingForm({
-  prescriptionRows,
-  handleRowChange,
-  removeRow,
-  addRow,
-  billingRef,
-  prescriptionId,
-}) {
+export default function BillingForm({prescriptionRows,handleRowChange,removeRow,addRow,billingRef,prescriptionId,}) {
   const [medicines, setMedicines] = useState([]);
   const [inventoryList, setInventoryList] = useState([]);
   const [selectedInventory, setSelectedInventory] = useState({});
@@ -32,7 +25,6 @@ export default function BillingForm({
         toast.error("Error fetching medicines: " + error.message);
       }
     };
-
     fetchMedicines(); // Call the API when the component mounts
   }, []);
 
@@ -75,7 +67,7 @@ export default function BillingForm({
     handleRowChange(index, "inventory_ID", inventory_ID);
     setSelectedInventory((prev) => ({
       ...prev,
-      [index]: inventory_ID,  // Store the selected inventory ID for the row
+      [index]: inventory_ID, // Store the selected inventory ID for the row
     }));
   };
 
@@ -104,7 +96,6 @@ export default function BillingForm({
   // send the billing details to the backend
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
-
     const billingDetails = {
       serviceCharge: e.target.serviceCharge.value,
       prescriptionId: prescriptionId,

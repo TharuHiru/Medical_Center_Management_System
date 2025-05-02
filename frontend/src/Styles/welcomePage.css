@@ -31,24 +31,39 @@
   padding: 10px;
 }
 
-.btnWhoAreYou{
-   padding: 30px;
-   box-shadow: 4px 6px 10px rgba(0, 0, 0, 0.2);
-   background-color: white;
-   color:rgb(79, 147, 160);
-   border: transparent;
-   padding-left: 60px;
-   padding-right: 60px;
+/* Button Styling */
+.btnWhoAreYou {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  height: 200px;
+  border-radius: 15px;
+  background-color: #1a879a;
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border: none;
+  margin-left: 350px;
+  padding: 20px;
+  text-align: center;
 }
 
-.btnWhoAreYou:hover{
-    background-color: rgb(79, 147, 160);
-    color:#ffffff;
+.btnWhoAreYou:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  background-color: #156371;
 }
 
-.btnWhoAreYou:active{
-  background-color: rgb(60, 110, 120) !important;
-  color:#ffffff;
+.btnWhoAreYou:active {
+  transform: translateY(0);
+}
+
+/* Icon Styling */
+.btnWhoAreYou svg {
+  color: white;
 }
 
 .btnRow{

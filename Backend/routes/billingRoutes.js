@@ -4,6 +4,11 @@ const db = require("../config/firebase"); // Firestore database
 require('dotenv').config();
 const router = express.Router();
 
+const PDFDocument = require('pdfkit');
+const fs = require('fs');
+const path = require('path');
+
+
 // function to get inventory details from the medicine ID, including brand name
 router.get('/getInventoryByMedicineID/:medicine_ID', async (req, res) => {
     const { medicine_ID } = req.params;

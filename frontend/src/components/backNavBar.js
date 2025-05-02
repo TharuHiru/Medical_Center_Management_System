@@ -15,10 +15,10 @@ function BackNavbar() {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg backNavBar">
-      <div className="container">
+    <nav className="navbar navbar-expand-lg backNavBar" style={{ backgroundColor: "rgba(255, 255, 255, 0.586)"}}>
+      <div className="container" >
         <Link className="navbar-brand" href="/">
-          <Image src="/Logo.png" alt="Poly Clinic" width={100} height={50} className="me-2" />
+          <Image src="/Logo.png" alt="Poly Clinic" width={100} height={100} className="me-2" />
           <span className="fw-bold">Poly Clinic</span>
         </Link>
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">

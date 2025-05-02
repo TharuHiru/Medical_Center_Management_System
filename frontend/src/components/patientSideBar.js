@@ -7,14 +7,13 @@ import {
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FaTachometerAlt, FaUser, FaCalendarCheck, FaBoxes } from 'react-icons/fa';
+import { FaTachometerAlt, FaUser, FaCalendarCheck } from 'react-icons/fa';
 import MenuIcon from '@mui/icons-material/Menu';
 import '../Styles/sideNavBar.css';
 
-
 const PatientSidebar = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md')); // Check if the screen is mobile
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
@@ -38,16 +37,17 @@ const PatientSidebar = () => {
 
   return (
     <Box>
-    <AppBar position="sticky">
-            <Toolbar>
-              {isMobile && (
-                <IconButton color="inherit" edge="start" onClick={toggleDrawer} aria-label="menu" sx={{ mr: 2 }}>
-                  <MenuIcon />
-                </IconButton>
-              )}
-            </Toolbar>
-          </AppBar>
-          
+      {/* Render AppBar only for mobile screens */}
+      {isMobile && (
+        <AppBar position="sticky" sx={{ backgroundColor: 'rgb(48, 90, 99)', zIndex: theme.zIndex.drawer + 1 }}>
+          <Toolbar>
+            <IconButton color="inherit" edge="start" onClick={toggleDrawer} aria-label="menu" sx={{ mr: 2 }}>
+              <MenuIcon />
+            </IconButton>
+          </Toolbar>
+        </AppBar>
+      )}
+
       {/* Sidebar Drawer */}
       <Drawer
         sx={{
@@ -113,7 +113,6 @@ const PatientSidebar = () => {
         <Box className="logout-container">
           <button className="logout-button">Log Out</button>
         </Box>
-
       </Drawer>
     </Box>
   );

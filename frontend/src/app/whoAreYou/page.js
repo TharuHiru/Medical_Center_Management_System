@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link'; // Next.js routing
 import { FaUser, FaUserMd, FaUserNurse } from "react-icons/fa"; // Import icons
 import BackNavbar from '../../components/backNavBar';
-import '../../Styles/welcomePage.css';
+import '../../Styles/whoAreYou.css';
 
 // Component for the registered or not page
 function WhoAreYou() {
@@ -13,37 +13,43 @@ function WhoAreYou() {
       <BackNavbar />
       <div>
         <section>
-          <div className="row btnRow">
-            {/* Patient Button */}
-            <div className="col-md-3 d-flex justify-content-center">
-              <Link href="/PatientLogin">
-                <button className="btn btn-primary btnWhoAreYou" aria-label="Patient Login">
-                  <FaUser size={40} className="mb-2" /> <br />
-                  Patient Login
-                </button>
-              </Link>
-            </div>
-
-            {/* Assistant Button */}
-            <div className="col-md-3 d-flex justify-content-center">
-              <Link href="/AssistantLogin">
-                <button className="btn btn-primary btnWhoAreYou" aria-label="Assistant Login">
-                  <FaUserNurse size={40} className="mb-2" /><br />
-                  Assistant Login
-                </button>
-              </Link>
-            </div>
-
-            {/* Doctor Button */}
-            <div className="col-md-3 d-flex justify-content-center">
-              <Link href="/DoctorLogin">
-                <button className="btn btn-primary btnWhoAreYou" aria-label="Doctor Login">
-                  <FaUserMd size={40} className="mb-2" /> <br />
-                  Doctor Login
-                </button>
-              </Link>
-            </div>
+        <div className="row btnRow">
+          {/* Patient Login */}
+          <div className="col-md-3 d-flex justify-content-center">
+            <Link
+              href="/PatientLogin"
+              className="btnWhoAreYou d-flex flex-column justify-content-center align-items-center text-decoration-none"
+              aria-label="Patient Login"
+            >
+              <FaUser size={40} className="mb-2" />
+              Patient Login
+            </Link>
           </div>
+
+          {/* Assistant Login */}
+          <div className="col-md-3 d-flex justify-content-center">
+            <Link
+              href="/AssistantLogin"
+              className="btnWhoAreYou d-flex flex-column justify-content-center align-items-center text-decoration-none"
+              aria-label="Assistant Login"
+            >
+              <FaUserNurse size={40} className="mb-2" />
+              Assistant Login
+            </Link>
+          </div>
+
+          {/* Doctor Login */}
+          <div className="col-md-3 d-flex justify-content-center">
+            <Link
+              href="/DoctorLogin"
+              className="btnWhoAreYou d-flex flex-column justify-content-center align-items-center text-decoration-none"
+              aria-label="Doctor Login"
+            >
+              <FaUserMd size={40} className="mb-2" />
+              Doctor Login
+            </Link>
+          </div>
+        </div>
         </section>
       </div>
     </>

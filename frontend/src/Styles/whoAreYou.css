@@ -1,0 +1,49 @@
+/* Button Styling */
+.btnWhoAreYou {
+    flex-direction: column !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 200px;
+    height: 200px;
+    border-radius: 15px;
+    border: none;
+    background-color: #d6e9ed !important;
+    color: #15637e !important;
+    font-size: 18px;
+    font-weight: 600;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    padding: 20px;
+    text-align: center;
+  }
+  .btnWhoAreYou:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    background-color: #156371 !important;
+    color: #ffffff !important;
+  }
+  
+  .btnWhoAreYou:active {
+    transform: translateY(0);
+  }
+  
+.btnRow {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    height: 100vh; 
+    flex-wrap: wrap; 
+    gap: 20px; 
+    height: calc(100vh - 150px) !important;
+  }
+  
+  .nav-div
+  {
+    padding: 0px;
+    
+  }
+  .btn-sin-text{
+    margin-left: 1px;
+  }
+  

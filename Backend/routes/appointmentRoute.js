@@ -59,7 +59,7 @@ router.put("/admit", async (req, res) => {
     return res.status(400).json({ success: false, error: "Missing required fields" });
   }
 
-  const appointmentRef = db.collection("appointments").doc(patientID);
+  const appointmentRef = db.collection("appointments").doc(appointmentDate + "_" + patientID);
   const connection = await pool.getConnection();
 
   // Generate random appointment ID like A_123456
@@ -71,7 +71,14 @@ router.put("/admit", async (req, res) => {
 
     // Firestore transaction
     await db.runTransaction(async (transaction) => {
-      transaction.update(appointmentRef, { status: "in progress" , appointment_ID : appointmentID});
+      const doc = await transaction.get(appointmentRef);
+      if (!doc.exists) {
+        throw new Error(`Appointment not found for ID: ${appointmentDate}_${patientID}`);
+      }
+      transaction.update(appointmentRef, {
+        status: "in progress",
+        appointment_ID: appointmentID
+      });
 
       // MySQL Query
       const sql = `INSERT INTO appointment (appoint_ID,patient_ID, date, time)VALUES (?,?, ?, ?)`;
@@ -109,12 +116,13 @@ module.exports = router;
 
 // ✅ Remove a patient from the queue after seen by doctor (Firestore Delete)
 router.delete("/remove", async (req, res) => {
-  const { patientID } = req.body;
-  if (!patientID) {
-    return res.status(400).json({ success: false, error: "Missing patientID" });
-  }
+  const { patientID, appointmentDate } = req.body;
 
-  const appointmentRef = db.collection("appointments").doc(patientID);
+if (!patientID || !appointmentDate) {
+  return res.status(400).json({ success: false, error: "Missing required fields" });
+}
+
+const appointmentRef = db.collection("appointments").doc(appointmentDate + "_" + patientID);
 
   try {
     // Delete the patient's appointment from Firestore

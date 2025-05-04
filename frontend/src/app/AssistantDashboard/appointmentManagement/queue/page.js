@@ -28,39 +28,8 @@ export default function AppointmentQueue() {
     return () => unsubscribe();
   }, []);
 
-  // Fetch queue status
-  useEffect(() => {
-    const checkQueueStatus = async () => {
-      const docSnap = await getDoc(queueDocRef);
-      if (docSnap.exists()) {
-        setQueueStarted(docSnap.data().started);
-      } else {
-        setQueueStarted(false);
-      }
-    };
-    checkQueueStatus();
-  }, []);
-
-  // set the queue started
-  const startQueue = async () => {
-    await setDoc(queueDocRef, { started: true });
-    setQueueStarted(true);
-    toast.success("Queue started for today!");
-  };
-
-  //Set the queue stop
-  const stopQueue = async () => {
-    await updateDoc(queueDocRef, { started: false });
-    setQueueStarted(false);
-    toast.info("Queue has been stopped.");
-  };
-
-  // Booking appointment only if queue is started
+  // Booking appointment 
   const handleBook = async () => {
-    if (!queueStarted) {
-      toast.error("Queue is not started yet.");
-      return;
-    }
     if (!patientID) {
       toast.error("Please enter patient details");
       return;
@@ -118,28 +87,6 @@ export default function AppointmentQueue() {
 
             {/* Right side - Booking and Queue Controls */}
             <div className="col-md-4 d-flex flex-column gap-3">
-
-              {/* Queue Control Buttons */}
-              <div className="card p-3">
-                <h5>Queue Control</h5>
-                <p>Status:{" "}
-                  <strong style={{ color: queueStarted ? "green" : "red" }}>
-                    {queueStarted ? "Queue Started" : "Queue Not Started"}
-                  </strong>
-                  <br />
-                  <small className="text-muted">
-                    {new Date().toLocaleDateString("en-CA")}
-                  </small>
-                </p>
-                <div className="d-grid gap-2">
-                  <button className="btn btn-success" onClick={startQueue} disabled={queueStarted}>
-                    Start Queue
-                  </button>
-                  <button className="btn btn-danger" onClick={stopQueue} disabled={!queueStarted}>
-                    Stop Queue
-                  </button>
-                </div>
-              </div>
 
               {/* Booking Card */}
               <div className="card p-3">

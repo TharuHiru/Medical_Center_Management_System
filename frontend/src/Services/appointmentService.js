@@ -3,18 +3,26 @@ import axios from "axios";
 const API_URL = "http://localhost:5000/api/appointments";
 
 // ✅ Create an Appointment 
+import { doc, setDoc, serverTimestamp, getDoc } from "firebase/firestore";
+import { db } from "../lib/firebase";
+
 export const createAppointment = async (patientID, appointmentDate) => {
-  try {
-    const response = await axios.post(API_URL, {
-      patientID,
-      appointmentDate,
-    });
-    return response.data; // ✅ Return success response
-  } catch (error) {
-    // ✅ Extract backend error message and return as a rejected Promise
-    return Promise.reject(error.response?.data?.error || "Something went wrong");
+  const docID = `${appointmentDate}_${patientID}`; // unique per day per patient
+  const appointmentRef = doc(db, "appointments", docID);
+
+  const existing = await getDoc(appointmentRef);
+  if (existing.exists()) {
+    throw new Error("Appointment already exists for this patient on this date.");
   }
+
+  await setDoc(appointmentRef, {
+    id: patientID,
+    appointmentDate,
+    status: "pending",
+    createdAt: serverTimestamp(),
+  });
 };
+
 
 
 // ✅ Get All Appointments

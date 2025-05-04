@@ -1,15 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { db } from "../../../lib/firebase";
-import {
-  collection,
-  query,
-  orderBy,
-  onSnapshot,
-  deleteDoc,
-  doc,
-  getDocs,
-} from "firebase/firestore";
+import { collection,query,orderBy,onSnapshot,deleteDoc,doc,where,getDocs} from "firebase/firestore";
 
 import { ToastContainer, toast } from "react-toastify";
 import Swal from "sweetalert2";
@@ -29,8 +21,10 @@ export default function AppointmentQueue() {
   const [nextPosition, setNextPosition] = useState(1);
   const [patientList, setPatientList] = useState([]);
   const [selectedPatientID, setSelectedPatientID] = useState("");
-  const [doctorAvailable, setDoctorAvailable] = useState(false);
   const [todayUnavailableNote, setTodayUnavailableNote] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const getFormattedDate = (date) => date.toISOString().split("T")[0]; // YYYY-MM-DD
 
   // Get patient names to view in the Queue
   const getPatientName = (id) => {
@@ -38,7 +32,7 @@ export default function AppointmentQueue() {
     return patient ? `${patient.firstName} ${patient.lastName}` : "Unknown";
   };
 
-  // Fetch list of patients under this master user
+  // Fetch list of patients under this master user from the SQL database
   useEffect(() => {
     const loadPatients = async () => {
       if (!masterID) return;
@@ -53,103 +47,37 @@ export default function AppointmentQueue() {
         toast.error("Failed to load patient IDs");
       }
     };
-
     loadPatients();
   }, [masterID]);
 
-  // Fetch doctor's availability for today and upcoming
+
+  // Real-time appointment queue for selected date
   useEffect(() => {
-    const fetchUnavailableDates = async () => {
-      const today = new Date().toISOString().split("T")[0];
-      const querySnapshot = await getDocs(collection(db, "doctorAvailability"));
-      let todayNote = null;
-
-      querySnapshot.forEach((docSnap) => {
-        const date = docSnap.id;
-        const { available, note } = docSnap.data();
-
-        if (date === today) {
-          if (!available) {
-            todayNote = note || "Doctor is not available today.";
-          }
-        }
-      });
-
-      setTodayUnavailableNote(todayNote);
-    };
-
-    fetchUnavailableDates();
-  }, []);
-
-  // Listen to real-time doctor availability for today
-  useEffect(() => {
-    const today = new Date().toISOString().split("T")[0];
-    const queueStatusRef = doc(db, "queueStatus", today);
-    let unsubscribeDoctor = null;
-  
-    const unsubscribeQueue = onSnapshot(queueStatusRef, (queueDoc) => {
-      if (queueDoc.exists()) {
-        const { started } = queueDoc.data();
-  
-        if (started === true) {
-          // Queue started — allow booking
-          setDoctorAvailable(true);
-          setTodayUnavailableNote(null);
-  
-          // Clean up doctor availability listener if active
-          if (unsubscribeDoctor) {
-            unsubscribeDoctor();
-            unsubscribeDoctor = null;
-          }
-        } else {
-          // Queue not started — check doctor availability
-          const doctorRef = doc(db, "doctorAvailability", today);
-          unsubscribeDoctor = onSnapshot(doctorRef, (docSnap) => {
-            if (docSnap.exists()) {
-              const { note } = docSnap.data();
-              setDoctorAvailable(false);
-              setTodayUnavailableNote(note || "Doctor is not available today.");
-            } else {
-              setDoctorAvailable(false);
-              setTodayUnavailableNote("The queue is not active");
-            }
-          });
-        }
-      } else {
-        // No queueStatus document
-        setDoctorAvailable(false);
-        setTodayUnavailableNote("The queue will be started soon. Please wait.");
-      }
-    });
-  
-    // Clean up both listeners on unmount
-    return () => {
-      unsubscribeQueue();
-      if (unsubscribeDoctor) unsubscribeDoctor();
-    };
-  }, []);
-  
-
-  // Real-time appointment queue
-  useEffect(() => {
-    const q = query(collection(db, "appointments"), orderBy("createdAt", "asc"));
+    const q = query(
+      collection(db, "appointments"),
+      orderBy("createdAt", "asc"),
+      where("appointmentDate", "==", getFormattedDate(selectedDate)) // Filter by the selected date
+    );
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map((doc, index) => ({
-        id: doc.id,
-        queueNumber: index + 1,
-        ...doc.data(),
-      }));
-      setAppointments(data);
-      setNextPosition(data.length + 1);
+      const data = snapshot.docs
+        .map((doc) => ({
+          docId: doc.id, // because the document has id column, i use docID to avoid confusion
+          ...doc.data(),
+        }))
+        .map((doc, index) => ({
+          ...doc,
+          queueNumber: index + 1,
+        }));
+      setAppointments(data); //get appointments for the day
+      setNextPosition(data.length + 1); // next position in the queue
 
       const patientAppointment = data.find(
-        (appt) => appt.id === patientID && appt.status === "pending"
+        (appt) => appt.id.endsWith(`_${patientID}`) && appt.status === "pending"
       );
       setPatientQueueNumber(patientAppointment ? patientAppointment.queueNumber : null);
     });
-
     return () => unsubscribe();
-  }, [patientID]);
+  }, [patientID, selectedDate]);
 
   // Get current user's patient IDs
   const patientIDsOwnedByUser = patientList.map((p) => p.patient_ID);
@@ -157,28 +85,35 @@ export default function AppointmentQueue() {
   // Determine if selected patient is in queue
   useEffect(() => {
     const selectedPatientAppt = appointments.find(
-      (appt) => appt.patient_ID === selectedPatientID && appt.status === "pending"
+      (appt) => appt.id === selectedPatientID && appt.status === "pending" //the id column has the patient ID and pending means doctor has not seen the patient yet
     );
     setPatientQueueNumber(selectedPatientAppt ? selectedPatientAppt.queueNumber : null);
   }, [appointments, selectedPatientID]);
+
 
   // Book appointment
   const handleBook = async () => {
     if (!selectedPatientID) {
       toast.error("Please select a patient");
-      return;
-    }
-
+      return; }
+    const formattedDate = getFormattedDate(selectedDate);
     try {
-      await createAppointment(selectedPatientID, new Date().toISOString().split("T")[0]);
+      await createAppointment(selectedPatientID, formattedDate); //call the service to create appointment
       toast.success("Appointment booked successfully!");
-    } catch (errorMessage) {
-      toast.error(errorMessage);
+    } catch (error) {
+      if (error.message.includes("already exists")) 
+      {
+        toast.error("You already have an appointment on this day!"); // dont allow same patient to book on the same day
+      } else {
+        console.error("Booking error:", error);
+        toast.error("Failed to book appointment.");
+      }
     }
   };
 
   // Remove appointment
   const handleRemove = async (appointmentID) => {
+    //pretty delete button
     Swal.fire({
       title: "Are you sure?",
       text: "This will remove your appointment permanently!",
@@ -190,7 +125,7 @@ export default function AppointmentQueue() {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await deleteDoc(doc(db, "appointments", appointmentID));
+          await deleteDoc(doc(db, "appointments", appointmentID)); // call firebase to delete the appointment
           toast.success("Appointment removed successfully!");
         } catch (error) {
           Swal.fire("Error", "Failed to remove appointment.", "error");
@@ -204,6 +139,13 @@ export default function AppointmentQueue() {
     console.log("Logged out");
   };
 
+  // Handle date selection for tabs
+  const handleDateTabClick = (dateOffset) => {
+    const newDate = new Date();
+    newDate.setDate(newDate.getDate() + dateOffset);
+    setSelectedDate(newDate);
+  };
+
   return (
     <>
       <PatientSidebar onLogout={logout} />
@@ -213,16 +155,38 @@ export default function AppointmentQueue() {
             <strong>Doctor Notice:</strong> {todayUnavailableNote}
           </div>
         )}
-
-        <div className="container mt-4">
-          <h2 className="text-center">Today&apos;s Appointment Queue</h2>
+        <div className ="container mt-4">
+          <h2 className="text-center"> Appointment Queue </h2>
+          <h4 className="text-center">{getFormattedDate(selectedDate)}</h4> {/* Display the date*/}
           <hr />
+          {/* Display the queue Tabs */}
+          <div className="mb-4 text-center">
+            <div className="btn-group" role="group">
+              {["Today", "Tomorrow", "Day After Tomorrow"].map((label, index) => {
+                return (
+                  <button
+                    key={label}
+                    type="button"
+                    className={`btn btn-outline-primary ${
+                      getFormattedDate(selectedDate) === getFormattedDate(new Date(new Date().setDate(new Date().getDate() + index))) ? "active" : ""
+                    }`}
+                    onClick={() => handleDateTabClick(index)}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="mt-2">Viewing appointments and booking for: <strong>{getFormattedDate(selectedDate)}</strong></p>
+          </div>
+
+          {/* Display the queue */}
           <div className="row">
             <div className="col-md-8">
               <div className="list-group">
                 {appointments.map((appt, index) => {
-                  const isUserAppointment = patientIDsOwnedByUser.includes(appt.id);
-                  return (
+                  const isUserAppointment = patientIDsOwnedByUser.some((pid) =>appt.docId.endsWith(`_${pid}`)); //check if the appointment belongs to the current user                 
+                    return (
                     <div
                       key={appt.id}
                       className={`list-group-item d-flex justify-content-between align-items-center 
@@ -249,10 +213,12 @@ export default function AppointmentQueue() {
                           <strong>Seen</strong>
                         )}
                       </span>
+                        <span className="fw-bold">{appt.id}</span>
                       {isUserAppointment && appt.status === "pending" && (
                         <button
                           className="btn btn-danger btn-sm"
-                          onClick={() => handleRemove(appt.id)}
+                          onClick={() => handleRemove(appt.docId) // send the document ID to delete the appointment
+                          }
                         >
                           Remove
                         </button>
@@ -263,6 +229,7 @@ export default function AppointmentQueue() {
               </div>
             </div>
 
+            {/* Booking section */}
             <div className="col-md-4">
               <div className="card p-3">
                 <h5>Book the Next Available Position</h5>
@@ -283,15 +250,8 @@ export default function AppointmentQueue() {
                 <button
                   className="btn btn-primary w-100"
                   onClick={handleBook}
-                  disabled={!doctorAvailable || patientQueueNumber !== null}
                 >
-                  {
-                    !doctorAvailable
-                      ? "Doctor Unavailable"
-                      : patientQueueNumber !== null
-                      ? "Already in Queue"
-                      : "Book Appointment"
-                  }
+                  Book the Number
                 </button>
               </div>
             </div>

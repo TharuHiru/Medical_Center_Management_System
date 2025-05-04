@@ -86,7 +86,7 @@ export default function PatientProfileView({ patient }) {
           <Row className="mb-3">
             <Col>
               <label><strong>Allergies:</strong></label>
-              <input type="text" className="form-control" readOnly value={patient.allergies} />
+              <input type="text" className="form-control" readOnly value={patient.allergies || "" } />
             </Col>
           </Row>
           <Row className="mb-3">
@@ -124,8 +124,8 @@ export default function PatientProfileView({ patient }) {
                           <div className="card">
                             <div className="card-body">
                               <p><strong>Date :</strong> {formattedDate}</p>
-                              <p><strong>Diagnosis :</strong> {appt.prescription.Diagnosis}</p>
-                              <p><strong>Other Details:</strong> {appt.prescription.other || "N/A"}</p>
+                              <p><strong>Diagnosis :</strong> {appt.prescription ? appt.prescription.Diagnosis : "N/A"} </p>
+                              <p><strong>Other Details:</strong> {appt.prescription ? appt.prescription.other : "N/A"}</p>
                               <p><strong><u>Medicines</u></strong></p>
 
                               {appt.medicines && appt.medicines.length > 0 ? (

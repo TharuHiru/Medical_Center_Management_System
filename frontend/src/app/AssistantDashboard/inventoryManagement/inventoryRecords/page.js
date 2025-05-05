@@ -4,11 +4,12 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import "../../../../Styles/AssistantDashboard.css";
 import "../../../../Styles/loginForms.css";
-import {  Row, Col } from 'react-bootstrap';
+import { Row, Col } from "react-bootstrap";
 import AssistNavBar from "../../../../components/assistantSideBar";
 import { FaPlus, FaSearch } from "react-icons/fa";
 import AddInventoryModal from "../../../../components/addInventoryModel";
-import { fetchInventory , fetchMedicineCategory ,addMedicineCategory } from "../../../../services/inventoryService";
+import { fetchInventory, fetchMedicineCategory, addMedicineCategory } from "../../../../services/inventoryService";
+import Select from 'react-select';
 
 function AssistantDashboardInventory() {
   const router = useRouter(); // create a router instance
@@ -28,13 +29,13 @@ function AssistantDashboardInventory() {
     handleCloseInventoryModal();
   };
 
-  // State to store patient data
+  // State to store inventory data
   const [inventory, setInventory] = useState([]);
   const [searchTerm, setSearchTerm] = useState(""); // State for search input
   const [medicineCategories, setMedicineCategories] = useState([]); // Store fetched categories
   const [selectedMedicine, setSelectedMedicine] = useState(""); // Selected category
 
-  // Fetch patients from the service
+  // Fetch inventory from the service
   useEffect(() => {
     const getInventory = async () => {
       try {
@@ -47,16 +48,16 @@ function AssistantDashboardInventory() {
     getInventory();
   }, []);
 
-  // Filter patients based on search input
+  // Filter inventory based on search input and selected category
   const filteredInventory = inventory.filter((item) => {
     const matchesSearchTerm = Object.values(item).some(
       (value) =>
         value && value.toString().toLowerCase().includes(searchTerm.toLowerCase())
     );
-  
+
     const matchesSelectedMedicine =
       !selectedMedicine || item.medicine_Name === selectedMedicine;
-  
+
     return matchesSearchTerm && matchesSelectedMedicine;
   });
 
@@ -73,16 +74,21 @@ function AssistantDashboardInventory() {
     getCategories();
   }, []);
 
-   // Handle dropdown selection change
-   const handleCategoryChange = (event) => {
-    setSelectedMedicine(event.target.value);
+  // Transform medicine categories to match the Select component's format
+  const categoryOptions = medicineCategories.map((category) => ({
+    value: category.medicine_Name, // value of the option
+    label: category.medicine_Name, // label displayed in the dropdown
+  }));
+
+  // Handle category change
+  const handleCategoryChange = (selectedOption) => {
+    setSelectedMedicine(selectedOption ? selectedOption.value : "");
   };
 
   return (
     <div className="dashboard-container">
       {/* Vertical Navigation Bar */}
       <AssistNavBar onLogout={logout} />
-     
 
       <div className="content-area">
         {/* Add Patient Button */}
@@ -100,40 +106,42 @@ function AssistantDashboardInventory() {
           />
         </div>
         <h2>&nbsp; &nbsp; Inventory Details</h2>
-      <div className="top-bar">
-      <Row>
-        <Col md={4}>
-        {/* Search Box */}
-        
-        <div className="search-container">
-          <FaSearch className="search-icon" />
-          <input
-            type="text"
-            placeholder="Search Inventory..."
-            className="search-input"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+
+        <div className="top-bar">
+          <Row>
+            <Col md={4}>
+              {/* Search Box */}
+              <div className="search-container">
+                <FaSearch className="search-icon" />
+                <input
+                  type="text"
+                  placeholder="Search Inventory..."
+                  className="search-input"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+            </Col>
+
+            <Col md={4}>
+              {/* Medicine Category Dropdown (Searchable) */}
+              <div>
+                <label>Select Medicine:</label>
+                &nbsp;&nbsp;
+                <Select
+                  className="search-input-combo"
+                  options={categoryOptions}
+                  value={categoryOptions.find((option) => option.value === selectedMedicine) || null}
+                  onChange={handleCategoryChange}
+                  isClearable
+                  placeholder="Select a Category"
+                />
+              </div>
+            </Col>
+          </Row>
         </div>
-        </Col>
-        <Col md={4}>
-        {/* Medicine Category Dropdown */}
-        <div>
-          <label>Select Medicine:</label>
-          &nbsp;&nbsp;
-          <select className="search-input-combo" value={selectedMedicine} onChange={handleCategoryChange}>
-            <option value=""> All Categories </option>
-            {medicineCategories.map((category) => (
-              <option key={category.medicine_ID} value={category.medicine_Name}>
-                {category.medicine_Name}
-              </option>
-            ))}
-          </select>
-        </div>
-        </Col>
-    </Row>
-    </div>
-        {/* Patient Table */}
+
+        {/* Inventory Table */}
         <div className="patient-table-container">
           <div className="table-responsive-custom">
             <table className="table table-striped patient-data-table">
@@ -165,7 +173,7 @@ function AssistantDashboardInventory() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="11">No Inventory record found</td>
+                    <td colSpan="8">No Inventory record found</td>
                   </tr>
                 )}
               </tbody>

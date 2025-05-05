@@ -115,24 +115,36 @@ module.exports = router;
 
 
 // ✅ Remove a patient from the queue after seen by doctor (Firestore Delete)
-router.delete("/remove", async (req, res) => {
-  const { patientID, appointmentDate } = req.body;
+  router.delete("/remove", async (req, res) => {
+    const { patientID, appointmentDate } = req.body;
 
-if (!patientID || !appointmentDate) {
-  return res.status(400).json({ success: false, error: "Missing required fields" });
-}
-
-const appointmentRef = db.collection("appointments").doc(appointmentDate + "_" + patientID);
-
-  try {
-    // Delete the patient's appointment from Firestore
-    await appointmentRef.delete();
-
-    res.status(200).json({ success: true, message: "Patient removed from queue!" });
-  } catch (error) {
-    console.error("Error removing patient:", error.message);
-    res.status(500).json({ success: false, error: error.message });
+  if (!patientID || !appointmentDate) {
+    return res.status(400).json({ success: false, error: "Missing required fields" });
   }
-});
+
+  const appointmentRef = db.collection("appointments").doc(appointmentDate + "_" + patientID);
+
+    try {
+      // Delete the patient's appointment from Firestore
+      await appointmentRef.delete();
+
+      res.status(200).json({ success: true, message: "Patient removed from queue!" });
+    } catch (error) {
+      console.error("Error removing patient:", error.message);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  router.get("/patients", async (req, res) => {
+    try {
+      const sql = `SELECT patient_ID, firstName, lastName FROM patients`;
+      const [rows] = await pool.query(sql);
+      res.status(200).json({ success: true, patients: rows });
+    } catch (error) {
+      console.error("Error fetching patients:", error.message);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+  
 
 module.exports = router;

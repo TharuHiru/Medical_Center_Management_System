@@ -191,13 +191,13 @@ export default function AppointmentQueue() {
                       key={appt.id}
                       className={`list-group-item d-flex justify-content-between align-items-center 
                       ${
-                        isUserAppointment
+                        isUserAppointment //if appointment belongs to the current user, highlight it
                           ? "list-group-item-primary"
-                          : appt.status === "in progress"
+                        : appt.status === "in progress" //if the appointment is in progress 
                           ? "list-group-item-warning"
-                          : appt.status === "pending"
-                          ? "list-group-item-danger"
-                          : "list-group-item-success"
+                        : appt.status === "pending" //if the appointment is pending 
+                          ? "list-group-item-light"
+                        : "list-group-item-success" //All other appointments
                       }`}
                     >
                       <span className="fw-bold">{index + 1}</span>

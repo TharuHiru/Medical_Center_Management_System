@@ -6,6 +6,7 @@ import "../../../../Styles/AssistantDashboard.css";
 import "../../../../Styles/loginForms.css";
 import "../../../../Styles/pages.css";
 import AssistNavBar from "../../../../components/assistantSideBar";
+import Select from "react-select";
 import {fetchBrandsByMedicineID, addMedicineCategory, addMedicineBrand,fetchMedicineCategory,} from "../../../../services/inventoryService";
 
 const MedicineCategoryPage = () => {
@@ -134,20 +135,34 @@ const MedicineCategoryPage = () => {
           <Col md={6}>
             <div className="new-category-group">
               <h4 className="new-category-group-label">Add Item to a Medicine</h4>
-
-              <select
-                className="form-control mb-3"
-                value={selectedMedicine}
-                onChange={handleMedicineSelect}
-              >
-                <option value="">Select Medicine</option>
-                {medicines.map((medicine) => (
-                  <option key={medicine.medicine_ID} value={medicine.medicine_ID}>
-                    {medicine.medicine_Name}
-                  </option>
-                ))}
-              </select>
-
+              <Select
+                  className="mb-3"
+                  placeholder="Select Medicine"
+                  options={medicines.map((medicine) => ({
+                    value: medicine.medicine_ID,
+                    label: medicine.medicine_Name
+                  }))}
+                  onChange={(selectedOption) => {
+                    const selectedID = selectedOption ? selectedOption.value : "";
+                    setSelectedMedicine(selectedID);
+                    if (selectedID) {
+                      fetchBrandsByMedicineID(selectedID).then((response) => {
+                        if (response.success) {
+                          setBrands(response.data);
+                        } else {
+                          setBrands([]);
+                          alert("Failed to fetch brand names.");
+                        }
+                      }).catch(() => {
+                        setBrands([]);
+                        alert("An error occurred while fetching brand names.");
+                      });
+                    } else {
+                      setBrands([]);
+                    }
+                  }}
+                  isClearable
+                />
               <div className="brand-list mb-3">
               <h5>Available Items:</h5>
               {brands.length > 0 ? (

@@ -73,3 +73,13 @@ export const removeAppointment = async (patientID) => {
     throw new Error(error.response?.data?.error || "Something went wrong");
   }
 };
+
+//get all patients
+export const getAllPatients = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/patients`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.error || "Something went wrong");
+  }
+};

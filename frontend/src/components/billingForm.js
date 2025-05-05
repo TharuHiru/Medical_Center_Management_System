@@ -5,62 +5,70 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../Styles/table.css";
+import Select from "react-select";
 
 export default function BillingForm({prescriptionRows,handleRowChange,removeRow,addRow,billingRef,prescriptionId,}) {
   const [medicines, setMedicines] = useState([]);
   const [inventoryList, setInventoryList] = useState([]);
   const [selectedInventory, setSelectedInventory] = useState({});
 
-  // Fetch medicines when the component mounts
+  // Fetch medicines when the component loads
   useEffect(() => {
     const fetchMedicines = async () => {
       try {
         const response = await fetchMedicineCategory();
         if (response.success) {
-          setMedicines(response.data); // Set medicines in the state
+          setMedicines(response.data || [] ); // Set medicines in the state
         } else {
           toast.error("Failed to load medicines");
+          setMedicines([]);
         }
       } catch (error) {
         toast.error("Error fetching medicines: " + error.message);
+        setMedicines([]);
       }
     };
-    fetchMedicines(); // Call the API when the component mounts
+    fetchMedicines(); // Call the API when the component loads
   }, []);
 
   // Handle medicine selection from the combo box
   const handleMedicineChange = async (index, medicine_ID) => {
     handleRowChange(index, "medicine_ID", medicine_ID); // Update the selected medicine ID for the row
-
+  
+    const ensureInventoryListSize = (list, requiredIndex) => {
+      const updated = [...list];
+      while (updated.length <= requiredIndex) {
+        updated.push([]);
+      }
+      return updated;
+    };
+  
     if (medicine_ID) {
       try {
-        const response = await fetchInventoryByMedicineID(medicine_ID); // Get inventory for the selected medicine ID
-
+        const response = await fetchInventoryByMedicineID(medicine_ID);
+  
+        let updatedInventoryList = ensureInventoryListSize(inventoryList, index);
+  
         if (response.success && Array.isArray(response.data)) {
-          setInventoryList((prev) => {
-            const updated = [...prev];
-            updated[index] = response.data; // Store inventory for the selected medicine
-            return updated;
-          });
+          updatedInventoryList[index] = response.data;
         } else {
-          setInventoryList((prev) => {
-            const updated = [...prev];
-            updated[index] = [];
-            return updated;
-          });
+          updatedInventoryList[index] = [];
           toast.error("Failed to load inventory");
         }
+  
+        setInventoryList(updatedInventoryList);
       } catch (error) {
+        const updatedInventoryList = ensureInventoryListSize(inventoryList, index);
+        updatedInventoryList[index] = [];
+        setInventoryList(updatedInventoryList);
         toast.error("Error fetching inventory: " + error.message);
       }
     } else {
-      setInventoryList((prev) => {
-        const updated = [...prev];
-        updated[index] = [];
-        return updated;
-      });
+      const updatedInventoryList = ensureInventoryListSize(inventoryList, index);
+      updatedInventoryList[index] = [];
+      setInventoryList(updatedInventoryList);
     }
-  };
+  };  
 
   // Handle inventory selection from the inventory table
   const handleInventorySelection = (index, inventory_ID) => {
@@ -145,20 +153,29 @@ export default function BillingForm({prescriptionRows,handleRowChange,removeRow,
                 <tbody>
                   {prescriptionRows.map((row, index) => (
                     <tr key={index}>
-                      <td>
-                        <select
-                          className="form-select"
-                          value={row.medicine_ID || ""} // Ensure the value is an empty string if no medicine is selected
-                          onChange={(e) => handleMedicineChange(index, e.target.value)}
-                        >
-                          <option value="">Select Medicine</option>
-                          {medicines.map((med) => (
-                            <option key={med.medicine_ID} value={med.medicine_ID}>
-                              {med.medicine_Name}
-                            </option>
-                          ))}
-                        </select>
-                      </td>
+                    <td>
+                      <Select
+                        className="basic-single"
+                        classNamePrefix="select"
+                        placeholder="Select Medicine"
+                        options={medicines.map((med) => ({
+                          value: med.medicine_ID,
+                          label: med.medicine_Name,
+                        }))}
+                        value={
+                          medicines
+                            .map((med) => ({
+                              value: med.medicine_ID,
+                              label: med.medicine_Name,
+                            }))
+                            .find((option) => option.value === row.medicine_ID) || null
+                        }
+                        onChange={(selectedOption) =>
+                          handleMedicineChange(index, selectedOption ? selectedOption.value : "")
+                        }
+                        isClearable
+                      />
+                    </td>
                       <td>
                         {Array.isArray(inventoryList[index]) && inventoryList[index].length > 0 ? (
                           <table className="table-hover table-sm table-bordered mt-2 mb-0">
@@ -188,7 +205,7 @@ export default function BillingForm({prescriptionRows,handleRowChange,removeRow,
                             </tbody>
                           </table>
                         ) : (
-                          <div className="text-muted mt-2">No records found</div>
+                          <div className="text-danger mt-2 small">No records found</div>
                         )}
                       </td>
                       <td>

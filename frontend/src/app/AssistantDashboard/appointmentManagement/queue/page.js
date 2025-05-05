@@ -2,10 +2,11 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../../../../lib/firebase.js";
 import {collection,query,orderBy,onSnapshot,getDocs,where} from "firebase/firestore";
-import { createAppointment } from "../../../../services/appointmentService";
+import { createAppointment , getAllPatients } from "../../../../services/appointmentService";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import Select from "react-select";
 import AssistNavBar from "../../../../components/assistantSideBar";
 
 // Format date as yyyy-mm-dd
@@ -18,6 +19,7 @@ export default function AppointmentQueue() {
   const [patientID, setPatientID] = useState("");
   const [nextPosition, setNextPosition] = useState(1);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [patients, setPatients] = useState([]);
 
   // Real-time listener for appointments on selected date
   useEffect(() => {
@@ -45,6 +47,26 @@ export default function AppointmentQueue() {
     newDate.setDate(newDate.getDate() + offset);
     setSelectedDate(newDate);
   };
+
+  // Get sll the appointments into a combo box
+  useEffect(() => {
+    const fetchPatients = async () => {
+      try {
+        const response = await getAllPatients(); // This should return the JSON from your backend
+        if (response.success) {
+          const options = response.patients.map((p) => ({
+            value: p.patient_ID,
+            label: `${p.patient_ID} - ${p.firstName} ${p.lastName}`,
+          }));
+          setPatients(options);
+        }
+      } catch (error) {
+        toast.error("Error fetching patients");
+      }
+    };
+    fetchPatients();
+  }, []);
+  
 
   //handle book appointment
   const handleBook = async () => {
@@ -149,13 +171,14 @@ export default function AppointmentQueue() {
                 <p>
                   Next Available: <strong>Position {nextPosition}</strong>
                 </p>
-                <input
-                  type="text"
-                  className="form-control mb-2"
-                  placeholder="Patient ID"
-                  value={patientID}
-                  onChange={(e) => setPatientID(e.target.value)}
-                />
+                <Select
+                    className="mb-2"
+                    placeholder="Search patient by name..."
+                    options={patients}
+                    onChange={(selectedOption) =>
+                      setPatientID(selectedOption ? selectedOption.value : "")
+                    }
+                  />
                 <button
                   className="btn btn-primary w-100"
                   onClick={handleBook}

@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { db } from "../../../../lib/firebase.js";
-import {collection,query,orderBy,onSnapshot,getDocs,where} from "firebase/firestore";
+import {collection,query,orderBy,onSnapshot,getDocs,where,setDoc, doc} from "firebase/firestore";
 import { createAppointment , getAllPatients } from "../../../../services/appointmentService";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -20,6 +20,7 @@ export default function AppointmentQueue() {
   const [nextPosition, setNextPosition] = useState(1);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [patients, setPatients] = useState([]);
+  const [queueStatus, setQueueStatus] = useState("stopped");
 
   // Real-time listener for appointments on selected date
   useEffect(() => {
@@ -66,6 +67,40 @@ export default function AppointmentQueue() {
     };
     fetchPatients();
   }, []);
+  
+  useEffect(() => {
+    const fetchStatus = async () => {
+      const statusDoc = await getDocs(
+        query(collection(db, "queueStatus"), where("date", "==", getFormattedDate(selectedDate)))
+      );
+      if (!statusDoc.empty) {
+        setQueueStatus(statusDoc.docs[0].data().status);
+      } else {
+        setQueueStatus("stopped"); // default
+      }
+    };
+    fetchStatus();
+  }, [selectedDate]);
+
+  const handleStartQueue = async () => {
+    const date = getFormattedDate(selectedDate);
+    await setDoc(doc(db, "queueStatus", date), {
+      date,
+      status: "started"
+    });
+    setQueueStatus("started");
+    toast.success("Queue started. Patients will be notified.");
+  };
+  
+  const handleStopQueue = async () => {
+    const date = getFormattedDate(selectedDate);
+    await setDoc(doc(db, "queueStatus", date), {
+      date,
+      status: "stopped"
+    });
+    setQueueStatus("stopped");
+    toast.info("Queue stopped. Booking is disabled.");
+  };
   
 
   //handle book appointment
@@ -166,6 +201,22 @@ export default function AppointmentQueue() {
 
             {/* Right side - Booking tab */}
             <div className="col-md-4 d-flex flex-column gap-3">
+            <div className="text-center my-3">
+              <button
+                className="btn btn-success me-2"
+                onClick={handleStartQueue}
+                disabled={queueStatus === "started"}
+              >
+                Start Queue
+              </button>
+              <button
+                className="btn btn-danger"
+                onClick={handleStopQueue}
+                disabled={queueStatus === "stopped"}
+              >
+                Stop Queue
+              </button>
+            </div>
               <div className="card p-3">
                 <h5>Book the Next Available Position</h5>
                 <p>
@@ -182,6 +233,7 @@ export default function AppointmentQueue() {
                 <button
                   className="btn btn-primary w-100"
                   onClick={handleBook}
+                  disabled={queueStatus !== "started"}
                 >
                   Book Appointment
                 </button>

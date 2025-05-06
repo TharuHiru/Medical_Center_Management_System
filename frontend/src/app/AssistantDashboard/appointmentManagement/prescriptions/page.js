@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import AssistNavBar from "../../../../components/assistantSideBar";
 import BillingForm from "../../../../components/billingForm";
-
+import Receipt from "../../../../components/receipt";   
 
 export default function AppointmentQueue() {
   const [prescriptions, setPrescriptions] = useState([]);
@@ -16,6 +16,17 @@ export default function AppointmentQueue() {
   const printRef = useRef();
   const billingRef = useRef(null);
   const [showBillingForm, setShowBillingForm] = useState(false);
+
+  const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
+  const [showBillingModal, setShowBillingModal] = useState(false);
+  const [showReceiptModal, setShowReceiptModal] = useState(false);
+
+  // This will be passed to Receipt component
+  const onCloseAll = () => {
+    setShowPrescriptionModal(false);
+    setShowBillingModal(false);
+    setShowReceiptModal(false);
+  };
 
   const [prescriptionRows, setPrescriptionRows] = useState([
     { medicine_ID: "", dosage: "", units: 1 }
@@ -79,6 +90,14 @@ export default function AppointmentQueue() {
   const logout = () => {
     console.log("Logged out");
   };
+
+  //close all models
+  const handleCloseAll = () => {
+    setShowBillingForm(false);
+    setSelectedPrescription(null);
+    setShowReceipt(false); // You'll lift this state up too
+  };
+  
 
   return (
     <>
@@ -215,8 +234,11 @@ export default function AppointmentQueue() {
                   addRow={addRow}
                   billingRef={billingRef}
                   prescriptionId={selectedPrescription?.id}
+                  onCloseAll={handleCloseAll}
                 />
               )}
+
+              
           </div>
         </div>
       </div>

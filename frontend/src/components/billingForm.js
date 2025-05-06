@@ -6,11 +6,14 @@ import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../Styles/table.css";
 import Select from "react-select";
+import Receipt from "./receipt";
 
-export default function BillingForm({prescriptionRows,handleRowChange,removeRow,addRow,billingRef,prescriptionId,}) {
+export default function BillingForm({prescriptionRows,handleRowChange,removeRow,addRow,billingRef,prescriptionId,onCloseAll}) {
   const [medicines, setMedicines] = useState([]);
   const [inventoryList, setInventoryList] = useState([]);
   const [selectedInventory, setSelectedInventory] = useState({});
+  const [showReceipt, setShowReceipt] = useState(false);
+  const [billingData, setBillingData] = useState({ serviceCharge: 0, medicines: [] });
 
   // Fetch medicines when the component loads
   useEffect(() => {
@@ -30,6 +33,7 @@ export default function BillingForm({prescriptionRows,handleRowChange,removeRow,
     };
     fetchMedicines(); // Call the API when the component loads
   }, []);
+
 
   // Handle medicine selection from the combo box
   const handleMedicineChange = async (index, medicine_ID) => {
@@ -70,6 +74,12 @@ export default function BillingForm({prescriptionRows,handleRowChange,removeRow,
     }
   };  
 
+  // Log the billing data whenever it changes
+  useEffect(() => {
+    console.log("Updated billingData:", billingData);
+  }, [billingData]);
+  
+
   // Handle inventory selection from the inventory table
   const handleInventorySelection = (index, inventory_ID) => {
     handleRowChange(index, "inventory_ID", inventory_ID);
@@ -88,8 +98,7 @@ export default function BillingForm({prescriptionRows,handleRowChange,removeRow,
       inventory_ID: "", 
     };
 
-    // Add the new row to prescriptionRows
-    addRow([newRow]); 
+     addRow([newRow]); // Add the new row to prescriptionRows
 
     // Reset inventory list to empty for this new row
     setInventoryList((prev) => [...prev, []]); // emply list
@@ -101,22 +110,43 @@ export default function BillingForm({prescriptionRows,handleRowChange,removeRow,
     setInventoryList((prev) => prev.filter((_, i) => i !== index)); // Remove corresponding inventory for this row
   };
 
-  // send the billing details to the backend
+
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
+  
     const billingDetails = {
       serviceCharge: e.target.serviceCharge.value,
       prescriptionId: prescriptionId,
-      medicines: prescriptionRows.map((row) => ({
-        inventory_ID: row.inventory_ID,
-        units: row.units,
-      })),
+      medicines: prescriptionRows.map((row, index) => {
+        const inventory = inventoryList[index]?.find((inv) => inv.inventory_ID === row.inventory_ID);
+        return {
+          inventory_ID: row.inventory_ID,
+          units: row.units,
+          brandName: inventory?.Brand_Name || "",
+          unit_price: inventory?.unit_price || 0,
+        };
+      }),
     };
-
+  
+    console.log("Billing details:", billingDetails); // Debug log
+  
     try {
       const response = await savePaymentData(billingDetails); // Save billing details to the backend
       if (response.success) {
         toast.success("Billing details saved successfully!");
+  
+        // Update state
+        setBillingData({
+          serviceCharge: billingDetails.serviceCharge,
+          medicines: billingDetails.medicines,
+        });
+  
+        // Delay showing receipt to allow billingData to update
+        setTimeout(() => {
+          console.log("Updated billing data (after delay):", billingDetails);
+          setShowReceipt(true);
+        }, 0);
+  
       } else {
         toast.error("Failed to save billing details");
       }
@@ -124,6 +154,7 @@ export default function BillingForm({prescriptionRows,handleRowChange,removeRow,
       toast.error("Error saving billing details: " + error.message);
     }
   };
+  
 
   return (
     <div className="container mt-5" ref={billingRef}>
@@ -134,7 +165,7 @@ export default function BillingForm({prescriptionRows,handleRowChange,removeRow,
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
                 <label htmlFor="serviceCharge" className="form-label">
-                  Service Charge:
+                  Doctor Fee :
                 </label>
                 <input type="number" className="form-control" id="serviceCharge" required />
               </div>
@@ -244,6 +275,20 @@ export default function BillingForm({prescriptionRows,handleRowChange,removeRow,
         </div>
       </div>
     </div>
+    {/* Success Modal */}
+    {showReceipt && (
+      <Receipt
+        show={showReceipt}
+        //the assistant should not be able to accidently close the receipt model
+        onHide={() => {}} 
+        backdrop="static"
+        keyboard={false}
+        serviceCharge={billingData.serviceCharge}
+        medicines={billingData.medicines}
+        prescriptionId={prescriptionId}
+        onConfirmClose={onCloseAll} 
+      />
+    )}
   </div>
   );
 }

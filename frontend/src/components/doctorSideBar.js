@@ -20,7 +20,7 @@ const AssistSidebar = () => {
   const pathname = usePathname();
 
   const tabMap = {
-    '/DoctorDashboard/dashboard': 'Dashboard',
+    '/DoctorDashboard/Dashboard': 'Dashboard',
     '/DoctorDashboard/patientManage': 'Patients',
     '/DoctorDashboard/appointmentManage': 'Appointments',
     '/DoctorDashboard/assistantManage': 'Assistants',
@@ -33,7 +33,7 @@ const AssistSidebar = () => {
   };
 
   const links = [
-    { href: '/DoctorDashboard/dashboard', text: 'Dashboard', icon: <FaTachometerAlt /> },
+    { href: '/DoctorDashboard/Dashboard', text: 'Dashboard', icon: <FaTachometerAlt /> },
     { href: '/DoctorDashboard/patientManage', text: 'Patients', icon: <FaUser /> },
     { href: '/DoctorDashboard/appointmentManage', text: 'Appointments', icon: <FaCalendarCheck /> },
     { href: '/DoctorDashboard/assistantManage', text: 'Assistants', icon: <FaUser /> },

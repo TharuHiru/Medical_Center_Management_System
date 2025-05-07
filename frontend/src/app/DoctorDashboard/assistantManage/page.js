@@ -13,9 +13,6 @@ import AddAssistantModal from '../../../components/addAssistantModel';
 
 function DoctorDashboard() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const firstName = searchParams.get("firstname");
-  const lastName = searchParams.get("lastname");
   const { userName } = useAuth();
   // Function to handle logout
   const logout = () => {
@@ -54,10 +51,6 @@ function DoctorDashboard() {
     <div className="dashboard-container">
       <DoctorNavBar onLogout={logout} />
       <div className="content-area">
-        <div className="greeting-container">
-          <h5 className="assistant-name">Hello, {userName}</h5>
-          <p className="greeting-text">Welcome back!</p>
-        </div>
 
         <div className="button-container">
           <button className="btn btn-primary btnAddPatient" onClick={handleShowAssistantModal}>

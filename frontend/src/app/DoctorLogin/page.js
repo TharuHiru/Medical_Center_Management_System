@@ -32,7 +32,7 @@ function DoctorLoginPage() {
   
         console.log("Response Data: ", data);
   
-        router.push(`/DoctorDashboard/assistantManage?firstname=${data.user.firstName}&lastname=${data.user.lastName}`);
+        router.push(`/DoctorDashboard/Dashboard?firstname=${data.user.firstName}&lastname=${data.user.lastName}`);
       } else {
         console.error("Login Failed:", data.message);
         toast.error(data.message || "Login failed! Invalid username or password");

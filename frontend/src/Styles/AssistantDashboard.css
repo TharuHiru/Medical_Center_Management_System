@@ -120,115 +120,9 @@
   background-color: #faf43e;
 }
 
-.btnstartQueue {
-  padding: 40px;
-  background-color: #f59535;
-  border: transparent;
-  color: #663d14;
-}
-
-.btnstartQueue:hover {
-  background-color: #f67b00;
-}
-
 .nav-icon {
   margin-right: 10px;
   font-size: 20px;
-}
-
-/* Beautiful Table & Search Components CSS */
-/* ===================================== */
-
-/* Table Container */
-.table-responsive-custom {
-  overflow-x: auto;
-  overflow-y: auto;
-  max-width: 100%;
-  max-height: 600px;
-  display: block;
-  white-space: nowrap;
-  width: 100%;
-  min-width: 700px;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  margin: 20px 20px 20px 20px;
-  background: white;
-  position: relative;
-}
-
-/* Beautiful Scrollbar */
-.table-responsive-custom::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-.table-responsive-custom::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
-}
-
-.table-responsive-custom::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 10px;
-}
-
-.table-responsive-custom::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
-}
-
-/* Table Styling */
-.patient-data-table {
-  width: 100%;
-  margin: 20px;
-  border-collapse: separate;
-  border-spacing: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-/* Table Header */
-.patient-data-table th {
-  background-color: #2c6a75;
-  color: white;
-  text-align: left;
-  padding: 12px 15px;
-  font-weight: 600;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  font-size: 15px;
-  text-transform: capitalize;
-}
-
-.patient-data-table th:first-child {
-  border-top-left-radius: 12px;
-}
-
-.patient-data-table th:last-child {
-  border-top-right-radius: 12px;
-}
-
-/* Table Cells */
-.patient-data-table td {
-  padding: 10px 15px;
-  font-size: 14px;
-  color: #333;
-  border-bottom: 1px solid #f0f0f0;
-  transition: all 0.2s ease;
-}
-
-/* Table Rows */
-.patient-data-table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.patient-data-table tr:last-child td {
-  border-bottom: none;
-}
-
-.patient-data-table tr:hover td {
-  background-color: #e6f7ff;
-  color: #0077cc;
-  transform: translateX(2px);
 }
 
 /* Search Container */
@@ -315,18 +209,7 @@
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-/* Table Heading */
-.table-heading {
-  background-color: #2c6a75;
-  color: white;
-  padding: 15px 20px;
-  border-radius: 12px 12px 0 0;
-  font-size: 18px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {

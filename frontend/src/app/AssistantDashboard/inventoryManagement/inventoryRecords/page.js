@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import "../../../../Styles/AssistantDashboard.css";
 import "../../../../Styles/loginForms.css";
+import "../../../../Styles/tableStyle.css"
 import { Row, Col } from "react-bootstrap";
 import AssistNavBar from "../../../../components/assistantSideBar";
 import { FaPlus, FaSearch } from "react-icons/fa";
@@ -142,10 +143,10 @@ function AssistantDashboardInventory() {
         </div>
 
         {/* Inventory Table */}
-        <div className="patient-table-container">
+        <div>
           <div className="table-responsive-custom">
-            <table className="table table-striped patient-data-table">
-              <thead className="table-heading">
+            <table className="table table-striped data-table">
+              <thead>
                 <tr>
                   <th>Inventory ID</th>
                   <th>Medicine Name</th>

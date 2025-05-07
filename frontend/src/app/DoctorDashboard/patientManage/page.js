@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import "../../../Styles/AssistantDashboard.css";
+import "../../../Styles/tableStyle.css"
 import "../../../Styles/loginForms.css";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -71,9 +72,9 @@ function AssistantDashboardPatient() {
           />
         </div>
 
-        <div className="patient-table-container">
+        <div>
           <div className="table-responsive-custom">
-            <table className="table table-striped patient-data-table">
+            <table className="table table-striped data-table">
               <thead>
                 <tr>
                   <th></th>

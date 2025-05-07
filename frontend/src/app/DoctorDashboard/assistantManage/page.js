@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from "next/navigation";
 import '../../../Styles/AssistantDashboard.css';
 import '../../../Styles/loginForms.css';
+import "../../../Styles/tableStyle.css";
 import { useAuth } from "../../../context/AuthContext";
 import DoctorNavBar from '../../../components/doctorSideBar';
 import { FaUser } from 'react-icons/fa'; // Import icons
@@ -71,10 +72,10 @@ function DoctorDashboard() {
           />
         </div>
 
-        <div className="assistant-table-container">
+        <div>
           <div className="table-responsive-custom">
-            <table className="table table-striped assistant-data-table">
-              <thead className="table-heading">
+            <table className="table table-striped data-table">
+              <thead>
                 <tr>
                   <th>NIC</th>
                   <th>Title</th>

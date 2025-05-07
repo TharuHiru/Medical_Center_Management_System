@@ -143,7 +143,7 @@ function AssistantDashboardInventory() {
         </div>
 
         {/* Inventory Table */}
-        <div>
+        <div className="table-wrapper">
           <div className="table-responsive-custom">
             <table className="table table-striped data-table">
               <thead>

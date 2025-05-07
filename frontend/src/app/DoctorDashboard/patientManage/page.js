@@ -72,9 +72,9 @@ function AssistantDashboardPatient() {
           />
         </div>
 
-        <div>
+        <div className="table-wrapper">
           <div className="table-responsive-custom">
-            <table className="table table-striped data-table">
+            <table className=" data-table">
               <thead>
                 <tr>
                   <th></th>

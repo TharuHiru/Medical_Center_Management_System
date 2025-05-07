@@ -88,7 +88,7 @@ function AssistantDashboardPatient() {
         </div>
 
         {/* Patient Table */}
-        <div className="patient-table-container">
+        <div>
           <div className="table-responsive-custom">
             <table className="table table-striped patient-data-table">
               <thead>

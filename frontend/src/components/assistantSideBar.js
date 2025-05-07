@@ -9,10 +9,10 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FaTachometerAlt, FaUser, FaCalendarCheck, FaBoxes } from 'react-icons/fa';
-import '../Styles/sideNavBar.css';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import MenuIcon from '@mui/icons-material/Menu';
+import '../Styles/sideNavBar.css'; // Ensure you update this CSS file too
 
 const AssistSidebar = () => {
   const theme = useTheme();
@@ -38,7 +38,6 @@ const AssistSidebar = () => {
   const handleAppointmentsClick = () => setAppointmentsOpen(!appointmentsOpen);
 
   useEffect(() => {
-    // Expand the relevant section if a child path is selected
     if (pathname.startsWith('/AssistantDashboard/appointmentManagement')) {
       setAppointmentsOpen(true);
     }
@@ -70,25 +69,28 @@ const AssistSidebar = () => {
 
   return (
     <Box>
-    <AppBar position="sticky">
-                <Toolbar>
-                  {isMobile && (
-                    <IconButton color="inherit" edge="start" onClick={toggleDrawer} aria-label="menu" sx={{ mr: 2 }}>
-                      <MenuIcon />
-                    </IconButton>
-                  )}
-                </Toolbar>
-              </AppBar>
+      <AppBar position="sticky" sx={{ background: 'linear-gradient(to right, #2c5364, #203a43, #0f2027)' }}>
+        <Toolbar>
+          {isMobile && (
+            <IconButton color="inherit" edge="start" onClick={toggleDrawer} aria-label="menu" sx={{ mr: 2 }}>
+              <MenuIcon />
+            </IconButton>
+          )}
+        </Toolbar>
+      </AppBar>
+
       <Drawer
         sx={{
-          width: 240,
+          width: 260,
           flexShrink: 0,
           '& .MuiDrawer-paper': {
-            width: 240,
-            boxSizing: 'border-box',
-            backgroundColor: 'rgb(48, 90, 99)',
+            width: 260,
+            background: 'rgba(32, 58, 67, 0.9)',
             color: 'white',
+            backdropFilter: 'blur(10px)',
+            boxShadow: '4px 0 10px rgba(0,0,0,0.3)',
             paddingTop: '20px',
+            borderRight: '1px solid rgba(255,255,255,0.1)',
           },
         }}
         variant={isMobile ? 'temporary' : 'permanent'}
@@ -97,10 +99,10 @@ const AssistSidebar = () => {
         onClose={toggleDrawer}
         ModalProps={{ keepMounted: true }}
       >
-        <Typography variant="h5" sx={{ textAlign: 'center', fontWeight: 'bold' }}>
+        <Typography variant="h5" sx={{ textAlign: 'center', fontWeight: 600, mb: 2 }}>
           {currentTab}
         </Typography>
-        <hr />
+        <Divider sx={{ borderColor: 'rgba(255,255,255,0.1)' }} />
 
         <List>
           {links.map(({ href, text, icon, children }) => (
@@ -111,27 +113,33 @@ const AssistSidebar = () => {
                   href={href}
                   selected={pathname === href}
                   sx={{
-                    backgroundColor: pathname === href ? '#1a3c42' : 'inherit',
-                    '&:hover': { backgroundColor: '#1a3c42' },
-                    '&.Mui-selected': {
-                      backgroundColor: '#1a3c42 !important',
-                    },
-                    '&.Mui-selected:hover': {
+                    borderRadius: '12px',
+                    mx: 1,
+                    my: 0.5,
+                    transition: 'all 0.3s ease',
+                    backgroundColor: pathname === href ? '#1a3c42' : 'transparent',
+                    '&:hover': {
                       backgroundColor: '#1a3c42',
+                      transform: 'scale(1.02)',
                     },
                   }}
                 >
                   <ListItemIcon sx={{ color: 'white' }}>{icon}</ListItemIcon>
-                  <ListItemText primary={text} primaryTypographyProps={{ sx: { color: 'white', fontSize: '20px' } }} />
+                  <ListItemText primary={text} primaryTypographyProps={{ fontSize: '18px', fontWeight: 500 }} />
                 </ListItemButton>
               ) : (
                 <>
                   <ListItemButton
                     onClick={text === 'Appointments' ? handleAppointmentsClick : handleInventoryClick}
-                    sx={{ '&:hover': { backgroundColor: '#1a3c42' } }}
+                    sx={{
+                      borderRadius: '12px',
+                      mx: 1,
+                      my: 0.5,
+                      '&:hover': { backgroundColor: '#1a3c42', transform: 'scale(1.01)' },
+                    }}
                   >
                     <ListItemIcon sx={{ color: 'white' }}>{icon}</ListItemIcon>
-                    <ListItemText primary={text} primaryTypographyProps={{ sx: { color: 'white', fontSize: '20px' } }} />
+                    <ListItemText primary={text} primaryTypographyProps={{ fontSize: '18px', fontWeight: 500 }} />
                     {(text === 'Appointments' ? appointmentsOpen : inventoryOpen)
                       ? <ExpandLess sx={{ color: 'white' }} />
                       : <ExpandMore sx={{ color: 'white' }} />}
@@ -145,33 +153,34 @@ const AssistSidebar = () => {
                         href={subHref}
                         selected={pathname === subHref}
                         sx={{
-                          pl: 4,
-                          backgroundColor: pathname === subHref ? '#1a3c42' : 'inherit',
-                          '&:hover': { backgroundColor: '#1a3c42' },
-                          '&.Mui-selected': {
-                            backgroundColor: '#1a3c42 !important',
-                          },
-                          '&.Mui-selected:hover': {
-                            backgroundColor: '#1a3c42',
+                          pl: 6,
+                          py: 1,
+                          mx: 2,
+                          borderRadius: '8px',
+                          backgroundColor: pathname === subHref ? '#244a53' : 'transparent',
+                          transition: 'all 0.3s ease',
+                          '&:hover': {
+                            backgroundColor: '#2e5e68',
+                            transform: 'translateX(4px)',
                           },
                         }}
                       >
                         <ListItemText
                           primary={subText}
-                          primaryTypographyProps={{ sx: { color: 'white', fontSize: '18px' } }}
+                          primaryTypographyProps={{ fontSize: '16px', fontWeight: 400 }}
                         />
                       </ListItemButton>
                     ))}
                   </Collapse>
                 </>
               )}
-              <Divider />
             </React.Fragment>
           ))}
         </List>
-          <Box className="logout-container">
-            <button className="logout-button">Log Out</button>
-          </Box>
+
+        <Box className="logout-container" sx={{ textAlign: 'center', mt: 'auto', pb: 3 }}>
+          <button className="logout-button">Log Out</button>
+        </Box>
       </Drawer>
     </Box>
   );

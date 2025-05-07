@@ -11,10 +11,8 @@ import DoctorNavBar from '../../../components/doctorSideBar';
 
 function AssistantDashboard() {
    const router = useRouter();
-    //const searchParams = useSearchParams();
-    //const firstName = searchParams.get("firstname");
-    //const lastName = searchParams.get("lastname");
     const { userName } = useAuth();
+    
     // Function to handle logout
     const logout = () => {
       console.log('Logged out');

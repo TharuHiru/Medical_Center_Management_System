@@ -1,21 +1,20 @@
 /* Table Container */
 .table-responsive-custom {
     overflow-x: auto;
+    background: transparent;
     overflow-y: auto;
     max-width: 100%;
     max-height: 600px;
-    display: block;
-    white-space: nowrap;
-    width: 100%;
-    min-width: 700px;
+    max-width: 100%;
+    white-space: nowrap; /* Ensure horizontal scrolling */
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    margin: 20px 20px 20px 20px;
+    margin: 20px;
     background: white;
     position: relative;
   }
   
-  /* Beautiful Scrollbar */
+  /* Custom Scrollbar */
   .table-responsive-custom::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -34,14 +33,14 @@
   .table-responsive-custom::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8;
   }
-  /*
+  
   /* Table Styling */
   .data-table {
     width: 100%;
-    margin: 0px;
     border-collapse: separate;
     border-spacing: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 16px; /* Increased font size */
   }
   
   /* Table Header */
@@ -49,12 +48,12 @@
     background-color: #2c6a75 !important;
     color: white !important;
     text-align: left;
-    padding: 12px 15px;
+    padding: 14px 18px;
     font-weight: 600;
     position: sticky;
     top: 0;
     z-index: 10;
-    font-size: 15px;
+    font-size: 16px;
     text-transform: capitalize;
   }
   
@@ -68,11 +67,12 @@
   
   /* Table Cells */
   .data-table td {
-    padding: 10px 15px;
-    font-size: 14px;
+    padding: 12px 18px;
+    font-size: 16px;
     color: #333;
     border-bottom: 1px solid #f0f0f0;
     transition: all 0.2s ease;
+    white-space: nowrap; /* Prevent cell wrapping */
   }
   
   /* Table Rows */

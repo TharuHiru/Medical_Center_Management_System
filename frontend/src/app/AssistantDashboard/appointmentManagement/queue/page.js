@@ -7,6 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Select from "react-select";
+import Swal from "sweetalert2";
 import AssistNavBar from "../../../../components/assistantSideBar";
 
 // Format date as yyyy-mm-dd
@@ -76,7 +77,7 @@ export default function AppointmentQueue() {
       if (!statusDoc.empty) {
         setQueueStatus(statusDoc.docs[0].data().status);
       } else {
-        setQueueStatus("stopped"); // default
+        setQueueStatus("started"); // default
       }
     };
     fetchStatus();
@@ -86,20 +87,43 @@ export default function AppointmentQueue() {
     const date = getFormattedDate(selectedDate);
     await setDoc(doc(db, "queueStatus", date), {
       date,
-      status: "started"
+      status: "started",
+      note : "Doctor has arrived"
     });
     setQueueStatus("started");
     toast.success("Queue started. Patients will be notified.");
   };
   
   const handleStopQueue = async () => {
-    const date = getFormattedDate(selectedDate);
-    await setDoc(doc(db, "queueStatus", date), {
-      date,
-      status: "stopped"
+    const { value: note } = await Swal.fire({
+      title: "Stop Queue",
+      input: "textarea",
+      inputLabel: "Reason for stopping the queue",
+      inputPlaceholder: "Type your reason here...",
+      inputAttributes: {
+        "aria-label": "Type your reason here"
+      },
+      showCancelButton: true,
+      confirmButtonText: "Submit",
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#6c757d",
+      preConfirm: (note) => {
+        if (!note) {
+          Swal.showValidationMessage("You must provide a reason.");
+        }
+      }
     });
-    setQueueStatus("stopped");
-    toast.info("Queue stopped. Booking is disabled.");
+  
+    if (note) {
+      const date = getFormattedDate(selectedDate);
+      await setDoc(doc(db, "queueStatus", date), {
+        date,
+        status: "stopped",
+        note: note
+      });
+      setQueueStatus("stopped");
+      toast.info("Queue stopped with note. Booking is disabled.");
+    }
   };
   
 
@@ -109,21 +133,26 @@ export default function AppointmentQueue() {
       toast.error("Please enter patient details");
       return;
     }
+    const bookingDate = getFormattedDate(selectedDate);
+  
+    if (queueStatus === "stopped" && bookingDate === getFormattedDate(new Date())) {
+      toast.error("Queue is stopped for today. Booking is disabled.");
+      return;
+    }
+  
     try {
-      const bookingDate = getFormattedDate(selectedDate);
-      // Check if the patient already has an appointment for the selected date
       const q = query(
         collection(db, "appointments"),
         where("appointmentDate", "==", bookingDate),
         where("id", "==", patientID)
       );
       const snapshot = await getDocs(q);
-      //manage duplicate appointments for the same date
+  
       if (!snapshot.empty) {
         toast.error("This patient already has an appointment on this date.");
         return;
       }
-      // Book the appointment
+  
       await createAppointment(patientID, bookingDate);
       toast.success("Appointment booked successfully!");
       setPatientID("");
@@ -131,6 +160,7 @@ export default function AppointmentQueue() {
       toast.error(errorMessage);
     }
   };
+  
   
   //logout function
   const logout = () => {
@@ -205,9 +235,9 @@ export default function AppointmentQueue() {
               <button
                 className="btn btn-success me-2"
                 onClick={handleStartQueue}
-                disabled={queueStatus === "started"}
+                disabled={queueStatus === "stopped"}
               >
-                Start Queue
+                Notify Doctor Arrival
               </button>
               <button
                 className="btn btn-danger"
@@ -231,12 +261,13 @@ export default function AppointmentQueue() {
                     }
                   />
                 <button
-                  className="btn btn-primary w-100"
-                  onClick={handleBook}
-                  disabled={queueStatus !== "started"}
-                >
-                  Book Appointment
-                </button>
+                    className="btn btn-primary w-100"
+                    onClick={handleBook}
+                    disabled={queueStatus === "stopped"}
+                  >
+                    Book Appointment
+                  </button>
+
               </div>
             </div>
           </div>

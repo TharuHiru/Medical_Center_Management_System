@@ -1,7 +1,6 @@
 .table-responsive-custom {
     width: 94%;
     max-width: 100%;
-    max-height: 100%; /* or any fixed height you want */
     overflow-x: auto;
     overflow-y: auto;
     white-space: nowrap;
@@ -11,20 +10,17 @@
   }
 
   .table-wrapper {
-    height: 80vh !important; /* or 80vh if you have a header/navbar */
-    overflow: hidden !important;
     padding: 24px;
     box-sizing: border-box !important;
   }
   
     /* This ensures ALL header cells stay at top on scroll */
-.data-table th {
+    .data-table th {
     position: sticky;
     top: 0;
     z-index: 1; /* Lower than the sticky column's header */
     background-color: #2c6a75 !important;
     color: white !important;
-    
   }
   
   /* Make ONLY the first column sticky */

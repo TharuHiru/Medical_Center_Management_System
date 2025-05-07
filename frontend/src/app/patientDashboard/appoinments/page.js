@@ -23,6 +23,9 @@ export default function AppointmentQueue() {
   const [selectedPatientID, setSelectedPatientID] = useState("");
   const [todayUnavailableNote, setTodayUnavailableNote] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [queueStatus, setQueueStatus] = useState(null);
+  const [queueNote, setQueueNote] = useState("");
+  
 
   const getFormattedDate = (date) => date.toISOString().split("T")[0]; // YYYY-MM-DD
 
@@ -146,6 +149,31 @@ export default function AppointmentQueue() {
     setSelectedDate(newDate);
   };
 
+  useEffect(() => {
+    const fetchQueueStatus = async () => {
+      try {
+        const dateKey = getFormattedDate(selectedDate);
+        const docRef = doc(db, "queueStatus", dateKey);
+        const docSnap = await getDocs(query(collection(db, "queueStatus"), where("__name__", "==", dateKey)));
+  
+        if (!docSnap.empty) {
+          const data = docSnap.docs[0].data();
+          setQueueStatus(data.status); // 'started', 'stopped', etc.
+          setQueueNote(data.note || "");
+        } else {
+          setQueueStatus(null);
+          setQueueNote("");
+        }
+      } catch (err) {
+        console.error("Error fetching queue status:", err);
+        toast.error("Could not load queue status");
+      }
+    };
+  
+    fetchQueueStatus();
+  }, [selectedDate]);
+  
+
   return (
     <>
       <PatientSidebar onLogout={logout} />
@@ -231,29 +259,47 @@ export default function AppointmentQueue() {
 
             {/* Booking section */}
             <div className="col-md-4">
-              <div className="card p-3">
-                <h5>Book the Next Available Position</h5>
-                <p>
-                  Next Available: <strong>Position {nextPosition}</strong>
-                </p>
-                <select
-                  className="form-select mb-3"
-                  value={selectedPatientID}
-                  onChange={(e) => setSelectedPatientID(e.target.value)}
-                >
-                  {patientList.map((patient) => (
-                    <option key={patient.patient_ID} value={patient.patient_ID}>
-                      {patient.firstName} {patient.lastName} (ID: {patient.patient_ID})
-                    </option>
-                  ))}
-                </select>
-                <button
-                  className="btn btn-primary w-100"
-                  onClick={handleBook}
-                >
-                  Book the Number
-                </button>
-              </div>
+            <div className="card p-3">
+              <h5>Book the Next Available Position</h5>
+
+              {queueStatus === "stopped" && (
+                <div className="alert alert-danger">
+                  <strong>Note:</strong> {queueNote || "Queue is currently stopped."}
+                </div>
+              )}
+
+              {queueStatus === "started" && queueNote && (
+                <div className="alert alert-success">
+                  <strong>Doctor Notice:</strong> {queueNote}
+                </div>
+              )}
+
+              <p>
+                Next Available: <strong>Position {nextPosition}</strong>
+              </p>
+
+              <select
+                className="form-select mb-3"
+                value={selectedPatientID}
+                onChange={(e) => setSelectedPatientID(e.target.value)}
+                disabled={queueStatus === "stopped"}
+              >
+                {patientList.map((patient) => (
+                  <option key={patient.patient_ID} value={patient.patient_ID}>
+                    {patient.firstName} {patient.lastName} (ID: {patient.patient_ID})
+                  </option>
+                ))}
+              </select>
+
+              <button
+                className="btn btn-primary w-100"
+                onClick={handleBook}
+                disabled={queueStatus === "stopped"}
+              >
+                Book the Number
+              </button>
+            </div>
+
             </div>
           </div>
           <ToastContainer />

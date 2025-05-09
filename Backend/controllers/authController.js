@@ -49,7 +49,7 @@ const doctorLogin = async (req, res) => {
     const { UserName, password } = req.body;
 
     try {
-        const rows = await findDoctorByUsername(UserName);
+        const rows = await authModel.findDoctorByUsername(UserName);
         if (rows.length === 0) {
             return res.status(401).json({ success: false, message: "User not found!" });
         }

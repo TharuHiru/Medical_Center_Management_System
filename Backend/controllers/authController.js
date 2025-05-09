@@ -1,6 +1,8 @@
+const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const authModel = require('../models/authModel');
+const nodemailer = require('nodemailer');
 const userTempData = {}; // In-memory temporary storage
 
 // Step 1 - Store doctor basic info
@@ -107,24 +109,45 @@ const registerAssistant = async (req, res) => {
     try {
         const existing = await authModel.findAssistantByEmail(email);
         if (existing.length > 0) {
-            return res.status(400).json({ message: 'Assistant already exists' });
+            return res.status(400).json({ message: 'Assistant for this email is already exists' });
         }
 
-        const randomPassword = "tharu"; // Secure this later
+        // create random password and hack it
+        const generateRandomPassword = () => {return crypto.randomBytes(6).toString('base64');}; // 8-char password};
+        const randomPassword = generateRandomPassword();
         const hashedPassword = await bcrypt.hash(randomPassword, 10);
 
         await authModel.insertAssistant({
             nic,title,firstname,lastname,contact,houseNo,addline1,addline2,email,
-            password: hashedPassword
+            password: hashedPassword,
+            firstLogin: true
         });
 
-        return res.status(201).json({ success: true, message: 'Assistant registered successfully. Email sent!' });
-    } catch (error) {
-        console.error('Error inserting assistant:', error);
-        return res.status(500).json({ message: 'Server error.' });
+        const transporter = nodemailer.createTransport({
+                    service: 'gmail',
+                    auth: {
+                        user: process.env.EMAIL_USER,
+                        pass: process.env.EMAIL_PASS
+                    },
+                    tls: { rejectUnauthorized: false }
+                });
+        
+                const mailOptions = {
+                    from: process.env.EMAIL_USER,
+                    to: email,
+                    subject: 'Your Assistant Account Password for POLYCLINIC web site',
+                    text: `Hello ${firstname},\n\nYour account has been created.\nYour temporary password is: ${randomPassword}\nPlease log in and change your password.\n\nRegards,\nTeam`
+                };
+
+                await transporter.sendMail(mailOptions);
+                res.json({ message: 'Assistant Account Created and Verification email sent successfully !' });    
+            } catch (error) {
+                console.error('Error inserting assistant:', error);
+                return res.status(500).json({ message: 'Server error.' });
     }
 };
 
+// Assistant login logic
 const assistantLogin = async (req, res) => {
     const { email, password } = req.body;
 
@@ -141,12 +164,16 @@ const assistantLogin = async (req, res) => {
             return res.status(401).json({ success: false, message: "Invalid Credentials!" });
         }
 
-        const token = jwt.sign({ id: assistant.id }, "your_secret_key", { expiresIn: "1h" });
+        const token = jwt.sign({ id: assistant.assist_ID }, "your_secret_key", { expiresIn: "1h" });
 
+        console.log (assistant.firstLogin);
         return res.json({
             success: true,
             message: "Login successful!",
             token,
+            firstLogin: assistant.firstLogin,
+
+            //data set in the auth context
             user: {
                 id: assistant.assist_ID,
                 firstName: assistant.First_Name,
@@ -170,6 +197,28 @@ const fetchMasterAccounts = async (req, res) => {
     }
 };
 
+//change assistant password
+const changeAssistantPassword = async (req, res) => {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+    try {
+        const decoded = jwt.verify(token, "your_secret_key");
+        const { newPassword } = req.body;
+
+        const hashed = await bcrypt.hash(newPassword, 10);
+        console.log("Decoded token ID:", decoded.id);
+
+
+        const result = await authModel.updateAssistantPasswordAndFlag(decoded.id, hashed);
+        console.log("Update result",result);        
+        return res.status(200).json({ message: "Password updated successfully." });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: "Error updating password" });
+    }
+};
+
 module.exports = {
     registerStep1,
     registerStep2,
@@ -177,5 +226,6 @@ module.exports = {
     tempPatientSignup,
     registerAssistant,
     assistantLogin,
-    fetchMasterAccounts
+    fetchMasterAccounts,
+    changeAssistantPassword
 };

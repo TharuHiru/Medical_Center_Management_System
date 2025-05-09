@@ -100,4 +100,17 @@ export const getMasterAccounts = async () => {
   }
 };
 
+// change assistant password at first login
+export const changeAssistantPassword = async (newPassword, token) => {
+  try {
+    const response = await axios.post(`${API_URL}/change-assistant-password`,
+      { newPassword },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response.data;
+  } catch (error) {
+    return error.response?.data || { success: false, message: "Server error!" };
+  }
+};
+
 

@@ -17,33 +17,33 @@ const AssistantLogin = () => {
   
 
   const handleSubmit = async (e) => {
-      e.preventDefault();
-      try {
-        const data = await assistLogin(email, password); // API call and await for response
-    
-        if (data.success) {
+    e.preventDefault();
+    try {
+      const data = await assistLogin(email, password);
+  
+      if (data.success) {
+        localStorage.setItem("AssistToken", data.token);
+        login("assistant", data.user.id, null, {
+          firstName: data.user.firstName,
+          lastName: data.user.lastName,
+        });
+  
+        if (data.firstLogin == 1) {
+          router.push("/changeAssistantPassword");
+        } else {
           toast.success("Logged in successfully!");
-          localStorage.setItem("AssistToken", data.token);
-        
-          login("assistant", data.user.id, null, {
-            firstName: data.user.firstName,
-            lastName: data.user.lastName,
-          });
-        
-          router.push(`/AssistantDashboard/dashboard`);
+          router.push("/AssistantDashboard/dashboard");
         }
-        else {
-          console.error("Login Failed:", data.message); // messgae for Debugging
-          toast.error(data.message || "Login failed! Invalid username or password");
-        }
-      } 
-      catch (error) {
-        console.error("Login Error:", error); // Debugging
-    
-        // Handle backend errors from `doctorLogin`
-        toast.error(error.message || "A network error occurred. Please check your connection.");
+      } else {
+        console.error("Login Failed:", data.message);
+        toast.error(data.message || "Login failed! Invalid username or password");
       }
-    };
+    } catch (error) {
+      console.error("Login Error:", error);
+      toast.error(error.message || "A network error occurred. Please check your connection.");
+    }
+  };
+  
 
   return (
     <div>

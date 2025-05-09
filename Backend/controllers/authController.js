@@ -1,7 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { insertDoctor, findDoctorByUsername } = require('../models/authModel');
-
+const authModel = require('../models/authModel');
 const userTempData = {}; // In-memory temporary storage
 
 // Step 1 - Store doctor basic info

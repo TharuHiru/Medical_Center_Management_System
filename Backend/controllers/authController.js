@@ -148,9 +148,9 @@ const assistantLogin = async (req, res) => {
             message: "Login successful!",
             token,
             user: {
+                id: assistant.assist_ID,
                 firstName: assistant.First_Name,
-                lastName: assistant.Last_Name
-            }
+                lastName: assistant.Last_Name}
         });
 
     } catch (error) {

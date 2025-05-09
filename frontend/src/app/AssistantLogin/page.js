@@ -1,17 +1,20 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation"; // Use useRouter instead of useNavigate
+import { useRouter } from "next/navigation"; 
 import BackNavbar from "../../components/backNavBar"; // Navbar component
 import "../../Styles/loginForms.css"; // Import styles
 import { assistLogin } from "../../services/authService"; // import the login function from the service file
 import { toast } from "react-toastify"; // Import Toastify for toast notifications
 import "react-toastify/dist/ReactToastify.css"; // Toastify CSS
+import { useAuth } from "../../context/AuthContext";
 
 const AssistantLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter(); 
+  const { login } = useAuth(); // ✅ Moved here
+  
 
   const handleSubmit = async (e) => {
       e.preventDefault();
@@ -21,9 +24,14 @@ const AssistantLogin = () => {
         if (data.success) {
           toast.success("Logged in successfully!");
           localStorage.setItem("AssistToken", data.token);
-  
-          router.push(`/AssistantDashboard/dashboard?firstname=${data.user.firstName}&lastname=${data.user.lastName}`); // Redirect to the dashboard
-        } 
+        
+          login("assistant", data.user.id, null, {
+            firstName: data.user.firstName,
+            lastName: data.user.lastName,
+          });
+        
+          router.push(`/AssistantDashboard/dashboard`);
+        }
         else {
           console.error("Login Failed:", data.message); // messgae for Debugging
           toast.error(data.message || "Login failed! Invalid username or password");

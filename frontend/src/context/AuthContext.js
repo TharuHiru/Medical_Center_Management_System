@@ -7,10 +7,11 @@ const AuthContext = createContext();
 // AuthProvider component
 export const AuthProvider = ({ children }) => {
   const [userType, setUserType] = useState(null); // 'patient', 'doctor', or 'assistant'
-  const [patientID, setPatientID] = useState(null); // Stores patient ID only for patient login
+  const [patientID, setPatientID] = useState(null); 
   const [doctorID, setDoctorID] = useState(null);
   const [masterID , setMasterID] = useState(null);
   const [userName, setUserName] = useState(null);
+  const [assistantID, setAssistantID] = useState(null);
 
   // Load saved user details on page refresh
   useEffect(() => {
@@ -19,9 +20,13 @@ export const AuthProvider = ({ children }) => {
     const savedDoctorID = localStorage.getItem("doctorID");
     const savedMasterID = localStorage.getItem("masterID");
     const savedUserName = localStorage.getItem("userName");
+    const savedAssistantID = localStorage.getItem("assistantID");
 
     if (savedUserType === "patient" && savedMasterID) {
       setMasterID(savedMasterID);
+    }
+    if (savedUserType === "assistant" && savedAssistantID) {
+      setAssistantID(savedAssistantID);
     }
     if (savedUserType) {
       setUserType(savedUserType);
@@ -36,7 +41,6 @@ export const AuthProvider = ({ children }) => {
 
   }, []);
 
-  // Login function
   const login = (type, id = null, masterIDVal = null, userDetails = null) => {
     setUserType(type);
     localStorage.setItem("userType", type);
@@ -44,45 +48,57 @@ export const AuthProvider = ({ children }) => {
     if (type === "patient" && id) {
       setPatientID(id);
       localStorage.setItem("userName", id);
-  
       if (masterIDVal) {
         setMasterID(masterIDVal);
         localStorage.setItem("masterID", masterIDVal);
       }
-    } else {
-      setPatientID(null);
-      localStorage.removeItem("userName");
-      setMasterID(null);
-      localStorage.removeItem("masterID");
-    }
-  
-    if (type === "doctor" && id) {
+
+    } else if (type === "doctor" && id) {
       setDoctorID(id);
       localStorage.setItem("doctorID", id);
-  
-      // ✅ Use userDetails instead of data
       if (userDetails?.firstName) {
         const fullName = `${userDetails.firstName} ${userDetails.lastName}`;
         setUserName(fullName);
         localStorage.setItem("userName", fullName);
       }
+
+    } else if (type === "assistant" && id) {
+      setAssistantID(id);
+      localStorage.setItem("assistantID", id);
+      if (userDetails?.firstName) {
+        const fullName = `${userDetails.firstName} ${userDetails.lastName}`;
+        setUserName(fullName);
+        localStorage.setItem("userName", fullName);
+      }
+
     } else {
+      setPatientID(null);
       setDoctorID(null);
+      setAssistantID(null);
+      setMasterID(null);
+      localStorage.removeItem("userName");
       localStorage.removeItem("doctorID");
+      localStorage.removeItem("assistantID");
+      localStorage.removeItem("masterID");
     }
   };
   
-
   // Logout function
   const logout = () => {
     setUserType(null);
     setPatientID(null);
+    setDoctorID(null);
+    setAssistantID(null);
+    setMasterID(null);
     localStorage.removeItem("userType");
     localStorage.removeItem("userName");
+    localStorage.removeItem("doctorID");
+    localStorage.removeItem("assistantID");
+    localStorage.removeItem("masterID");
   };
-
+  
   return (
-    <AuthContext.Provider value={{ userType, userName, doctorID, patientID, masterID, login, logout }}>
+    <AuthContext.Provider value={{ userType, userName, doctorID, patientID, masterID, assistantID,login, logout }}>
       {children}
     </AuthContext.Provider>
   );

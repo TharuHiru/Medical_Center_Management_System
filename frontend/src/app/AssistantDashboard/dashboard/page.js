@@ -6,14 +6,14 @@ import "../../../Styles/AssistantDashboard.css";
 import "../../../Styles/loginForms.css";
 import "../../../Styles/dashboardCard.css";
 import Image from "next/image";
+import { useAuth } from "../../../context/AuthContext";
 import AssistNavBar from "../../../components/assistantSideBar";
 import { PersonAdd, AccessibilityNew, LocalHospital, EventNote } from "@mui/icons-material";  // Example icons
 
 function AssistantDashboard() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const username = `${searchParams.get("firstname")} ${searchParams.get("lastname")}`;
-
+ const { userName } = useAuth();
   // Logout logic
   const logout = () => {
     router.push("/login");
@@ -40,7 +40,7 @@ function AssistantDashboard() {
             />
           </div>
           <div className="text-col text-center text-md-start">
-            <h1 className="fw-bold mb-2 card-text">Welcome, {username} 👋</h1>
+            <h1 className="fw-bold mb-2 card-text">Welcome, {userName} 👋</h1>
             <p className="mb-0 text-muted">Wishing you a productive day ahead!</p>
           </div>
         </div>

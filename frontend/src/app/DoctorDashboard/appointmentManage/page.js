@@ -30,6 +30,7 @@ function DoctorQueue() {
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   // Real-time listener to appointment queue
   useEffect(() => {
@@ -54,6 +55,11 @@ function DoctorQueue() {
     
     return () => unsubscribe();
   }, [selectedDate]);
+
+  // Toggle sidebar collapse state
+  const toggleSidebar = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
+  };
 
   const handleDateTabClick = (offset) => {
     const newDate = new Date();
@@ -108,74 +114,87 @@ function DoctorQueue() {
     const statusClass = isPending ? "list-group-item-warning" : "list-group-item-success";
     
     return (
-      //the appointment list
-          <div
-            key={appt.docId}
-            className={`list-group-item d-flex justify-content-between align-items-center ${statusClass} mb-2 shadow-sm rounded`}
-          >
-            <div className="d-flex align-items-center">
-              <span className="badge bg-primary rounded-pill me-3">#{index + 1}</span> {/*Queue Position*/}
-              <div>
-                <h5 className="mb-1">{appt.id}</h5> {/*Patient ID*/}
-                <p className="mb-0 text-muted small"> {/*status text*/}
-                  {isPending ? 
-                    "Waiting to be seen" : 
-                    "Currently with doctor"
-                  }
-                </p>
-              </div>
-            </div>
-            
-            {/*control Buttons*/}
-            <div className="d-flex">
-              {isPending ? (
-                <button 
-                  className="btn btn-primary btn-sm" 
-                  onClick={() => handleAdmit(appt)}
-                >
-                  <i className="fas fa-user-check me-1"></i> Admit
-                </button>
-              ) : (
-                <React.Fragment>
-                  <button 
-                    className="btn btn-outline-primary btn-sm me-2" 
-                    onClick={() => handleAddPrescription(appt)}
-                  >
-                    <i className="fas fa-prescription me-1"></i> Add Prescription
-                  </button>
-                  <button 
-                    className="btn btn-outline-danger btn-sm" 
-                    onClick={() => handleRemove(appt.docId)}
-                  >
-                    <i className="fas fa-times me-1"></i> Remove
-                  </button>
-                </React.Fragment>
-              )}
-            </div>
+      <div
+        key={appt.docId}
+        className={`list-group-item d-flex flex-column flex-md-row justify-content-between align-items-md-center ${statusClass} mb-2 shadow-sm rounded p-3`}
+      >
+        <div className="d-flex align-items-center mb-2 mb-md-0">
+          <span className="badge bg-primary rounded-pill me-3">#{index + 1}</span> {/*Queue Position*/}
+          <div>
+            <h5 className="mb-1">{appt.id}</h5> {/*Patient ID*/}
+            <p className="mb-0 text-muted small"> {/*status text*/}
+              {isPending ? 
+                "Waiting to be seen" : 
+                "Currently with doctor"
+              }
+            </p>
           </div>
-        );
+        </div>
+        
+        {/*control Buttons*/}
+        <div className="d-flex flex-column flex-sm-row gap-2 mt-2 mt-md-0">
+          {isPending ? (
+            <button 
+              className="btn btn-primary btn-sm" 
+              onClick={() => handleAdmit(appt)}
+            >
+              <i className="fas fa-user-check me-1"></i> Admit
+            </button>
+          ) : (
+            <React.Fragment>
+              <button 
+                className="btn btn-outline-primary btn-sm" 
+                onClick={() => handleAddPrescription(appt)}
+              >
+                <i className="fas fa-prescription me-1"></i> Add Prescription
+              </button>
+              <button 
+                className="btn btn-outline-danger btn-sm" 
+                onClick={() => handleRemove(appt.docId)}
+              >
+                <i className="fas fa-times me-1"></i> Remove
+              </button>
+            </React.Fragment>
+          )}
+        </div>
+      </div>
+    );
   };
 
   return (
-    <div className="dashboard-container bg-light min-vh-100">
-      <DoctorNavBar onLogout={logout} />
+    <div className="dashboard-container bg-light min-vh-100 d-flex flex-column overflow-hidden">
+      <div className="d-lg-none position-fixed top-0 start-0 p-3" style={{ zIndex: 1000 }}>
+        <button className="btn btn-primary" onClick={toggleSidebar}>
+          <i className={`fas fa-${sidebarCollapsed ? 'bars' : 'times'}`}></i>
+        </button>
+      </div>
       
-      <div className="content-area d-flex justify-content-center" style={{ marginLeft: "260px", padding: "20px" }}>
-      <div style={{ maxWidth: "800px", width: "100%" }}>        
-       <div className="container">
-          <div className="row mb-4" style={{ background: 'rgba(32, 58, 67, 0.9)' }} >
-            <div className="col-12" >
+      <DoctorNavBar onLogout={logout} collapsed={sidebarCollapsed} />
+      
+      <div className="content-area" 
+           style={{ 
+             marginLeft: sidebarCollapsed ? "0" : "260px", 
+             transition: "margin-left 0.3s ease-in-out",
+             width: sidebarCollapsed ? "100%" : "calc(100% - 260px)",
+             maxWidth: "100%",
+             overflowX: "hidden"
+           }}>
+        <div className="container p-3 p-md-4">
+          <div className="row mb-4">
+            <div className="col-12">
               <div className="card shadow-sm">
                 <div className="card-body text-center" style={{ background: 'rgba(32, 58, 67, 0.9)' }}>
-                  <h2 className="card-title">Patient Queue Dashboard</h2>
-                  <h5 className="text-muted">{formatDisplayDate(selectedDate)}</h5>
+                  <h2 className="card-title text-white">Patient Queue Dashboard</h2>
+                  <h5 className="text-white">{formatDisplayDate(selectedDate)}</h5>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Date Selection Tabs */}
-          <div className="mb-4 text-center">
+          <div className="card-body">
+              {/* Date Selection Tabs */}
+              <div className="mb-4 text-center">
                 <div className="btn-group" role="group" style={{ background: 'rgba(32, 58, 67, 0.9)' }}>
                   {[{ label: "Today", offset: 0 },{ label: "Tomorrow", offset: 1 },{ label: "Day After Tomorrow", offset: 2 }
                   ].map((item) => {
@@ -197,14 +216,15 @@ function DoctorQueue() {
                   })}
                 </div>
               </div>
+              </div>
 
           {/* Appointments List */}
           <div className="row">
             <div className="col-12">
               <div className="card shadow">
                 <div className="card-header bg-white">
-                  <div className="d-flex justify-content-between align-items-center">
-                    <h4 className="mb-0">Patient Queue</h4>
+                  <div className="d-flex justify-content-between align-items-center flex-wrap">
+                    <h4 className="mb-2 mb-md-0">Patient Queue</h4>
                     <span className="badge bg-info">
                       {appointments.length} {appointments.length === 1 ? 'patient' : 'patients'}
                     </span>
@@ -234,19 +254,18 @@ function DoctorQueue() {
             </div>
           </div>
         </div>
-        </div>
-
-        {/* Prescription Modal */}
-        <PrescriptionModal
-          show={showModal}
-          handleClose={() => {
-            setShowModal(false);
-            setSelectedAppointment(null);
-          }}
-          patientId={selectedAppointment?.id}
-          appointmentID={selectedAppointment?.appointment_ID}
-        />
       </div>
+
+      {/* Prescription Modal */}
+      <PrescriptionModal
+        show={showModal}
+        handleClose={() => {
+          setShowModal(false);
+          setSelectedAppointment(null);
+        }}
+        patientId={selectedAppointment?.id}
+        appointmentID={selectedAppointment?.appointment_ID}
+      />
     </div>
   );
 }

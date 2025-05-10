@@ -27,7 +27,7 @@ const PatientLogin = () => {
         login("patient", userName, response.master_ID); // ✅ Passing master_ID
         console.log("Patient ID stored in context:", userName,response.master_ID); // ✅ Log the ID
         toast.success(`Login successful! Your Patient ID: ${userName}`); // ✅ Include ID in alert
-        router.push("/patientDashboard/appoinments"); // Redirect to dashboard
+        router.push("/patientDashboard/dashboard"); // Redirect to dashboard
       } else {
         toast.err("Login failed: " + response.error);
       }

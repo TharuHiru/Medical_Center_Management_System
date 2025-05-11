@@ -6,7 +6,7 @@ import BackNavbar from "@/components/backNavBar"; //import backnav bar to use
 import { toast } from "react-toastify";// toast css
 import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link"; // Next.js navigation
-import { useAuth } from ".@/context/AuthContext"; // Make sure this path is correct
+import { useAuth } from "@/context/AuthContext"; // Make sure this path is correct
 import { doctorLogin } from "@/services/authService";
 
 function DoctorLoginPage() {

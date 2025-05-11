@@ -62,9 +62,21 @@ async function removePatient(req, res) {
   }
 }
 
+const fetchPatients = async (req, res) => {
+    try {
+        const rows = await appointmentModel.fetchPatients();
+        console.log('Fetched patients:', rows);
+        return res.status(200).json({ success: true, data: rows });
+    } catch (error) {
+        console.error('Error fetching categories:', error);
+        return res.status(500).json({ success: false, message: 'Server error.' });
+    }
+};
+
 module.exports = {
   addAppointment,
   getAppointments,
   admitPatient,
   removePatient,
+  fetchPatients
 };

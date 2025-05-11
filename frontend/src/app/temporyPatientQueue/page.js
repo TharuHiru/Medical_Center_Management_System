@@ -4,6 +4,7 @@ import { db } from "@/lib/firebase";
 import {collection,query,orderBy,onSnapshot,where,addDoc,getDocs,} from "firebase/firestore";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { checkExistingAppointment, createTemporaryAppointment } from "@/services/temporaryAppointmentService";
 
 export default function TempPatientQueue() {
   const [appointments, setAppointments] = useState([]);
@@ -23,11 +24,15 @@ export default function TempPatientQueue() {
   const identifier = `${name.trim()}_${phone.trim()}`;
 
    useEffect(() => {
-    const storedData = localStorage.getItem("temporarypatientData");
-    if (storedData) {
-      setPatientData(JSON.parse(storedData));
-    }
-  }, []);
+  const storedData = localStorage.getItem("temporarypatientData");
+  if (storedData) {
+    const parsedData = JSON.parse(storedData);
+    setPatientData(parsedData);
+    setName(parsedData.name || "");
+    setPhone(parsedData.phone || "");
+  }
+}, []);
+
 
   useEffect(() => {
     const q = query(
@@ -68,46 +73,35 @@ export default function TempPatientQueue() {
     fetchQueueStatus();
   }, [selectedDate]);
 
+
   const handleBook = async () => {
-    if (!name || !phone) {
-      toast.error("Please enter name and phone number");
-      return;
-    }
+  if (!name || !phone) {
+    toast.error("Please enter name and phone number");
+    return;
+  }
 
-    if (queueStatus === "stopped") {
-      toast.error("Queue is currently stopped.");
-      return;
-    }
+  if (queueStatus === "stopped") {
+    toast.error("Queue is currently stopped.");
+    return;
+  }
 
-    const dateStr = getFormattedDate(selectedDate);
-    const q = query(
-      collection(db, "appointments"),
-      where("appointmentDate", "==", dateStr),
-      where("id", "==", identifier)
-    );
-    const docs = await getDocs(q);
-    if (!docs.empty) {
-      toast.error("You already have an appointment on this day!");
-      return;
-    }
+  const alreadyExists = await checkExistingAppointment(name, phone, selectedDate);
+  if (alreadyExists) {
+    toast.error("You already have an appointment on this day!");
+    return;
+  }
 
-    try {
-      setIsLoading(true);
-      await addDoc(collection(db, "appointments"), {
-        id: identifier,
-        name,
-        phone,
-        appointmentDate: dateStr,
-        createdAt: new Date(),
-        status: "pending",
-      });
-      toast.success("Appointment booked!");
-    } catch {
-      toast.error("Failed to book appointment");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  try {
+    setIsLoading(true);
+    await createTemporaryAppointment(name, phone, selectedDate);
+    toast.success("Appointment booked!");
+  } catch {
+    toast.error("Failed to book appointment");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   const handleDateTabClick = (offset) => {
     const newDate = new Date();

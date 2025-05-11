@@ -62,10 +62,11 @@ export default function AppointmentQueue() {
     const fetchPatients = async () => {
       try {
         const response = await getAllPatients(); // This should return the JSON from your backend
-        if (response.success) {
-          const options = response.patients.map((p) => ({
-            value: p.patient_ID,
-            label: `${p.patient_ID} - ${p.firstName} ${p.lastName}`,
+        console.log("Patients fetch response:", response);
+        if (response) {
+          const options = response.data.map((p) => ({
+            value: p.patient_id,
+            label: `${p.patient_id} - ${p.firstName} ${p.LastName}`,
           }));
           setPatients(options);
         }
@@ -286,11 +287,22 @@ export default function AppointmentQueue() {
                                   {appt.patientName}
                                 </div>
                               </div>
-                              <span className={`badge ${
-                                appt.status === "pending" ? "bg-danger" : "bg-success"
-                              } rounded-pill`}>
-                                {appt.status === "pending" ? "Waiting" : "Seen"}
-                              </span>
+                              <div className="d-flex flex-column align-items-end">
+                                  <span className={`badge ${
+                                    appt.status === "pending" ? "bg-danger" : "bg-success"
+                                  } rounded-pill mb-2`}>
+                                    {appt.status === "pending" ? "Waiting" : "Seen"}
+                                  </span>
+
+                                  {appt.temporary && (
+                                    <button
+                                      className="btn btn-sm btn-outline-primary"
+                                      onClick={() => handleSaveAsPatient(appt)}
+                                    >
+                                      Save as Patient 
+                                    </button>
+                                  )}
+                                </div>
                             </div>
                           ))}
                         </div>

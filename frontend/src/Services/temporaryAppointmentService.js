@@ -1,0 +1,52 @@
+// ✅ Create an Appointment 
+import { db } from "@/lib/firebase";
+import { collection, query, where, getDocs, setDoc, doc } from "firebase/firestore";
+
+// Create temporary patient Appointment
+const getIdentifier = (name, phone) => `${name.trim()}_${phone.trim()}`;
+const getFormattedDate = (date) => date.toISOString().split("T")[0];
+
+export const checkExistingAppointment = async (name, phone, selectedDate) => {
+  const dateStr = getFormattedDate(selectedDate);
+  const q = query(
+    collection(db, "appointments"),
+    where("appointmentDate", "==", dateStr),
+    where("phone", "==", phone)
+  );
+  const docs = await getDocs(q);
+  return !docs.empty;
+};
+
+export const createTemporaryAppointment = async (name, phone, selectedDate) => {
+  const identifier = getIdentifier(name, phone);
+  const dateStr = getFormattedDate(selectedDate);
+  const docId = `${dateStr}_${phone}`; // date_phone as ID
+
+  const appointmentRef = doc(db, "appointments", docId);
+  await setDoc(appointmentRef, {
+    id: identifier,
+    name,
+    phone,
+    appointmentDate: dateStr,
+    createdAt: new Date(),
+    status: "pending",
+    temporary: true,
+  });
+};
+
+export const createAppointment = async (patientID, appointmentDate) => {
+  const docID = `${appointmentDate}_${patientID}`; // unique per day per patient
+  const appointmentRef = doc(db, "appointments", docID);
+
+  const existing = await getDoc(appointmentRef);
+  if (existing.exists()) {
+    throw new Error("Appointment already exists for this patient on this date.");
+  }
+
+  await setDoc(appointmentRef, {
+    id: patientID,
+    appointmentDate,
+    status: "pending",
+    createdAt: serverTimestamp(),
+  });
+};

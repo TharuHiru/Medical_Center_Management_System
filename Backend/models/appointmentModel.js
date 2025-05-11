@@ -70,10 +70,17 @@ async function removePatient(patientID, appointmentDate) {
   await appointmentRef.delete();
 }
 
+//fetch all patients
+const fetchPatients = async () => {
+    const [rows] = await pool.query("SELECT patient_id , firstName, LastName from patients");
+    return rows;
+};
+
 module.exports = {
   addAppointment,
   checkAppointmentExists,
   getAppointments,
   admitPatient,
   removePatient,
+  fetchPatients,
 };

@@ -102,7 +102,7 @@ const TemporySignUp = () => {
               />
             </div>
             <button type="submit" className="btn btn-primary w-100 loginBtn">
-              Login
+              Create Account
             </button>
             <p>
                 Already have an account? &nbsp;

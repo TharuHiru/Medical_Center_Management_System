@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation"; // Next.js 13+ uses "next/navigation"
 import BackNavbar from "../../components/backNavBar";
-import { temporyPatientSignUp } from "../../services/authService"; // Import service
+import { temporyPatientLogin } from "../../services/temporyPatientService"; // ✅ Use login, not signUp
 import Link from "next/link";
 
 import "../../Styles/loginForms.css";
@@ -20,25 +20,22 @@ const TemporyLogin = () => {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-  const submitPatientData = async () => {
+
+  const submitPatientData = async (e) => {
+    e.preventDefault(); // Prevent the default form submission
     try {
-      const response = await temporyPatientSignUp(formData); // Call the service function
-  
+      const response = await temporyPatientLogin(formData); // Call the service function
+
       if (response.success) {
-        alert("Temporary patient added successfully");
-        router.push("/"); 
+        alert("Login successful");
+        router.push("/temporyPatientQueue"); // Redirect on success
       } else {
-        alert(response.message || "Error adding temporary patient");
+        alert(response.message || "Login failed");
       }
     } catch (error) {
-      console.error("Error adding temporary patient:", error);
-      alert(error.response?.data?.message || "An error occurred while adding the patient");
+      console.error("Login error:", error);
+      alert(error.response?.data?.message || "An error occurred while logging in");
     }
-  };
-  
-  const handleLoginSubmit = (e) => {
-    e.preventDefault();
-    submitPatientData();
   };
 
   return (
@@ -47,7 +44,7 @@ const TemporyLogin = () => {
       <section className="container d-flex justify-content-center">
         <div className="col-md-6 loginForm">
           <h2 className="text-center mb-4">Temporary Patient Login</h2>
-          <form onSubmit={handleLoginSubmit}>
+          <form onSubmit={submitPatientData}> {/* Correct form submission */}
             <div className="mb-4">
               <label htmlFor="phone" className="form-label">Phone Number:</label>
               <input
@@ -62,7 +59,7 @@ const TemporyLogin = () => {
               />
             </div>
             <div className="mb-4">
-              <label htmlFor="address" className="form-label">Paassword:</label>
+              <label htmlFor="password" className="form-label">Password:</label>
               <input
                 type="password"
                 className="form-control"
@@ -80,7 +77,7 @@ const TemporyLogin = () => {
             <p>
               Don&apos;t have an account? &nbsp;
               <Link href="/TemporySignUp">Create patient Account</Link>
-            </p> 
+            </p>
           </form>
         </div>
       </section>

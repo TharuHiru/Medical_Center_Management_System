@@ -28,6 +28,7 @@ const TemporyLogin = () => {
 
       if (response.success) {
         alert("Login successful");
+        localStorage.setItem('temporarypatientData', JSON.stringify(response.data)); // save name and phone in local storage
         router.push("/temporyPatientQueue"); // Redirect on success
       } else {
         alert(response.message || "Login failed");

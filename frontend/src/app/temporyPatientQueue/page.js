@@ -13,12 +13,21 @@ export default function TempPatientQueue() {
   const [isLoading, setIsLoading] = useState(false);
   const [queueStatus, setQueueStatus] = useState("started");
   const [queueNote, setQueueNote] = useState("");
+  const [patientData, setPatientData] = useState(null);
+
 
   const getFormattedDate = (date) => date.toISOString().split("T")[0];
   const getDisplayDate = (date) =>
     date.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
 
   const identifier = `${name.trim()}_${phone.trim()}`;
+
+   useEffect(() => {
+    const storedData = localStorage.getItem("temporarypatientData");
+    if (storedData) {
+      setPatientData(JSON.parse(storedData));
+    }
+  }, []);
 
   useEffect(() => {
     const q = query(
@@ -109,6 +118,8 @@ export default function TempPatientQueue() {
   return (
     <div className="container py-5">
       <h2 className="mb-4 text-center">Temporary Patient Appointment Queue</h2>
+    <h1>Welcome, {patientData?.name}</h1>
+      <p>Phone: {patientData?.phone}</p>
 
       <div className="text-center mb-3">
         {[{ label: "Today", offset: 0 }, { label: "Tomorrow", offset: 1 }, { label: "Day After", offset: 2 }].map(
@@ -142,15 +153,14 @@ export default function TempPatientQueue() {
           type="text"
           className="form-control mb-2"
           placeholder="Your Full Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          value={patientData?.name}
+          readOnly
         />
         <input
           type="tel"
           className="form-control mb-3"
           placeholder="Phone Number"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          value={patientData?.phone}
         />
         <button className="btn btn-primary" onClick={handleBook} disabled={isLoading}>
           {isLoading ? "Booking..." : "Book Appointment"}

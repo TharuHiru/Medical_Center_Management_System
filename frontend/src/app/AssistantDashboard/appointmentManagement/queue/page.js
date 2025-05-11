@@ -30,6 +30,13 @@ export default function AppointmentQueue() {
   const [patients, setPatients] = useState([]);
   const [queueStatus, setQueueStatus] = useState("stopped");
   const [isLoading, setIsLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState(null);
+
+  const handleSaveAsPatient = (appt) => {
+  setSelectedPatient(appt); // Set the selected patient
+  setShowModal(true); // Open the modal
+};
 
   // Real-time listener for appointments on selected date
   useEffect(() => {
@@ -296,17 +303,18 @@ export default function AppointmentQueue() {
                                   </span>
 
                                   {appt.temporary && (
-                                    <button
-                                      className="btn btn-sm btn-outline-primary"
-                                      onClick={() => handleSaveAsPatient(appt)}
-                                    >
-                                      Save as Patient 
-                                    </button>
+                                     <button
+                                        className="btn btn-sm btn-outline-primary"
+                                        onClick={() => handleSaveAsPatient(appt)} // Open modal
+                                      >
+                                        Save as Patient
+                                      </button>
                                   )}
                                 </div>
                             </div>
                           ))}
                         </div>
+                        
                       ) : (
                         <div className="text-center p-5">
                           <p className="text-muted mb-0">No appointments scheduled for this date</p>
@@ -343,7 +351,6 @@ export default function AppointmentQueue() {
                       </div>
                     </div>
                   </div>
-                  
                   <div className="card border-0 shadow-sm">
                     <div className="card-header bg-white">
                       <h5 className="mb-0">Book Appointment</h5>
@@ -389,6 +396,14 @@ export default function AppointmentQueue() {
           </div>
         </div>
       </div>
+       {/* Conditionally render the modal */}
+      {showModal && (
+        <AddPatientModal
+          showModal={true}  // Explicitly set to true since we're controlling visibility
+          handleClose={() => setShowModal(false)}
+          patient={selectedPatient} // Optional: pass patient data if needed
+        />
+      )}
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
     </div>
   );

@@ -5,9 +5,9 @@ import { Button, Modal, Form, Row, Col } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaUser } from 'react-icons/fa';
-import '../Styles/loginForms.css';
+import '@/Styles/loginForms.css';
 
-import { registerInventory, fetchMedicineCategory, fetchBrandsByMedicineID } from "../services/inventoryService";
+import { registerInventory, fetchMedicineCategory, fetchBrandsByMedicineID } from "@/services/inventoryService";
 
 const AddInventoryModal = ({ showModal, handleClose }) => {
   const [inventoryDetails, setInventoryDetails] = useState({

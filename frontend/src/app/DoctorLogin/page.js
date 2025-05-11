@@ -2,12 +2,12 @@
 
 import React, { useState } from "react"; //get state
 import { useRouter } from "next/navigation"; // use routing
-import BackNavbar from "../../components/backNavBar"; //import backnav bar to use
+import BackNavbar from "@/components/backNavBar"; //import backnav bar to use
 import { toast } from "react-toastify";// toast css
 import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link"; // Next.js navigation
-import { useAuth } from "../../context/AuthContext"; // Make sure this path is correct
-import { doctorLogin } from "../../services/authService";
+import { useAuth } from ".@/context/AuthContext"; // Make sure this path is correct
+import { doctorLogin } from "@/services/authService";
 
 function DoctorLoginPage() {
   const router = useRouter(); // Use Next.js router

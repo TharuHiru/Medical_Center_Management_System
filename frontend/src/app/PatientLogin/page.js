@@ -7,8 +7,8 @@ import Link from "next/link";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useAuth } from "../../context/AuthContext"; // Import AuthContext
-import { patientLogin } from "../../services/patientAuthService";
+import { useAuth } from "@/context/AuthContext"; // Import AuthContext
+import { patientLogin } from "@/services/patientAuthService";
 
 const PatientLogin = () => {
   const [userName, setUserName] = useState("");

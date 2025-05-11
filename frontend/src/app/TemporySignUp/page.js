@@ -2,10 +2,10 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation"; // Next.js 13+ uses "next/navigation"
-import BackNavbar from "../../components/backNavBar";
-import { temporyPatientSignUp } from "../../services/temporyPatientService"; // Import service
+import BackNavbar from "@/components/backNavBar";
+import { temporyPatientSignUp } from "@/services/temporyPatientService"; // Import service
 import Link from "next/link";
-import "../../Styles/loginForms.css";
+import "@/Styles/loginForms.css";
 
 const TemporySignUp = () => {
   const [formData, setFormData] = useState({

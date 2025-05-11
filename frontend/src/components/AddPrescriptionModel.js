@@ -1,15 +1,15 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Modal, Button, Form, Table } from "react-bootstrap";
-import { fetchMedicineCategory } from "../services/inventoryService"; // toget the medicine categories
-import { addPrescription , fetchPatientAllergies } from "../services/prescriptionService"; // imported the service file
-import AllergiesModel from '../components/editAllergies.js'; 
-import { useAuth } from "../context/AuthContext"; 
+import { fetchMedicineCategory } from "@/services/inventoryService"; // toget the medicine categories
+import { addPrescription , fetchPatientAllergies } from "@/services/prescriptionService"; // imported the service file
+import AllergiesModel from '@/components/editAllergies.js'; 
+import { useAuth } from "@/context/AuthContext"; 
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaTimes , FaPlus ,FaPrescriptionBottleAlt } from 'react-icons/fa';
-import '../Styles/loginForms.css';
+import '@/Styles/loginForms.css';
 
 export default function PrescriptionModal({ show, handleClose,patientId,appointmentID}) {
   // the model receives three props

@@ -2,12 +2,12 @@
 
 import React from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import "../../../Styles/AssistantDashboard.css";
-import "../../../Styles/loginForms.css";
-import "../../../Styles/dashboardCard.css";
-import { useAuth } from "../../../context/AuthContext";
+import "@/Styles/AssistantDashboard.css";
+import "@/Styles/loginForms.css";
+import "@/Styles/dashboardCard.css";
+import { useAuth } from "@/context/AuthContext";
 import Image from "next/image";
-import DoctorNavBar from '../../../components/doctorSideBar';
+import DoctorNavBar from '@/components/doctorSideBar';
 
 function AssistantDashboard() {
    const router = useRouter();

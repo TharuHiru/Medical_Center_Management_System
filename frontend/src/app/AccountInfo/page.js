@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import BackNavbar from "../../components/backNavBar"; // Import the Navbar component
+import BackNavbar from "@/components/backNavBar"; // Import the Navbar component
 import { useRouter } from "next/navigation"; // Import useRouter for navigation
 import { toast } from "react-toastify"; // Ensure you have toast for notifications
-import { setNewPassword } from "../../services/patientAuthService"; // Import setPassword function
+import { setNewPassword } from "@/services/patientAuthService"; // Import setPassword function
 
 const AccountInfo = () => {
   const [userName, setUserName] = useState('');

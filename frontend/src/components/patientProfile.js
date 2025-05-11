@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
-import { fetchPatientAppointments } from "../services/patientAuthService";
+import { fetchPatientAppointments } from "@/services/patientAuthService";
 import { Container, Row, Col } from "react-bootstrap";
 import { FaCalendarCheck } from "react-icons/fa";
 import { toast } from "react-toastify";

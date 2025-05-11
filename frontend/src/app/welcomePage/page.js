@@ -4,8 +4,8 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation'; // ✅ Correct import
-import '../../Styles/welcomePage.css';
-import '../../Styles/loginForms.css';
+import '@/Styles/welcomePage.css';
+import '@/Styles/loginForms.css';
 
 // Component for the Welcome Page (Without Navbar)
 function WelcomePage() {

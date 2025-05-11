@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import BackNavbar from "../../components/backNavBar"; // Import the Navbar component
+import BackNavbar from "@/components/backNavBar"; // Import the Navbar component
 import { useRouter } from "next/navigation"; // Import useRouter for navigation
-import { sendVerification } from "../../services/patientAuthService";
+import { sendVerification } from "@/services/patientAuthService";
 import { ToastContainer, toast } from "react-toastify"; // Import Toastify
 import "react-toastify/dist/ReactToastify.css"; // Import Toastify styles
 

@@ -3,10 +3,10 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation"; // Import useRouter hook
 
-import BackNavbar from '../../components/backNavBar';
+import BackNavbar from '@/components/backNavBar';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { registerDoctorStep2 } from '../../services/authService';
+import { registerDoctorStep2 } from '@/services/authService';
 import { useSearchParams } from "next/navigation"; // Import useSearchParams
 
 const DoctorSignUpDetails = () => {

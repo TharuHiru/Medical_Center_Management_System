@@ -3,11 +3,11 @@ import React, { useState, useEffect ,useRef} from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-toastify/dist/ReactToastify.css";
-import { useAuth } from "../../../context/AuthContext";
-import PatientSidebar from "../../../components/patientSideBar";
+import { useAuth } from "@/context/AuthContext";
+import PatientSidebar from "@/components/patientSideBar";
 import { fetchPatientIDs, fetchPatientAppointments } from "../../../services/patientAuthService";
-import PatientProfileView from "../../../components/patientProfile";
-import '../../../Styles/profileTab.css'
+import PatientProfileView from "@/components/patientProfile";
+import '@/Styles/profileTab.css'
 
 export default function ProfilePage() {
   const { masterID } = useAuth();

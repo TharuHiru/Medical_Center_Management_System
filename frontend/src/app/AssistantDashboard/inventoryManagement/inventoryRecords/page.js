@@ -2,14 +2,14 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import "../../../../Styles/AssistantDashboard.css";
-import "../../../../Styles/loginForms.css";
-import "../../../../Styles/tableStyle.css"
+import "@/Styles/AssistantDashboard.css";
+import "@/Styles/loginForms.css";
+import "@/Styles/tableStyle.css"
 import { Row, Col } from "react-bootstrap";
-import AssistNavBar from "../../../../components/assistantSideBar";
+import AssistNavBar from "@/components/assistantSideBar";
 import { FaPlus, FaSearch } from "react-icons/fa";
-import AddInventoryModal from "../../../../components/addInventoryModel";
-import { fetchInventory, fetchMedicineCategory, addMedicineCategory } from "../../../../services/inventoryService";
+import AddInventoryModal from "@/components/addInventoryModel";
+import { fetchInventory, fetchMedicineCategory} from "@/services/inventoryService";
 import Select from 'react-select';
 
 function AssistantDashboardInventory() {

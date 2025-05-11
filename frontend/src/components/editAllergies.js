@@ -2,7 +2,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
-import { editPatientAllergies } from "../services/prescriptionService";
+import { editPatientAllergies } from "@/services/prescriptionService";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";

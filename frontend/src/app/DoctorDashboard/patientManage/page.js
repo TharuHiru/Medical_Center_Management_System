@@ -2,15 +2,15 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import "../../../Styles/AssistantDashboard.css";
-import "../../../Styles/tableStyle.css"
-import "../../../Styles/loginForms.css";
+import "@/Styles/AssistantDashboard.css";
+import "@/Styles/tableStyle.css"
+import "@/Styles/loginForms.css";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import DoctorNavBar from "../../../components/doctorSideBar";
+import DoctorNavBar from "@/components/doctorSideBar";
 import { FaEye, FaSearch } from "react-icons/fa";
-import { fetchPatients } from "../../../services/patientService";
-import PatientProfileView from "../../../components/patientProfile";
+import { fetchPatients } from "@/services/patientService";
+import PatientProfileView from "@/components/patientProfile";
 
 function AssistantDashboardPatient() {
   const router = useRouter();

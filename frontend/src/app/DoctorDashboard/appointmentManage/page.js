@@ -3,14 +3,14 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from "react-toastify";
 import { collection, query, orderBy, onSnapshot, doc, deleteDoc, where } from "firebase/firestore";
-import { admitPatient } from "../../../services/appointmentService";
-import { db } from "../../../lib/firebase";
-import DoctorNavBar from '../../../components/doctorSideBar';
-import PrescriptionModal from "../../../components/AddPrescriptionModel";
+import { admitPatient } from "@/services/appointmentService";
+import { db } from "@/lib/firebase";
+import DoctorNavBar from '@/components/doctorSideBar';
+import PrescriptionModal from "@/components/AddPrescriptionModel";
 
 // Styles
-import '../../../Styles/AssistantDashboard.css';
-import '../../../Styles/loginForms.css';
+import '@/Styles/AssistantDashboard.css';
+import '@/Styles/loginForms.css';
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 

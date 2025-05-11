@@ -2,12 +2,12 @@
 
 import React from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import "../../../Styles/AssistantDashboard.css";
-import "../../../Styles/loginForms.css";
-import "../../../Styles/dashboardCard.css";
+import "@/Styles/AssistantDashboard.css";
+import "@/Styles/loginForms.css";
+import "@/Styles/dashboardCard.css";
 import Image from "next/image";
-import { useAuth } from "../../../context/AuthContext";
-import AssistNavBar from "../../../components/assistantSideBar";
+import { useAuth } from "@/context/AuthContext";
+import AssistNavBar from "@/components/assistantSideBar";
 import { PersonAdd, AccessibilityNew, LocalHospital, EventNote } from "@mui/icons-material";  // Example icons
 
 function AssistantDashboard() {

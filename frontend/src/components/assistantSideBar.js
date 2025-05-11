@@ -12,7 +12,7 @@ import { FaTachometerAlt, FaUser, FaCalendarCheck, FaBoxes } from 'react-icons/f
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import MenuIcon from '@mui/icons-material/Menu';
-import '../Styles/sideNavBar.css'; // Ensure you update this CSS file too
+import '@/Styles/sideNavBar.css'; // Ensure you update this CSS file too
 
 const AssistSidebar = () => {
   const theme = useTheme();

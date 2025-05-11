@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import { Row, Col } from "react-bootstrap";
-import "../../../../Styles/AssistantDashboard.css";
-import "../../../../Styles/loginForms.css";
-import "../../../../Styles/pages.css";
-import AssistNavBar from "../../../../components/assistantSideBar";
+import "@/Styles/AssistantDashboard.css";
+import "@/Styles/loginForms.css";
+import "@/Styles/pages.css";
+import AssistNavBar from "@/components/assistantSideBar";
 import Select from "react-select";
 import {fetchBrandsByMedicineID, addMedicineCategory, addMedicineBrand, fetchMedicineCategory} from "../../../../services/inventoryService";
 

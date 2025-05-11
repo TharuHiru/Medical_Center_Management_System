@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { db } from "../../../lib/firebase";
+import { db } from "@/lib/firebase";
 import { collection, query, orderBy, onSnapshot, deleteDoc, doc, where, getDocs 
 } from "firebase/firestore";
 import { ToastContainer, toast } from "react-toastify";
@@ -8,10 +8,10 @@ import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { createAppointment } from "../../../services/appointmentService";
-import { fetchPatientIDs } from "../../../services/patientAuthService";
-import { useAuth } from "../../../context/AuthContext";
-import PatientSidebar from "../../../components/patientSideBar";
+import { createAppointment } from "@/services/appointmentService";
+import { fetchPatientIDs } from "@/services/patientAuthService";
+import { useAuth } from "@/context/AuthContext";
+import PatientSidebar from "@/components/patientSideBar";
 import { FaCalendarAlt, FaUserClock, FaUserCheck, FaUserMinus, FaSpinner, FaInfoCircle, FaExclamationTriangle } from "react-icons/fa";
 
 export default function AppointmentQueue() {

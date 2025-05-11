@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import '../../../Styles/patientDashboard.css';
+import '@/Styles/patientDashboard.css';
 import Image from "next/image"; // Optimize images
 
 const Dashboard = () => {

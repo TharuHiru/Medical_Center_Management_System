@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import "../../../Styles/AssistantDashboard.css";
-import "../../../Styles/loginForms.css";
-import AssistNavBar from "../../../components/assistantSideBar";
+import "@/Styles/AssistantDashboard.css";
+import "@/Styles/loginForms.css";
+import AssistNavBar from "@/components/assistantSideBar";
 import { FaPlus, FaSearch } from "react-icons/fa";
-import AddPatientModal from "../../../components/addPatientModel";
-import { fetchPatients } from "../../../services/patientService";
+import AddPatientModal from "@/components/addPatientModel";
+import { fetchPatients } from "@/services/patientService";
 
 function AssistantDashboardPatient() {
   const router = useRouter(); // create a router instance

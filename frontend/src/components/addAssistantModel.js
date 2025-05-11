@@ -5,9 +5,9 @@ import { Button, Modal, Form, Row, Col } from 'react-bootstrap';
 import { toast } from 'react-toastify'; // Import Toastify for toast notifications
 import 'react-toastify/dist/ReactToastify.css';
 import { FaUser } from 'react-icons/fa'; // Import icons
-import '../Styles/loginForms.css';
+import '@/Styles/loginForms.css';
 
-import { registerAssistant } from "../services/authService";
+import { registerAssistant } from "@/services/authService";
 
 const AddAssistantModal = ({ showModal, handleClose }) => {
   const [assistantDetails, setAssistantDetails] = useState({

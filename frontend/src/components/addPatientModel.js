@@ -6,8 +6,8 @@ import { toast } from "react-toastify";
 import { FaUser } from "react-icons/fa";
 import ViewAndPrintQr from "./viewAndPrintQr"; 
 import { useEffect } from "react";
-import { registerPatient , getMasterAccounts} from "../services/authService";
-import '../Styles/loginForms.css';
+import { registerPatient , getMasterAccounts} from "@/services/authService";
+import '@/Styles/loginForms.css';
 
 const AddPatientModal = ({ showModal, handleClose }) => {
   const [patientDetails, setPatientDetails] = useState({

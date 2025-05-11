@@ -2,14 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from "next/navigation";
-import '../../../Styles/AssistantDashboard.css';
-import '../../../Styles/loginForms.css';
-import "../../../Styles/tableStyle.css";
-import { useAuth } from "../../../context/AuthContext";
-import DoctorNavBar from '../../../components/doctorSideBar';
+import '@/Styles/AssistantDashboard.css';
+import '@/Styles/loginForms.css';
+import "@/Styles/tableStyle.css";
+import { useAuth } from "@/context/AuthContext";
+import DoctorNavBar from '@/components/doctorSideBar';
 import { FaUser } from 'react-icons/fa'; // Import icons
-import { fetchAssistants } from '../../../services/doctorAssistantService';
-import AddAssistantModal from '../../../components/addAssistantModel';
+import { fetchAssistants } from '@/services/doctorAssistantService';
+import AddAssistantModal from '@/components/addAssistantModel';
 
 function DoctorDashboard() {
   const router = useRouter();

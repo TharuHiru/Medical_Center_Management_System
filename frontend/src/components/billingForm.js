@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { fetchMedicineCategory } from "../services/inventoryService";
-import { fetchInventoryByMedicineID , savePaymentData } from "../services/billingService";
+import { fetchMedicineCategory } from "@/services/inventoryService";
+import { fetchInventoryByMedicineID , savePaymentData } from "@/services/billingService";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../Styles/table.css";
+import "@/Styles/table.css";
 import Select from "react-select";
 import Receipt from "./receipt";
 

@@ -2,12 +2,12 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation"; 
-import BackNavbar from "../../components/backNavBar"; // Navbar component
-import "../../Styles/loginForms.css"; // Import styles
-import { assistLogin } from "../../services/authService"; // import the login function from the service file
+import BackNavbar from "@/components/backNavBar"; // Navbar component
+import "@/Styles/loginForms.css"; // Import styles
+import { assistLogin } from "@/services/authService"; // import the login function from the service file
 import { toast } from "react-toastify"; // Import Toastify for toast notifications
 import "react-toastify/dist/ReactToastify.css"; // Toastify CSS
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 
 const AssistantLogin = () => {
   const [email, setEmail] = useState("");

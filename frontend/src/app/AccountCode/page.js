@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import BackNavbar from "../../components/backNavBar";
+import BackNavbar from "@/components/backNavBar";
 import { useRouter } from "next/navigation"; // Import useRouter for navigation
-import '../../Styles/loginForms.css'; // Import your CSS styles
-import { verifyCode } from "../../services/patientAuthService"; // Import verifyCode function
+import '@/Styles/loginForms.css'; // Import your CSS styles
+import { verifyCode } from "@/services/patientAuthService"; // Import verifyCode function
 
 import { toast } from "react-toastify"; // Import toast
 import "react-toastify/dist/ReactToastify.css"; // Import toast styles

@@ -1,9 +1,9 @@
 "use client"; // ✅ This makes the file a client component
 import React, { use } from 'react';
 import { useRouter } from 'next/navigation'; // Import useNavigate
-import BackNavbar from '../../components/backNavBar';
-import '../../Styles/loginForms.css';
-import '../../Styles/welcomePage.css';
+import BackNavbar from '@/components/backNavBar';
+import '@/Styles/loginForms.css';
+import '@/Styles/welcomePage.css';
 
 
 function Page1() {

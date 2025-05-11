@@ -3,8 +3,8 @@
 import React from 'react';
 import Link from 'next/link'; // Next.js routing
 import { FaUser, FaUserMd, FaUserNurse } from "react-icons/fa"; // Import icons
-import BackNavbar from '../../components/backNavBar';
-import '../../Styles/whoAreYou.css';
+import BackNavbar from '@/components/backNavBar';
+import '@/Styles/whoAreYou.css';
 
 // Component for the registered or not page
 function WhoAreYou() {

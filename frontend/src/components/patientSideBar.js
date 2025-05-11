@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FaTachometerAlt, FaUser, FaCalendarCheck } from 'react-icons/fa';
 import MenuIcon from '@mui/icons-material/Menu';
-import '../Styles/sideNavBar.css';
+import '@/Styles/sideNavBar.css';
 
 const PatientSidebar = () => {
   const theme = useTheme();

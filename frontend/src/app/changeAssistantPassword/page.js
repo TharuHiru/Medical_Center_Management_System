@@ -3,8 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import {changeAssistantPassword} from "../../services/authService"
-import axios from "axios"; // ✅ Import axios
+import {changeAssistantPassword} from "@/services/authService"
 
 const AssistantChangePassword = () => {
   const [newPassword, setNewPassword] = useState("");

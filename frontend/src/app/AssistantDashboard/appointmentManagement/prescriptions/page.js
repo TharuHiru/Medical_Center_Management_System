@@ -1,14 +1,14 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from "react";
-import { db } from "../../../../lib/firebase";
+import { db } from "@/lib/firebase";
 import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import AssistNavBar from "../../../../components/assistantSideBar";
-import BillingForm from "../../../../components/billingForm";
-import Receipt from "../../../../components/receipt";   
+import AssistNavBar from "@/components/assistantSideBar";
+import BillingForm from "@/components/billingForm";
+import Receipt from "@/components/receipt";   
 
 export default function AppointmentQueue() {
   const [prescriptions, setPrescriptions] = useState([]);

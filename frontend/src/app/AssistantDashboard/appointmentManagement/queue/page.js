@@ -1,14 +1,14 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { db } from "../../../../lib/firebase.js";
+import { db } from "@/lib/firebase";
 import {collection,query,orderBy,onSnapshot,getDocs,where,setDoc,doc} from "firebase/firestore";
-import { createAppointment, getAllPatients } from "../../../../services/appointmentService";
+import { createAppointment, getAllPatients } from "@/services/appointmentService";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Select from "react-select";
 import Swal from "sweetalert2";
-import AssistNavBar from "../../../../components/assistantSideBar";
+import AssistNavBar from "@/components/assistantSideBar";
 import { FaCalendarAlt, FaUserPlus, FaCheck, FaExclamationTriangle, FaArrowRight } from "react-icons/fa";
 
 // Format date as yyyy-mm-dd

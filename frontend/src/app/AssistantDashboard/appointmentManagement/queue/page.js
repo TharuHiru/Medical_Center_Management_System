@@ -9,6 +9,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Select from "react-select";
 import Swal from "sweetalert2";
 import AssistNavBar from "@/components/assistantSideBar";
+import AddPatientModal from "@/components/addPatientModel";
 import { FaCalendarAlt, FaUserPlus, FaCheck, FaExclamationTriangle, FaArrowRight } from "react-icons/fa";
 
 // Format date as yyyy-mm-dd

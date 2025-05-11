@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import '../../../Styles/patientDashboard.css';
+import Image from "next/image"; // Optimize images
 
 const Dashboard = () => {
   const router = useRouter();
@@ -26,8 +27,9 @@ const Dashboard = () => {
   return (
     <div className="min-vh-100 bg-light">
       {/* Full-width Top Navigation Bar */}
-      <nav className="navbar navbar-expand-lg navbar-dark bg-primary shadow">
+      <nav className="navbar navbar-expand-lg navbar-dark topNav">
         <div className="container-fluid px-4 py-2">
+          <Image src="/Logo.png" alt="Poly Clinic" width={100} height={100} className="me-1" />
           <a className="navbar-brand fs-3 fw-bold" href="#">Patient Portal</a>
           <button 
             onClick={logout}

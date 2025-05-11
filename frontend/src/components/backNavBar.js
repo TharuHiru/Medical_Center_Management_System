@@ -4,7 +4,7 @@ import React from "react";
 import { useRouter } from "next/navigation"; // Use Next.js router
 import Image from "next/image"; // Optimize images
 import Link from "next/link"; // Use Next.js routing 
-import "../Styles/loginForms.css"; // Styling for the login form
+import "../Styles/loginForms.css";
 
 // Component for the Navbar
 function BackNavbar() {

@@ -81,13 +81,14 @@
   transition: transform 0.3s ease;
 }
 
-/* Improved font readability */
+
 .card-text {
   color: #495057;
   line-height: 1.6;
 }
 
-/* Additional style for navbar */
-.navbar {
+.topNav {
   padding: 0.8rem 1rem;
+  background-color: #2c6a75;
+  color: #fff !important;
 }

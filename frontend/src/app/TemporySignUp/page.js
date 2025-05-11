@@ -3,15 +3,16 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation"; // Next.js 13+ uses "next/navigation"
 import BackNavbar from "../../components/backNavBar";
-import { temporyPatientSignUp } from "../../services/authService"; // Import service
+import { temporyPatientSignUp } from "../../services/temporyPatientService"; // Import service
 import Link from "next/link";
-
 import "../../Styles/loginForms.css";
 
-const TemporyLogin = () => {
+const TemporySignUp = () => {
   const [formData, setFormData] = useState({
+    name: "",
+    address: "",
     phone: "",
-    password: ""
+    password: "",
   });
 
   const router = useRouter(); // Initialize the router
@@ -26,7 +27,7 @@ const TemporyLogin = () => {
   
       if (response.success) {
         alert("Temporary patient added successfully");
-        router.push("/"); 
+        router.push("/TemporyLogin"); 
       } else {
         alert(response.message || "Error adding temporary patient");
       }
@@ -36,7 +37,7 @@ const TemporyLogin = () => {
     }
   };
   
-  const handleLoginSubmit = (e) => {
+  const handleSignUpSubmit = (e) => {
     e.preventDefault();
     submitPatientData();
   };
@@ -46,8 +47,34 @@ const TemporyLogin = () => {
       <BackNavbar />
       <section className="container d-flex justify-content-center">
         <div className="col-md-6 loginForm">
-          <h2 className="text-center mb-4">Temporary Patient Login</h2>
-          <form onSubmit={handleLoginSubmit}>
+          <h2 className="text-center mb-4">Temporary Patient Register</h2>
+          <form onSubmit={handleSignUpSubmit}>
+            <div className="mb-4">
+              <label htmlFor="name" className="form-label">Name:</label>
+              <input
+                type="text"
+                className="form-control"
+                id="name"
+                name="name"
+                placeholder="Enter your name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="address" className="form-label">Address:</label>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Enter your Address"
+                id="address"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                required
+              />
+            </div>
             <div className="mb-4">
               <label htmlFor="phone" className="form-label">Phone Number:</label>
               <input
@@ -62,11 +89,11 @@ const TemporyLogin = () => {
               />
             </div>
             <div className="mb-4">
-              <label htmlFor="address" className="form-label">Paassword:</label>
+              <label htmlFor="passworde" className="form-label">Password:</label>
               <input
                 type="password"
                 className="form-control"
-                placeholder="Enter your password"
+                placeholder="Enter your phone number"
                 id="password"
                 name="password"
                 value={formData.password}
@@ -78,9 +105,9 @@ const TemporyLogin = () => {
               Login
             </button>
             <p>
-              Don&apos;t have an account? &nbsp;
-              <Link href="/TemporySignUp">Create patient Account</Link>
-            </p> 
+                Already have an account? &nbsp;
+                <Link href="/TemporyLogin">Login to your account</Link>
+            </p>
           </form>
         </div>
       </section>
@@ -88,4 +115,4 @@ const TemporyLogin = () => {
   );
 };
 
-export default TemporyLogin;
+export default TemporySignUp;

@@ -30,8 +30,9 @@ function WelcomePage() {
     <>
       {/* Navbar */}
       <nav className="navbar navbar-expand-lg welcomeNavBar fixed-top" style={{ zIndex: 1000 }}>
+      <div className="container-fluid px-4 py-2">
         <Link href="/" className="navbar-brand d-flex align-items-center">
-          <Image src="/Logo.png" alt="Poly Clinic" width={100} height={100} className="me-2" />
+          <Image src="/Logo.png" alt="Poly Clinic" width={100} height={100} className="me-5" />
           <span className="fw-bold">Poly Clinic</span>
         </Link>
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -49,6 +50,7 @@ function WelcomePage() {
           <button className="btn btn-primary ms-2 rounded-pill px-4 loginBtn" onClick={() => router.push('/whoAreYou')}>
             Login
           </button>
+        </div>
         </div>
       </nav>
 

@@ -81,23 +81,6 @@ const doctorLogin = async (req, res) => {
     }
 };
 
-// signup the teporary patient
-const tempPatientSignup = async (req, res) => {
-    const { title, name, address, phone } = req.body;
-
-    if (!title || !name || !address || !phone) {
-        return res.status(400).json({ success: false, message: 'Please fill all the fields' });
-    }
-
-    try {
-        await authModel.insertTempPatient({ title, name, address, phone });
-        res.status(200).json({ success: true, message: 'Temporary patient added successfully' });
-    } catch (err) {
-        console.error('Error inserting temporary patient:', err);
-        res.status(500).json({ success: false, message: 'Error adding temporary patient' });
-    }
-};
-
 //register the assistant
 const registerAssistant = async (req, res) => {
     const { nic, title, firstname, lastname, contact, houseNo, addline1, addline2, email } = req.body;
@@ -223,7 +206,6 @@ module.exports = {
     registerStep1,
     registerStep2,
     doctorLogin,
-    tempPatientSignup,
     registerAssistant,
     assistantLogin,
     fetchMasterAccounts,

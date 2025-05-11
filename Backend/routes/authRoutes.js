@@ -11,9 +11,6 @@ router.post('/register/step2', authController.registerStep2);
 // Doctor Login
 router.post('/doctor-login', authController.doctorLogin);
 
-// Temporary Patient Signup
-router.post('/tempory-patient-signup', authController.tempPatientSignup);
-
 // Assistant Register
 router.post('/register-assistant', authController.registerAssistant);
 

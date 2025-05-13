@@ -202,6 +202,33 @@ const changeAssistantPassword = async (req, res) => {
     }
 };
 
+const registerPatient = async (req, res) => {
+    console.log("Received Patient Data:", req.body);
+
+    const { title, firstname, lastname, contact, gender, dob, houseNo, addline1, addline2, email, masterAccountID } = req.body;
+
+    if (!title || !firstname || !lastname || !contact || !gender || !dob || !houseNo || !addline1 || !addline2 || !email) {
+        return res.status(400).json({ message: "All fields are required." });
+    }
+
+    try {
+        const { newPatientID, qrCodeImage, qrData, fullName } = await authModel.registerPatient(req.body, masterAccountID);
+
+        return res.status(201).json({ 
+            success: true,
+            message: 'Patient registered successfully.', 
+            patientID: newPatientID,
+            name: fullName,
+            qrCode: qrCodeImage,
+            qrPage: qrData
+        });
+    } catch (error) {
+        console.error("Transaction failed, rolled back:", error.message);
+        return res.status(500).json({ message: 'Server error during registration.' });
+    }
+};
+
+
 module.exports = {
     registerStep1,
     registerStep2,
@@ -209,5 +236,6 @@ module.exports = {
     registerAssistant,
     assistantLogin,
     fetchMasterAccounts,
-    changeAssistantPassword
+    changeAssistantPassword,
+    registerPatient
 };

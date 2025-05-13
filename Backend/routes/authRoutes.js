@@ -23,4 +23,7 @@ router.get('/master-accounts', authController.fetchMasterAccounts);
 // change assistant password at the first login
 router.post('/change-assistant-password', authController.changeAssistantPassword);
 
+//save a patient
+router.post('/register-patient', authController.registerPatient);
+
 module.exports = router;

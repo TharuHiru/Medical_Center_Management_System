@@ -1,4 +1,5 @@
 const pool = require('../config/db');
+const QRCode = require('qrcode');
 
 //save doctor data to the database
 const insertDoctor = async (doctorData) => {
@@ -14,6 +15,65 @@ const insertDoctor = async (doctorData) => {
 const findDoctorByUsername = async (username) => {
     const [rows] = await pool.query("SELECT * FROM doctor WHERE User_Name = ?", [username]);
     return rows;
+};
+
+//save patients into database
+const registerPatient = async (patientData, masterAccountID) => {
+    const { title, firstname, lastname, contact, gender, dob, houseNo, addline1, addline2, email } = patientData;
+
+    const connection = await pool.getConnection();
+    try {
+        await connection.beginTransaction();
+
+        const [lastPatient] = await connection.query("SELECT patient_ID FROM patients ORDER BY patient_ID DESC LIMIT 1");
+        
+        let newPatientID = "PC_ID00001";
+        if (lastPatient.length > 0) {
+            const lastID = lastPatient[0].patient_ID;
+            const nextNumber = parseInt(lastID.substring(5)) + 1;
+            newPatientID = `PC_ID${String(nextNumber).padStart(5, '0')}`;
+        }
+
+        const qrData = `https://yourwebsite.com/patient-card/${newPatientID}`;
+        const qrCodeImage = await QRCode.toDataURL(qrData);
+
+        const assist_ID = "1"; // Hardcoded for now
+
+        const insertPatientQuery = `
+            INSERT INTO patients 
+            (patient_ID, assist_ID, title, firstName, lastName, contactNo, gender, DOB, house_no, addr_line_1, addr_line_2, email) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+        await connection.query(insertPatientQuery, [
+            newPatientID, assist_ID, title, firstname, lastname, contact, gender, dob, houseNo, addline1, addline2, email
+        ]);
+
+        if (masterAccountID !== "") {
+            const [masterIDResult] = await connection.query(
+                "SELECT master_ID FROM patient_user WHERE patient_ID = ?", [masterAccountID]
+            );
+
+            if (masterIDResult.length === 0) {
+                throw new Error("Master account not found");
+            }
+
+            const masterID = masterIDResult[0].master_ID;
+
+            const insertLinkQuery = `
+                INSERT INTO master_patient_links (master_ID, patient_ID)
+                VALUES (?, ?)
+            `;
+            await connection.query(insertLinkQuery, [masterID, newPatientID]);
+        }
+
+        await connection.commit();
+        return { newPatientID, qrCodeImage, qrData, fullName: `${title} ${firstname} ${lastname}` };
+    } catch (error) {
+        await connection.rollback();
+        throw error;
+    } finally {
+        connection.release();
+    }
 };
 
 //save temporary patient data to the database
@@ -68,6 +128,7 @@ const updateAssistantPasswordAndFlag = async (id, hashedPassword) => {
 module.exports = {
     insertDoctor,
     findDoctorByUsername,
+    registerPatient,
     insertTempPatient,
     findAssistantByEmail,
     insertAssistant,

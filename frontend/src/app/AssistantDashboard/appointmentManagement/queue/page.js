@@ -156,6 +156,21 @@ export default function AppointmentQueue() {
     }
   };
   
+    const confirmBeforeSave = (appt) => {
+    Swal.fire({
+      title: 'Please Logout First',
+      text: 'To proceed, please log out from the temporary patient account.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'OK, Continue',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        handleSaveAsPatient(appt); // Continue with saving as patient
+      }
+    });
+  };
+  
   // Handle book appointment
   const handleBook = async () => {
     if (!patientID) {
@@ -304,11 +319,11 @@ export default function AppointmentQueue() {
 
                                   {appt.temporary && (
                                      <button
-                                        className="btn btn-sm btn-outline-primary"
-                                        onClick={() => handleSaveAsPatient(appt)} // Open modal
-                                      >
-                                        Save as Patient
-                                      </button>
+                                      className="btn btn-sm btn-outline-primary"
+                                      onClick={() => confirmBeforeSave(appt)}
+                                    >
+                                      Save as Patient
+                                    </button>
                                   )}
                                 </div>
                             </div>
@@ -401,7 +416,8 @@ export default function AppointmentQueue() {
         <AddPatientModal
           showModal={true}  // Explicitly set to true since we're controlling visibility
           handleClose={() => setShowModal(false)}
-          patient={selectedPatient} // Optional: pass patient data if needed
+          temp={true} 
+          appointmentData={selectedPatient}
         />
       )}
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />

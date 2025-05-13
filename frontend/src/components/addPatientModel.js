@@ -7,9 +7,10 @@ import { FaUser } from "react-icons/fa";
 import ViewAndPrintQr from "./viewAndPrintQr"; 
 import { useEffect } from "react";
 import { registerPatient , getMasterAccounts} from "@/services/authService";
+import {upgradeTemporaryAppointment} from "@/services/temporaryAppointmentService"
 import '@/Styles/loginForms.css';
 
-const AddPatientModal = ({ showModal, handleClose }) => {
+const AddPatientModal = ({ showModal, handleClose , temp = false , appointmentData}) => {
   const [patientDetails, setPatientDetails] = useState({
     title: "",
     firstname: "",
@@ -74,12 +75,20 @@ const AddPatientModal = ({ showModal, handleClose }) => {
 
     //Run API call to register the patient
     try {
-      const response = await registerPatient(patientDetails);
+      const response = await registerPatient({
+      ...patientDetails,
+      temp: temp 
+    });
       console.log("patient details:", patientDetails); // Debugging log
   
       if (response.success) {
         toast.success("Patient registered successfully!");
   
+      if (temp && appointmentData) {
+        await upgradeTemporaryAppointment(appointmentData, response.patientID);
+        toast.success("Temporary appointment upgraded successfully!");
+      }
+
         //Save the new patient data
         const newPatientData = {
           patientID: response.patientID,
@@ -91,28 +100,17 @@ const AddPatientModal = ({ showModal, handleClose }) => {
         console.log("New Patient Data:", newPatientData || "no data received"); // Debugging log
   
         setNewPatient(newPatientData);
-  
         // Show the QR modal before closing AddPatientModal
         setShowQrModal(true);
   
-        // Close AddPatientModal with a slight delay
-        setTimeout(() => {
-          handleClose();
-        }, 300);
-  
         // Reset form
         setPatientDetails({
-          title: "",
-          firstname: "",
-          lastname: "",
-          contact: "",
-          gender: "",
-          dob: "",
-          houseNo: "",
-          addline1: "",
-          addline2: "",
-          email: "",
+          title: "",firstname: "",lastname: "",contact: "",gender: "",
+          dob: "",houseNo: "",addline1: "",addline2: "",email: "",
         });
+          
+        handleClose();
+
       } else {
         toast.error(response.message || "Error adding patient");
       }

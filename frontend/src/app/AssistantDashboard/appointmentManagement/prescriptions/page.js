@@ -216,16 +216,16 @@ export default function AppointmentQueue() {
 
                 {/* Print Button and goto billing button section */}
                 <div className="text-center mt-4">
-                  <button className="btn btn-success me-3" onClick={handlePrint}>
+                  <button  className="btn btn-success me-3" onClick={handlePrint}>
                     Print Prescription
                   </button>
-                  <button className="btn btn-danger me-3" onClick={() => setShowBillingForm(true)}>
-                      Go to Billing
-                    </button>
-                  <button
-                    className="btn btn-secondary"
-                    onClick={() => setSelectedPrescription(null)}
-                  >
+                  <button  className="btn btn-danger me-3"  onClick={() => setShowBillingForm(true)}>
+                    Go to Billing
+                  </button>
+                  <button  className="btn btn-primary me-3" onClick={() => sendToMail(selectedPrescription.patient_ID)}>
+                    Send to mail
+                  </button>
+                  <button  className="btn btn-secondary "   onClick={() => setSelectedPrescription(null)}>
                     Back to List
                   </button>
                 </div>

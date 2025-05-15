@@ -1,4 +1,4 @@
-const db = require("../models/db");
+const pool = require('../config/db');
 
 const getDashboardStats = async () => {
   const queries = [

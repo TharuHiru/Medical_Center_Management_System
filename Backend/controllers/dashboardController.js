@@ -1,4 +1,4 @@
-const dashboardService = require("../services/dashboardService");
+const dashboardService = require("../models/dashboardModels");
 
 const getStats = async (req, res) => {
   try {

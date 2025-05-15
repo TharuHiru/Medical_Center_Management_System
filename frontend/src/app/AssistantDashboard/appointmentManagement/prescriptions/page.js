@@ -77,6 +77,7 @@ export default function AppointmentQueue() {
     }
   }, [showBillingForm]);
   
+  //open printing model when it is selected
   const handlePrint = () => {
     const printContents = printRef.current.innerHTML;
     const originalContents = document.body.innerHTML;
@@ -87,6 +88,7 @@ export default function AppointmentQueue() {
     window.location.reload();
   };
 
+  //log out function
   const logout = () => {
     console.log("Logged out");
   };
@@ -152,7 +154,7 @@ export default function AppointmentQueue() {
                         <div className="d-flex justify-content-center">
                           <table
                             className="table table-bordered"
-                            style={{ width: "90%", borderColor: "#dee2e6" }}
+                            style={{ width: "90%", borderColor: "transparent" }}
                           >
                             <tbody>
                               <tr>
@@ -160,8 +162,13 @@ export default function AppointmentQueue() {
                                 <td className="text-start">{selectedPrescription.id}</td>
                               </tr>
                               <tr>
-                                <th scope="row" className="text-end">Patient Name:</th>
+                                <th scope="row" className="text-end">Patient Name :</th>
                                 <td className="text-start">{selectedPrescription.patientName}</td>
+                              </tr>
+                              <tr>
+                                <th scope="row" className="text-end">Age :</th>
+                                <td className="text-start">{selectedPrescription.Age}
+                                </td>
                               </tr>
                               <tr>
                                 <th scope="row" className="text-end">Date:</th>

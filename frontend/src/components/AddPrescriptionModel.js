@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Modal, Button, Form, Table } from "react-bootstrap";
 import { fetchMedicineCategory } from "@/services/inventoryService"; // toget the medicine categories
-import { addPrescription , fetchPatientAllergies } from "@/services/prescriptionService"; // imported the service file
+import { addPrescription , getAllergiesAndDOB } from "@/services/prescriptionService"; // imported the service file
 import AllergiesModel from '@/components/editAllergies.js'; 
 import { useAuth } from "@/context/AuthContext"; 
 import { toast } from "react-toastify";
@@ -19,6 +19,7 @@ export default function PrescriptionModal({ show, handleClose,patientId,appointm
   const [prescribedMedicines, setPrescribedMedicines] = useState([]);
   const [inventory, setMedicineCategories] = useState([]);
   const [allergies, setAllergies] = useState("");
+  const [dob , setDOB] = useState("");
   const [showAllergiesModal, setShowAllergiesModal] = useState(false); 
 
   //get categories
@@ -51,14 +52,15 @@ export default function PrescriptionModal({ show, handleClose,patientId,appointm
     setPrescribedMedicines(prescribedMedicines.filter((_, i) => i !== index));
   };
   
-  //Fetch allergies when patient ID changes and model opens
+  //Fetch allergies abd the DOB when patient ID changes and model opens
   useEffect(() => {
     if (show && patientId) {
       const fetchAllergies = async () => {
         try {
-          const response = await fetchPatientAllergies(patientId);
+          const response = await getAllergiesAndDOB(patientId);
           if (response.success) {
             setAllergies(response.allergies);
+            setDOB(response.DOB);
           } else {
             setAllergies("No allergies found");
             console.error("Error fetching allergies:", response.message);
@@ -80,13 +82,14 @@ export default function PrescriptionModal({ show, handleClose,patientId,appointm
       const handleSubmit = async () => {
         try {
           const today = new Date().toISOString().split("T")[0];
-  
+          const patientAge = getPatientAge(dob);
           const prescriptionPayload = {
             status: "pending",
             date: today,
             diagnosis,
             otherNotes: others,
             patient_ID: patientId,
+            Age :  patientAge,
             appointment_ID : appointmentID ,
             doctor_ID: doctorID, // 👈 Use context-based doctorID
             medicines: prescribedMedicines.map((med) => ({
@@ -120,6 +123,32 @@ export default function PrescriptionModal({ show, handleClose,patientId,appointm
         }
       }, [show]);
 
+      const getPatientAge = (dob) => {
+          if (!dob) return '';
+          const birthDate = new Date(dob);
+          const today = new Date();
+
+          if (birthDate > today) return 'Invalid DOB';
+
+          let years = today.getFullYear() - birthDate.getFullYear();
+          let months = today.getMonth() - birthDate.getMonth();
+
+          if (today.getDate() < birthDate.getDate()) {
+            months--;
+          }
+
+          if (months < 0) {
+            years--;
+            months += 12;
+          }
+
+          if (years >= 1) {
+            return `${years} year${years !== 1 ? 's' : ''}`;
+          } else {
+            return `${months} month${months !== 1 ? 's' : ''}`;
+          }
+    };
+
   return (
     <>
     <Modal show={show} onHide={handleClose}>
@@ -128,12 +157,13 @@ export default function PrescriptionModal({ show, handleClose,patientId,appointm
           <FaPrescriptionBottleAlt style={{ marginRight: "10px" }} />
             Add Prescription</Modal.Title>
       </Modal.Header>     
-          <Modal.Body>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+      <Modal.Body>
+        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
           <tbody>
             <tr>
               <td><strong>Patient ID: </strong> {patientId}</td>
               <td><strong>Appointment ID: </strong> {appointmentID}</td>
+              <td><strong>Age: </strong>{getPatientAge(dob)}</td>
             </tr>
             </tbody>
           </table>
@@ -163,8 +193,8 @@ export default function PrescriptionModal({ show, handleClose,patientId,appointm
           </td>
           </tr>
           </tbody>
-          </table>
-          </div>
+        </table>
+      </div>
 
           {/*Rest of the form*/}
             <Form>

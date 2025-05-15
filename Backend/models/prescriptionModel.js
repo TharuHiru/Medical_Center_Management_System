@@ -25,8 +25,9 @@ exports.insertPrescriptionMedicine = async (connection, prescription_ID, medicin
   );
 };
 
-exports.getAllergies = async (patientId) => {
-  const [rows] = await pool.query("SELECT allergies FROM patients WHERE patient_ID = ?", [patientId]);
+exports.getAllergiesAndDOB = async (patientId) => {
+  const [rows] = await pool.query("SELECT allergies , DOB FROM patients WHERE patient_ID = ?", [patientId]);
+  console.log(rows);
   return rows[0];
 };
 

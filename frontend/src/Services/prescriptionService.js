@@ -21,10 +21,11 @@ export const addPrescription = async (prescriptionPayload) => {
 };
 
 // Get the alleries of the patient
-export const fetchPatientAllergies = async (patientId) => {
+export const getAllergiesAndDOB = async (patientId) => {
   try {
     const response = await axios.get(`${API_URL}/getPatientAllergies/${patientId}`);
-    return response.data;
+    console.log(response.data);
+    return response.data;  
   } catch (error) {
     console.error("Error fetching patient allergies:", error);
     return { success: false, message: "Failed to fetch patient allergies" };

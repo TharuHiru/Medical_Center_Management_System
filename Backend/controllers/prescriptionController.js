@@ -6,7 +6,7 @@ const generatePrescriptionID = () => `P_${Math.floor(100000 + Math.random() * 90
 
 // Add new prescription for a patient (Firestore & MySQL Atomic Transaction - add to Firestore and MySQL)
 exports.addPrescription = async (req, res) => {
-  const { status, date, diagnosis, otherNotes, patient_ID, doctor_ID, medicines, appointment_ID } = req.body;
+  const { status, date, diagnosis, otherNotes, patient_ID,Age, doctor_ID, medicines, appointment_ID } = req.body;
 
   if (!diagnosis || !patient_ID || !Array.isArray(medicines) || medicines.length === 0) {
     return res.status(400).json({ success: false, message: "Missing or invalid input data" });
@@ -50,6 +50,7 @@ exports.addPrescription = async (req, res) => {
       patientName,
       date,
       diagnosis,
+      Age,
       otherNotes,
       medicines,
       createdAt: new Date()
@@ -68,7 +69,7 @@ exports.addPrescription = async (req, res) => {
 };
 
 // Get alllergies for a patient
-exports.getPatientAllergies = async (req, res) => {
+exports.getAllergiesAndDOB = async (req, res) => {
   const patientId = req.params.patientId;
 
   if (!patientId) {
@@ -76,14 +77,14 @@ exports.getPatientAllergies = async (req, res) => {
   }
 
   try {
-    const result = await Prescription.getAllergies(patientId);
+    const result = await Prescription.getAllergiesAndDOB(patientId);
     if (!result) {
       return res.status(404).json({ success: false, message: "Patient not found" });
     }
 
-    res.json({ success: true, allergies: result.allergies });
+    res.json({ success: true, allergies: result.allergies , DOB : result.DOB});
   } catch (error) {
-    console.error("Error fetching allergies:", error);
+    console.error("Error fetching allergies and DOB :", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };

@@ -106,52 +106,74 @@ export default function AppointmentQueue() {
     <>
       {/* Prescription to be billed section */}
       <div className="d-flex">
-        <AssistNavBar onLogout={logout} />
-        <div className="content-area flex-grow-1 p-4">
-          <div className="container">
-            <h2 className="text-center mb-4">Prescriptions to be Billed</h2>
-
-            <div className="row justify-content-center">
-              <div className="col-md-10">
-                <div className="list-group shadow-sm">
-                  {prescriptions.length === 0 ? (
-                    <div className="text-center">No prescriptions in queue</div>
-                  ) : (
-                    prescriptions.map((prescription, index) => (
-                      <div
-                        key={prescription.id}
-                        className={`list-group-item d-flex justify-content-between align-items-center mb-2 rounded list-group-item-success`}
-                      >
-                        <span className="fw-bold">{index + 1}</span>
-                        <span>{prescription.id}</span>
-                        <span>
-                          Name: <strong>{prescription.patientName}</strong>
-                          {prescription.status === "pending" && (
-                            <span> – <em>Not yet billed</em></span>
-                          )}
-                        </span>
-                        <button
-                          className="btn btn-primary"
-                          onClick={() => setSelectedPrescription(prescription)}
-                        >
-                          Proceed
-                        </button>
+            <AssistNavBar onLogout={logout} />
+            <div className="content-area flex-grow-1 p-4 ">
+              <div className="container">
+                <h2 className="fw-bold mb-4">Billing Queue</h2>
+                
+                <div className="card border-0 shadow-sm">
+                  <div className="card-header  py-3">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <h5 className="mb-0">Pending Prescriptions</h5>
+                      <span className="badge bg-primary rounded-pill">
+                        {prescriptions.length}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className="card-body p-0">
+                    {prescriptions.length === 0 ? (
+                      <div className="text-center py-5 text-muted">
+                        <i className="bi bi-inbox fs-1"></i>
+                        <p className="mt-3">No prescriptions in queue</p>
                       </div>
-                    ))
-                  )}
+                    ) : (
+                      <div className="prescription-list">
+                        {prescriptions.map((prescription, index) => (
+                          <div
+                            key={prescription.id}
+                            className="prescription-item p-3 border-bottom d-flex justify-content-between align-items-center"
+                          >
+                            <div className="prescription-details">
+                              <div className="d-flex align-items-center">
+                                <span className="text-muted me-3">{index + 1}</span>
+                                <div>
+                                  <h6 className="mb-1">{prescription.patientName}</h6>
+                                  <small className="text-muted">ID: {prescription.id}</small>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div className="d-flex align-items-center">
+                              {prescription.status === "pending" && (
+                                <span className="badge bg-warning text-dark me-3">Pending</span>
+                              )}
+                              <button
+                                className="btn btn-primary btn-sm px-4"
+                                onClick={() => setSelectedPrescription(prescription)}
+                              >
+                                Process
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
+          </div>
 
             {/* Prescription details section */}
             {selectedPrescription && (
               <>
                 <div className="container mt-5" ref={printRef}>
                   <div className="row justify-content-center">
-                    <div className="col-md-10">
-                      <div className="card shadow p-4 rounded"  style={{ width: "70%", borderColor: "transparent" }}>
+                    <div className="col-md-8"> 
+                      <div className="card shadow p-4 rounded" style={{ borderColor: "transparent" }}>
                               {/* Header with logo and description */}
-                            <div className="d-flex align-items-center mb-4">
+                            <div className="d-flex align-items-center mb-5">
                               <Image src="/Logo.png" alt="Poly Clinic" width={100} height={100} className="me-5" />
                             <div>
                           <h3 className="mb-1">Polyclinic Medical Center</h3>
@@ -161,9 +183,7 @@ export default function AppointmentQueue() {
                           </p>
                         </div>
                       </div>
-                        <h3 className="text-center mb-4">Billing Receipt</h3>
                         <h4 className="text-center mb-4">Prescription Details</h4>
-
                         <div className="d-flex justify-content-center">
                           <table
                             className="table table-bordered"
@@ -259,9 +279,6 @@ export default function AppointmentQueue() {
               )}
 
               
-          </div>
-        </div>
-      </div>
       <ToastContainer />
     </>
   );

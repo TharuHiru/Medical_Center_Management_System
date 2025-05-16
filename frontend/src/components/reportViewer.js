@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { fetchReport } from '@/services/reportService';
+import "@/Styles/reportViewer.css"
 
 const ReportViewer = () => {
   const [reportType, setReportType] = useState('daily-appointments');

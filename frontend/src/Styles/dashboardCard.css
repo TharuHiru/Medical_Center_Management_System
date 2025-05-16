@@ -1,52 +1,88 @@
-.custom-float-card {
-    background-color: rgb(255, 255, 255) !important;
-    transition: all 0.3s ease-in-out;
-    transform: translateY(10px);
-    opacity: 0;
-    animation: fadeInUp 0.6s ease-in-out forwards;
-  }
-  
- .image-col{
-    opacity: 0.8 !important;
- }
-  .custom-float-card:hover {
-    transform: translateY(-5px) !important;
-  }
-  
-  .card-text{
-    color: #2c6a75 !important;
-  }
-  @keyframes fadeInUp {
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
-  }
-  
-  .image-col {
-    flex: 0 0 auto;
-  }
-  
-  .text-col {
-    flex: 1;
-  }
-  
-  .total-patients-card {
-    display: flex;
-    align-items: center;
-    background-color: white;
-    padding: 1.5rem;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .vertical-line {
-    width: 5px;
-    height: 100%;
-    background-color: #2c6a75; /* Green color */
-  }
-  
-  .content-area {
-    flex: 1;
-  }
-  
-  
+.dashboard-container {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.content-area {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.card-top-border {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+}
+
+.stat-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+}
+
+.stat-icon-container i {
+  font-size: 1.5rem;
+}
+
+/* Custom colors */
+.bg-purple {
+  background-color: #6f42c1;
+}
+
+.bg-orange {
+  background-color: #fd7e14;
+}
+
+.bg-purple-light {
+  background-color: rgba(111, 66, 193, 0.15);
+}
+
+.bg-orange-light {
+  background-color: rgba(253, 126, 20, 0.15);
+}
+
+.bg-success-light {
+  background-color: rgba(25, 135, 84, 0.15);
+}
+
+.bg-primary-light {
+  background-color: rgba(13, 110, 253, 0.15);
+}
+
+.bg-warning-light {
+  background-color: rgba(255, 193, 7, 0.15);
+}
+
+.bg-danger-light {
+  background-color: rgba(220, 53, 69, 0.15);
+}
+
+.bg-info-light {
+  background-color: rgba(13, 202, 240, 0.15);
+}
+
+.bg-secondary-light {
+  background-color: rgba(108, 117, 125, 0.15);
+}
+
+.text-purple {
+  color: #6f42c1;
+}
+
+.text-orange {
+  color: #fd7e14;
+}
+
+/* Rounder corners */
+.rounded-4 {
+  border-radius: 1rem !important;
+}
+
+.rounded-3 {
+  border-radius: 0.75rem !important;
+}

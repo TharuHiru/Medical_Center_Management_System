@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, Button, Table } from "react-bootstrap";
+import { Modal, Button, Table, Image } from "react-bootstrap";
 import Swal from 'sweetalert2';
 
 export default function Receipt({ show, onHide, serviceCharge, medicines, prescriptionId, onConfirmClose}) {
@@ -50,7 +50,17 @@ export default function Receipt({ show, onHide, serviceCharge, medicines, prescr
   return (
     <Modal show={show} onHide={onHide} size="lg">
       <Modal.Header>
-        <Modal.Title>Billing Receipt</Modal.Title>
+      {/* Header with logo and description */}
+      <div className="d-flex align-items-center mb-4">
+        <Image src="/Logo.png" alt="Poly Clinic" width={100} height={100} className="me-5" />
+        <div>
+        <h3 className="mb-1">Polyclinic Medical Center</h3>
+        <p className="mb-0 text-muted" style={{ fontSize: "1rem" }}>
+          Temple Road, Thalawathugoda, Sri Lanka | Phone: 071-7517940 <br />
+          Providing quality healthcare with compassion and care.
+        </p>
+        </div>
+      </div> 
       </Modal.Header>
       <Modal.Body>
         <h5>Prescription ID: {prescriptionId}</h5>

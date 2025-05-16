@@ -76,7 +76,7 @@ const TemporySignUp = () => {
               />
             </div>
             <div className="mb-4">
-              <label htmlFor="phone" className="form-label">Phone Number:</label>
+              <label htmlFor="phone" className="form-label">Phone Number[Please insert a unique phone number]:</label>
               <input
                 type="text"
                 className="form-control"

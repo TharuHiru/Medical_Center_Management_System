@@ -9,6 +9,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import AssistNavBar from "@/components/assistantSideBar";
 import BillingForm from "@/components/billingForm";
 import Receipt from "@/components/receipt";   
+import Image from "next/image";
 
 export default function AppointmentQueue() {
   const [prescriptions, setPrescriptions] = useState([]);
@@ -148,13 +149,25 @@ export default function AppointmentQueue() {
                 <div className="container mt-5" ref={printRef}>
                   <div className="row justify-content-center">
                     <div className="col-md-10">
-                      <div className="card shadow p-4 rounded">
+                      <div className="card shadow p-4 rounded"  style={{ width: "70%", borderColor: "transparent" }}>
+                              {/* Header with logo and description */}
+                            <div className="d-flex align-items-center mb-4">
+                              <Image src="/Logo.png" alt="Poly Clinic" width={100} height={100} className="me-5" />
+                            <div>
+                          <h3 className="mb-1">Polyclinic Medical Center</h3>
+                          <p className="mb-0 text-muted" style={{ fontSize: "1rem" }}>
+                            Temple Road, Thalawathugoda, Sri Lanka | Phone: 071-7517940 <br />
+                            Providing quality healthcare with compassion and care.
+                          </p>
+                        </div>
+                      </div>
+                        <h3 className="text-center mb-4">Billing Receipt</h3>
                         <h4 className="text-center mb-4">Prescription Details</h4>
 
                         <div className="d-flex justify-content-center">
                           <table
                             className="table table-bordered"
-                            style={{ width: "90%", borderColor: "transparent" }}
+                            style={{ width: "70%", borderColor: "transparent" }}
                           >
                             <tbody>
                               <tr>

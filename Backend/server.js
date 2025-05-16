@@ -47,7 +47,7 @@ const appointmentRoutes = require('./routes/appointmentRoute');
 const prescriptionRoutes = require('./routes/prescriptionRoutes');
 const temporyPatientRoutes = require('./routes/temporyPatientRoutes');
 const dashboardRoutes = require("./routes/dashboardRoutes");
-
+const reportsRoutes = require ("./routes/reportRoute");
 
 // ✅ Use Routes
 app.use('/api/auth', authRoutes);
@@ -60,7 +60,7 @@ app.use('/api/appointments', appointmentRoutes);
 app.use('/api/prescriptions', prescriptionRoutes);
 app.use('/api/temporyPatientAuth', temporyPatientRoutes);
 app.use("/api/dashboard", dashboardRoutes);
-
+app.use("/api/reports", reportsRoutes);
 
 // ✅ Start Server
 app.listen(port, () => {

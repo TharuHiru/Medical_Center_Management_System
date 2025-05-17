@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { db } from "@/lib/firebase";
-import {collection,query,orderBy,onSnapshot,where,addDoc,getDocs,} from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot, where, getDocs, doc, deleteDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { checkExistingAppointment, createTemporaryAppointment } from "@/services/temporaryAppointmentService";
@@ -16,23 +16,19 @@ export default function TempPatientQueue() {
   const [queueNote, setQueueNote] = useState("");
   const [patientData, setPatientData] = useState(null);
 
-
   const getFormattedDate = (date) => date.toISOString().split("T")[0];
   const getDisplayDate = (date) =>
     date.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
 
-  const identifier = `${name.trim()}_${phone.trim()}`;
-
-   useEffect(() => {
-  const storedData = localStorage.getItem("temporarypatientData");
-  if (storedData) {
-    const parsedData = JSON.parse(storedData);
-    setPatientData(parsedData);
-    setName(parsedData.name || "");
-    setPhone(parsedData.phone || "");
-  }
-}, []);
-
+  useEffect(() => {
+    const storedData = localStorage.getItem("temporarypatientData");
+    if (storedData) {
+      const parsedData = JSON.parse(storedData);
+      setPatientData(parsedData);
+      setName(parsedData.name || "");
+      setPhone(parsedData.phone || "");
+    }
+  }, []);
 
   useEffect(() => {
     const q = query(
@@ -73,35 +69,49 @@ export default function TempPatientQueue() {
     fetchQueueStatus();
   }, [selectedDate]);
 
-
   const handleBook = async () => {
-  if (!name || !phone) {
-    toast.error("Please enter name and phone number");
-    return;
-  }
+    if (!name || !phone) {
+      toast.error("Please enter name and phone number");
+      return;
+    }
 
-  if (queueStatus === "stopped") {
-    toast.error("Queue is currently stopped.");
-    return;
-  }
+    if (queueStatus === "stopped") {
+      toast.error("Queue is currently stopped.");
+      return;
+    }
 
-  const alreadyExists = await checkExistingAppointment(name, phone, selectedDate);
-  if (alreadyExists) {
-    toast.error("You already have an appointment on this day!");
-    return;
-  }
+    const alreadyExists = await checkExistingAppointment(name, phone, selectedDate);
+    if (alreadyExists) {
+      toast.error("You already have an appointment on this day!");
+      return;
+    }
 
-  try {
-    setIsLoading(true);
-    await createTemporaryAppointment(name, phone, selectedDate);
-    toast.success("Appointment booked!");
-  } catch {
-    toast.error("Failed to book appointment");
-  } finally {
-    setIsLoading(false);
-  }
-};
+    try {
+      setIsLoading(true);
+      await createTemporaryAppointment(name, phone, selectedDate);
+      toast.success("Appointment booked!");
+    } catch {
+      toast.error("Failed to book appointment");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  const handleRemoveAppointment = async (appointmentId) => {
+    try {
+      const appointmentToRemove = appointments.find(appt => appt.id === appointmentId);
+      
+      if (appointmentToRemove && appointmentToRemove.phone === patientData?.phone) {
+        await deleteDoc(doc(db, "appointments", appointmentId));
+        toast.success("Appointment removed successfully");
+      } else {
+        toast.error("You can only remove your own appointments");
+      }
+    } catch (error) {
+      console.error("Error removing appointment:", error);
+      toast.error("Failed to remove appointment");
+    }
+  };
 
   const handleDateTabClick = (offset) => {
     const newDate = new Date();
@@ -112,7 +122,7 @@ export default function TempPatientQueue() {
   return (
     <div className="container py-5">
       <h2 className="mb-4 text-center">Temporary Patient Appointment Queue</h2>
-    <h1>Welcome, {patientData?.name}</h1>
+      <h1>Welcome, {patientData?.name}</h1>
       <p>Phone: {patientData?.phone}</p>
 
       <div className="text-center mb-3">
@@ -155,6 +165,7 @@ export default function TempPatientQueue() {
           className="form-control mb-3"
           placeholder="Phone Number"
           value={patientData?.phone}
+          readOnly
         />
         <button className="btn btn-primary" onClick={handleBook} disabled={isLoading}>
           {isLoading ? "Booking..." : "Book Appointment"}
@@ -167,8 +178,18 @@ export default function TempPatientQueue() {
       ) : (
         <ul className="list-group">
           {appointments.map((appt) => (
-            <li key={appt.id} className="list-group-item">
-              #{appt.queueNumber} - {appt.name || "Unnamed"} ({appt.phone})
+            <li key={appt.id} className="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                #{appt.queueNumber} - {appt.name || "Unnamed"} ({appt.phone})
+              </div>
+              {appt.phone === patientData?.phone && (
+                <button 
+                  className="btn btn-danger btn-sm"
+                  onClick={() => handleRemoveAppointment(appt.id)}
+                >
+                  Remove
+                </button>
+              )}
             </li>
           ))}
         </ul>

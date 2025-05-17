@@ -12,7 +12,6 @@ const TemporySignUp = () => {
     name: "",
     address: "",
     phone: "",
-    password: "",
   });
 
   const router = useRouter(); // Initialize the router
@@ -88,25 +87,12 @@ const TemporySignUp = () => {
                 required
               />
             </div>
-            <div className="mb-4">
-              <label htmlFor="passworde" className="form-label">Password:</label>
-              <input
-                type="password"
-                className="form-control"
-                placeholder="Enter your phone number"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
-            </div>
             <button type="submit" className="btn btn-primary w-100 loginBtn">
               Create Account
             </button>
             <p>
-                Already have an account? &nbsp;
-                <Link href="/TemporyLogin">Login to your account</Link>
+                Already have an appointment? View status of the appointment &nbsp;
+                <Link href="/TemporyLogin">View Appointment</Link>
             </p>
           </form>
         </div>

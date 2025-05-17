@@ -48,6 +48,7 @@ export const checkExistingAppointment = async (name, phone, selectedDate) => {
   return !docs.empty;
 };
 
+//create temporary appointment
 export const createTemporaryAppointment = async (name, phone, selectedDate) => {
   const identifier = getIdentifier(name, phone);
   const dateStr = getFormattedDate(selectedDate);
@@ -65,6 +66,7 @@ export const createTemporaryAppointment = async (name, phone, selectedDate) => {
   });
 };
 
+// change temporary appoinrmtment into permanat one
 export const createAppointment = async (patientID, appointmentDate) => {
   const docID = `${appointmentDate}_${patientID}`; // unique per day per patient
   const appointmentRef = doc(db, "appointments", docID);

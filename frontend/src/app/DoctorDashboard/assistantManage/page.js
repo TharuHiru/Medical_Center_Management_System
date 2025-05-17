@@ -68,6 +68,9 @@ function DoctorDashboard() {
 
   // Update assistant call
   const handleSaveAssistant = async (id) => {
+     if (!validateAssistant(editingAssistant)) {
+  return;
+}
     try {
       const result = await updateAssistant(id, editingAssistant); // Send updated data to backend
       if (result.success) {
@@ -80,6 +83,29 @@ function DoctorDashboard() {
       console.error("Failed to save assistant:", error);
     }
   };
+
+  const validateAssistant = (assistant) => {
+  const { First_Name, Last_Name, Email, Contact_Number, NIC } = assistant;
+
+  if (!String(First_Name).trim() || !String(Last_Name).trim() || !String(Email).trim() || !String(Contact_Number).trim()) {
+    toast.error('Please fill all required fields');
+    return false;
+  }
+
+  const nameRegex = /^[A-Za-z]+$/;
+  if (!nameRegex.test(First_Name) || !nameRegex.test(Last_Name)) {
+    toast.error('Names should contain only letters');
+    return false;
+  }
+
+  const contactRegex = /^0\d{9}$/;
+  if (!contactRegex.test(Contact_Number)) {
+    toast.error('Invalid contact number');
+    return false;
+  }
+
+  return true;
+};
 
   return (
     <div className="dashboard-container">

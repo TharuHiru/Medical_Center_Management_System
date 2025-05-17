@@ -31,18 +31,45 @@ const AddAssistantModal = ({ showModal, handleClose }) => {
     setAssistantDetails({ ...assistantDetails, [name]: value });
   };
 
-  // Form validation logic
   const validateForm = () => {
-    if ((!assistantDetails.firstname.trim()) 
-        || (!assistantDetails.lastname.trim())
-        || (!assistantDetails.email.trim())
-        || (!assistantDetails.contact.trim())) 
-    {    
-      toast.error('Please Fill all the values');
-      return false;
-    }
-    return true;
-  };
+  const { firstname, lastname, email, contact, nic } = assistantDetails;
+
+  // Basic empty checks
+  if (!firstname.trim() || !lastname.trim() || !email.trim() || !contact.trim()) {
+    toast.error('Please fill all required fields');
+    return false;
+  }
+
+  // Name validation
+  const nameRegex = /^[A-Za-z]+$/;
+  if (!nameRegex.test(firstname) || !nameRegex.test(lastname)) {
+    toast.error('Names should contain only letters');
+    return false;
+  }
+
+  // NIC validation (supports old 9-digit + 'V' and new 12-digit NICs)
+  const nicRegex = /^(\d{9}[vV]|\d{12})$/;
+  if (nic && !nicRegex.test(nic)) {
+    toast.error('Invalid NIC format');
+    return false;
+  }
+
+  // Contact validation (10 digits, starting with 0)
+  const contactRegex = /^0\d{9}$/;
+  if (!contactRegex.test(contact)) {
+    toast.error('Invalid contact number');
+    return false;
+  }
+
+  // Email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    toast.error('Invalid email format');
+    return false;
+  }
+
+  return true;
+};
 
   // Handle form submission
   const handleSubmit = async (e) => {

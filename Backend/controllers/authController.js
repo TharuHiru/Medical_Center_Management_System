@@ -106,7 +106,7 @@ const registerAssistant = async (req, res) => {
             return res.status(400).json({ message: 'Assistant for this email is already exists' });
         }
 
-        // create random password and hack it
+        // create random password and add it
         const generateRandomPassword = () => {return crypto.randomBytes(6).toString('base64');}; // 8-char password};
         const randomPassword = generateRandomPassword();
         const hashedPassword = await bcrypt.hash(randomPassword, 10);
@@ -134,7 +134,7 @@ const registerAssistant = async (req, res) => {
                 };
 
                 await transporter.sendMail(mailOptions);
-                res.json({ message: 'Assistant Account Created and Verification email sent successfully !' });    
+                return res.status(400).json({ message: 'Assistant Account Created and Verification email sent successfully !' });    
             } catch (error) {
                 console.error('Error inserting assistant:', error);
                 return res.status(500).json({ message: 'Server error.' });

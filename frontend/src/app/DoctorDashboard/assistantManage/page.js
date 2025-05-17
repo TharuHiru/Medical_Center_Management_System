@@ -7,8 +7,10 @@ import '@/Styles/loginForms.css';
 import "@/Styles/tableStyle.css";
 import { useAuth } from "@/context/AuthContext";
 import DoctorNavBar from '@/components/doctorSideBar';
+import { toast } from "react-toastify"; // Import Toastify for toast notifications
+import "react-toastify/dist/ReactToastify.css"; // Toastify CSS
 import { FaUser , FaPencilAlt } from 'react-icons/fa'; // Import icons
-import { fetchAssistants } from '@/services/doctorAssistantService';
+import { fetchAssistants , updateAssistant } from '@/services/doctorAssistantService';
 import AddAssistantModal from '@/components/addAssistantModel';
 
 function DoctorDashboard() {
@@ -67,10 +69,13 @@ function DoctorDashboard() {
   // Update assistant call
   const handleSaveAssistant = async (id) => {
     try {
-      await updateAssistant(id, editingAssistant); // Send updated data to backend
-      const updatedResponse = await fetchAssistants(); // Refresh the list
-      setAssistants(updatedResponse.data);
-      setEditingAssistant(null);
+      const result = await updateAssistant(id, editingAssistant); // Send updated data to backend
+      if (result.success) {
+        toast.success("Assistant updated successfully");
+        const updatedResponse = await fetchAssistants(); // Refresh the list
+        setAssistants(updatedResponse.data);
+        setEditingAssistant(null);
+      }
     } catch (error) {
       console.error("Failed to save assistant:", error);
     }

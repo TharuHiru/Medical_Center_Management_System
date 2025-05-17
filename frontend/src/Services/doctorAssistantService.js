@@ -13,3 +13,13 @@ export const fetchAssistants = async () => {
     throw error;
   }
 };
+
+export const updateAssistant = async (id, assistantData) => {
+  try {
+    const response = await axios.put(`${API_URL}/assistants/${id}`, assistantData);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating assistant:", error);
+    throw error;
+  }
+};

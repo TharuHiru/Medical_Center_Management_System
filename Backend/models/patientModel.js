@@ -7,12 +7,38 @@ exports.getAllPatients = async () => {
 };
 
 // Update patient by ID
-exports.updatePatient = async ({ patient_ID, title, firstName, lastName, contactNo, email }) => {
+exports.updatePatient = async (patientId, patientData) => {
+  const { title, firstName, lastName, contactNo, email, gender, DOB, house_no, addr_line_1, addr_line_2 } = patientData;
+  
   const query = `
     UPDATE patients
-    SET title = ?, firstName = ?, lastName = ?, contactNo = ?, email = ?
+    SET 
+      title = ?,
+      firstName = ?,
+      lastName = ?,
+      contactNo = ?,
+      email = ?,
+      gender = ?,
+      DOB = ?,
+      house_no = ?,
+      addr_line_1 = ?,
+      addr_line_2 = ?
     WHERE patient_ID = ?
   `;
-  const [result] = await pool.query(query, [title, firstName, lastName, contactNo, email, patient_ID]);
+  
+  const [result] = await pool.query(query, [
+    title,
+    firstName,
+    lastName,
+    contactNo,
+    email,
+    gender,
+    DOB,
+    house_no,
+    addr_line_1,
+    addr_line_2,
+    patientId
+  ]);
+  
   return result;
 };

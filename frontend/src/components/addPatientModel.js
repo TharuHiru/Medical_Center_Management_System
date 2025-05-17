@@ -71,11 +71,11 @@ const AddPatientModal = ({ showModal, handleClose , temp = false , appointmentDa
   }
 
   // Name validation (letters only)
-  if (!/^[a-zA-Z]+$/.test((firstname)||(lastname)) ){
-    toast.error('First name can only contain letters');
+  if (!/^[a-zA-Z]+(?:'[a-zA-Z]+)*$/.test((firstname)||(lastname)) ){
+    toast.error('First name can only contain letters ');
     return false;
   }
-  if (!/^[a-zA-Z]+$/.test(lastname)) {
+  if (!/^[a-zA-Z]+(?:'[a-zA-Z]+)*$/.test(lastname)) {
     toast.error('Last name can only contain letters');
     return false;
   }

@@ -14,10 +14,10 @@ export const fetchPatients = async () => {
   }
 };
 
-//update patient details
-export const updatePatient = async (selectedPatient) => {
+// function to update patient details
+export const updatePatient = async (patientId, patientData) => {
   try {
-    const response = await axios.put(`${API_URL}/updatePatient`, selectedPatient);
+    const response = await axios.put(`${API_URL}/patients/${patientId}`, patientData);
     return response.data;
   } catch (error) {
     console.error("Error updating patient:", error);

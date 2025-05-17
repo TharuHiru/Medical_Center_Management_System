@@ -12,18 +12,20 @@ exports.fetchPatients = async (req, res) => {
   }
 };
 
-// Controller: Update patient
+// Update patient by ID
 exports.updatePatient = async (req, res) => {
-  const { patient_ID, title, firstName, lastName, contactNo, email } = req.body;
+  const { patientId } = req.params;
+  const patientData = req.body;
 
   try {
-    const result = await PatientModel.updatePatient({ patient_ID, title, firstName, lastName, contactNo, email });
-
+    const result = await PatientModel.updatePatient(patientId, patientData);
     if (result.affectedRows === 0) {
       return res.status(404).json({ success: false, message: "Patient not found" });
     }
 
-    res.status(200).json({ success: true, message: "Patient updated successfully" });
+    res.status(200).json({ success: true, message: "Patient updated successfully",
+      data: { patient_ID: patientId, ...patientData }
+    });
   } catch (error) {
     console.error("Error updating patient:", error);
     res.status(500).json({ success: false, message: "Error updating patient details" });

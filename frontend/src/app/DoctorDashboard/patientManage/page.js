@@ -60,7 +60,7 @@ function AssistantDashboardPatient() {
 
       <div className="content-area container mt-4">
         <br />
-        <h2>&nbsp; &nbsp; Patient Details</h2>
+        <h1> &nbsp; Patient Details</h1>
         <br />
         <div className="search-container">
           <FaSearch className="search-icon" />

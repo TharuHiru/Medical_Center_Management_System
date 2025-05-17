@@ -7,13 +7,14 @@ import '@/Styles/loginForms.css';
 import "@/Styles/tableStyle.css";
 import { useAuth } from "@/context/AuthContext";
 import DoctorNavBar from '@/components/doctorSideBar';
-import { FaUser } from 'react-icons/fa'; // Import icons
+import { FaUser , FaPencilAlt } from 'react-icons/fa'; // Import icons
 import { fetchAssistants } from '@/services/doctorAssistantService';
 import AddAssistantModal from '@/components/addAssistantModel';
 
 function DoctorDashboard() {
   const router = useRouter();
   const { userName } = useAuth();
+
   // Function to handle logout
   const logout = () => {
     console.log('Logged out');
@@ -22,6 +23,17 @@ function DoctorDashboard() {
 
   const [showAssistantModal, setShowAssistantModal] = useState(false);
   const [assistants, setAssistants] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [editingAssistant, setEditingAssistant] = useState(null);
+
+  // search function of the assistant
+  const filteredAssistants = assistants.filter((assistant) =>
+  Object.values(assistant).some(
+      (value) =>
+        value &&
+        value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    )
+);
 
   useEffect(() => {
     // Fetch assistant details when component mounts
@@ -39,19 +51,37 @@ function DoctorDashboard() {
   const handleShowAssistantModal = () => setShowAssistantModal(true);
   const handleCloseAssistantModal = () => setShowAssistantModal(false);
 
+  // Add new assistant form submit logic
   const handleFormSubmit = async () => {
     console.log("Form submitted");
-    handleCloseAssistantModal();
-    // Refresh the assistant list after adding a new assistant
+    handleCloseAssistantModal();  // Refresh the assistant list after adding a new assistant
     const updatedResponse= await fetchAssistants();
     setAssistants(updatedResponse.data);
+  };
+
+  // cancel button when click on edit
+  const cancelEdit = () => {
+  setEditingAssistant(null);
+};
+
+  // Update assistant call
+  const handleSaveAssistant = async (id) => {
+    try {
+      await updateAssistant(id, editingAssistant); // Send updated data to backend
+      const updatedResponse = await fetchAssistants(); // Refresh the list
+      setAssistants(updatedResponse.data);
+      setEditingAssistant(null);
+    } catch (error) {
+      console.error("Failed to save assistant:", error);
+    }
   };
 
   return (
     <div className="dashboard-container">
       <DoctorNavBar onLogout={logout} />
         <div className="content-area container mt-4">
-        <div className="button-container">
+        <h1> &nbsp; Assistants Details</h1>
+        <div className="button-container text-end mb-3">
           <button className="btn btn-primary btnAddPatient" onClick={handleShowAssistantModal}>
             <FaUser size={40} />
             <br />
@@ -64,11 +94,24 @@ function DoctorDashboard() {
           />
         </div>
 
+        {/*Search container*/}
+        <div className="search-container mb-3">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Search assistants..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
+        {/* Data Table */}
         <div className="table-wrapper">
           <div className="table-responsive-custom">
             <table className="table table-striped data-table">
               <thead>
                 <tr>
+                  <th></th>
                   <th>NIC</th>
                   <th>Title</th>
                   <th>First Name</th>
@@ -80,25 +123,61 @@ function DoctorDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {assistants.length > 0 ? (
-                  assistants.map((assistant) => (
+                {filteredAssistants.length > 0 ? (
+                  filteredAssistants.map((assistant) => (
                     <tr key={assistant.assist_ID}>
-                      <td>{assistant.NIC}</td>
-                      <td>{assistant.Title}</td>
-                      <td>{assistant.Firs_tName}</td>
-                      <td>{assistant.Last_Name}</td>
-                      <td>{assistant.Contact_Number}</td>
-                      <td>{assistant.House_No}</td>
-                      <td>{assistant.Address_Line_1}</td>
-                      <td>{assistant.Address_Line_2}</td>
+                      <td> {editingAssistant?.assist_ID === assistant.assist_ID ? (
+                          <>
+                            <button
+                              className="btn btn-sm btn-success me-1" onClick={() => handleSaveAssistant(assistant.assist_ID)}
+                            > Save
+                            </button>
+                            <button
+                              className="btn btn-sm btn-secondary" onClick={cancelEdit}
+                            > Cancel
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            className="btn btn-sm " onClick={() => setEditingAssistant({ ...assistant })}
+                          > <FaPencilAlt className="me-1" />
+                          </button>
+                        )}
+                      </td>
+
+                      {/* Inline Editable Fields */}
+                      {['NIC', 'Title', 'First_Name', 'Last_Name', 'Contact_Number', 'House_No', 'Address_Line_1', 'Address_Line_2'].map((field) => (
+                        <td key={field}>
+                          {editingAssistant?.assist_ID === assistant.assist_ID ? (
+                            field === 'NIC' ? (
+                              editingAssistant[field] // NIC is uneditable
+                            ) : (
+                              <input
+                                type="text"
+                                className="form-control form-control-sm"
+                                value={editingAssistant[field] || ""}
+                                onChange={(e) =>
+                                  setEditingAssistant({
+                                    ...editingAssistant,
+                                    [field]: e.target.value,
+                                  })
+                                }
+                              />
+                            )
+                          ) : (
+                            assistant[field]
+                          )}
+                        </td>
+                      ))}
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="8">No Assistant record found</td>
+                    <td colSpan="9">No matching assistants found</td>
                   </tr>
                 )}
               </tbody>
+
             </table>
           </div>
         </div>

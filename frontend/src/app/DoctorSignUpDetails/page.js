@@ -8,6 +8,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import { registerDoctorStep2 } from '@/services/authService';
 import { useSearchParams } from "next/navigation";
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+
 const DoctorSignUpDetails = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -16,6 +19,10 @@ const DoctorSignUpDetails = () => {
   const [password, setPassword] = useState('');
   const [secretKey, setSecretKey] = useState('');
   const [rePassword, setRePassword] = useState('');
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showRePassword, setShowRePassword] = useState(false);
+  const [showSecretKey, setShowSecretKey] = useState(false);
 
   useEffect(() => {
     if (!emailFromURL) {
@@ -70,46 +77,66 @@ const DoctorSignUpDetails = () => {
           <p className="text-center mb-4">Registering as: {emailFromURL}</p>
           
           <form className="temporyLoginForm" onSubmit={handleSubmit}>
+
+            {/* Password */}
             <div className="mb-3">
               <label htmlFor="password" className="form-label">Password:</label>
-              <input
-                type="password"
-                className="form-control"
-                id="register-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+              <div className="input-group">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  className="form-control"
+                  id="register-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <span className="input-group-text" style={{ cursor: "pointer" }} onClick={() => setShowPassword(!showPassword)}>
+                  <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                </span>
+              </div>
             </div>
 
+            {/* Confirm Password */}
             <div className="mb-3">
               <label htmlFor="rePassword" className="form-label">Confirm Password:</label>
-              <input
-                type="password"
-                className="form-control"
-                id="register-re-password"
-                value={rePassword}
-                onChange={(e) => setRePassword(e.target.value)}
-                required
-              />
+              <div className="input-group">
+                <input
+                  type={showRePassword ? "text" : "password"}
+                  className="form-control"
+                  id="register-re-password"
+                  value={rePassword}
+                  onChange={(e) => setRePassword(e.target.value)}
+                  required
+                />
+                <span className="input-group-text" style={{ cursor: "pointer" }} onClick={() => setShowRePassword(!showRePassword)}>
+                  <FontAwesomeIcon icon={showRePassword ? faEyeSlash : faEye} />
+                </span>
+              </div>
             </div>
 
+            {/* Secret Key */}
             <div className="mb-3">
               <label htmlFor="secretKey" className="form-label">Secret Key:</label>
-              <input
-                type="password"
-                className="form-control"
-                id="secretKey"
-                value={secretKey}
-                onChange={(e) => setSecretKey(e.target.value)}
-                required
-              />
+              <div className="input-group">
+                <input
+                  type={showSecretKey ? "text" : "password"}
+                  className="form-control"
+                  id="secretKey"
+                  value={secretKey}
+                  onChange={(e) => setSecretKey(e.target.value)}
+                  required
+                />
+                <span className="input-group-text" style={{ cursor: "pointer" }} onClick={() => setShowSecretKey(!showSecretKey)}>
+                  <FontAwesomeIcon icon={showSecretKey ? faEyeSlash : faEye} />
+                </span>
+              </div>
             </div>
 
             <button type="submit" className="btn btn-primary w-100 loginBtn">
               Complete Registration
             </button>
           </form>
+
         </div>
       </section>
     </div>

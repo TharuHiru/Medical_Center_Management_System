@@ -123,7 +123,7 @@ const DoctorSignUp = () => {
             </p>
 
             <button type="submit" className="btn btn-primary w-100 loginBtn">
-              Register
+              Next {'>'}
             </button>
           </form>
         </div>

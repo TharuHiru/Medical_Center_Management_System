@@ -10,7 +10,7 @@ import Select from "react-select";
 import Swal from "sweetalert2";
 import AssistNavBar from "@/components/assistantSideBar";
 import AddPatientModal from "@/components/addPatientModel";
-import { FaCalendarAlt, FaUserPlus, FaCheck, FaExclamationTriangle, FaArrowRight } from "react-icons/fa";
+import { FaCalendarAlt, FaUserPlus, FaCheck, FaExclamationTriangle, FaArrowRight, FaRedo } from "react-icons/fa";
 
 // Format date as yyyy-mm-dd
 const getFormattedDate = (date) => {
@@ -34,17 +34,14 @@ export default function AppointmentQueue() {
   const [selectedPatient, setSelectedPatient] = useState(null);
 
   const handleSaveAsPatient = (appt) => {
-  setSelectedPatient(appt); // Set the selected patient
-  setShowModal(true); // Open the modal
-};
+    setSelectedPatient(appt); // Set the selected patient
+    setShowModal(true); // Open the modal
+  };
 
   // Real-time listener for appointments on selected date
   useEffect(() => {
     const formattedDate = getFormattedDate(selectedDate);
-    const q = query(
-      collection(db, "appointments"),
-      where("appointmentDate", "==", formattedDate),
-      orderBy("createdAt", "asc")
+    const q = query( collection(db, "appointments"), where("appointmentDate", "==", formattedDate), orderBy("createdAt", "asc")
     );
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map((doc, index) => ({
@@ -69,7 +66,7 @@ export default function AppointmentQueue() {
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-        const response = await getAllPatients(); // This should return the JSON from your backend
+        const response = await getAllPatients(); // backend API call
         console.log("Patients fetch response:", response);
         if (response) {
           const options = response.data.map((p) => ({
@@ -85,6 +82,7 @@ export default function AppointmentQueue() {
     fetchPatients();
   }, []);
   
+  // get the queue status
   useEffect(() => {
     const fetchStatus = async () => {
       const statusDoc = await getDocs(
@@ -99,14 +97,13 @@ export default function AppointmentQueue() {
     fetchStatus();
   }, [selectedDate]);
 
+  // Noify doctor arrival button
   const handleStartQueue = async () => {
     setIsLoading(true);
     try {
       const date = getFormattedDate(selectedDate);
       await setDoc(doc(db, "queueStatus", date), {
-        date,
-        status: "started",
-        note: "Doctor has arrived"
+        date, status: "started", note: "Doctor has arrived"
       });
       setQueueStatus("started");
       toast.success("Queue started. Patients will be notified.");
@@ -116,19 +113,13 @@ export default function AppointmentQueue() {
       setIsLoading(false);
     }
   };
-  
+
+  // stop the queue button
   const handleStopQueue = async () => {
+    //open confirmation box
     const { value: note } = await Swal.fire({
-      title: "Stop Queue",
-      input: "textarea",
-      inputLabel: "Reason for stopping the queue",
-      inputPlaceholder: "Type your reason here...",
-      inputAttributes: {
-        "aria-label": "Type your reason here"
-      },
-      showCancelButton: true,
-      confirmButtonText: "Submit",
-      confirmButtonColor: "#d33",
+      title: "Stop Queue", input: "textarea", inputLabel: "Reason for stopping the queue", inputPlaceholder: "Type your reason here...",
+      inputAttributes: { "aria-label": "Type your reason here"}, showCancelButton: true, confirmButtonText: "Submit", confirmButtonColor: "#d33",
       cancelButtonColor: "#6c757d",
       preConfirm: (note) => {
         if (!note) {
@@ -136,7 +127,7 @@ export default function AppointmentQueue() {
         }
       }
     });
-  
+    //if confirmed save the note in the firebase queue status
     if (note) {
       setIsLoading(true);
       try {
@@ -155,11 +146,29 @@ export default function AppointmentQueue() {
       }
     }
   };
-  
+    // handle the queue restart button
+    const handleRestartQueue = async () => {
+      setIsLoading(true);
+      try {
+        const date = getFormattedDate(selectedDate);
+        await setDoc(doc(db, "queueStatus", date), {
+          date,
+          status: "started",
+          note: "Queue has been restarted"
+        });
+        setQueueStatus("started");
+        toast.success("Queue restarted successfully");
+      } catch (error) {
+        toast.error("Error restarting queue");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     const confirmBeforeSave = (appt) => {
     Swal.fire({
       title: 'Please Logout First',
-      text: 'To proceed, please log out from the temporary patient account.',
+      text: 'To proceed, please ask the temporary patient to logout.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'OK, Continue',
@@ -177,30 +186,28 @@ export default function AppointmentQueue() {
       toast.error("Please select a patient");
       return;
     }
-    
+    // if the queue is stopped cant book
     const bookingDate = getFormattedDate(selectedDate);
     if (queueStatus === "stopped" && getFormattedDate(selectedDate) === bookingDate) {
       toast.error("Queue is stopped for today. Booking is disabled.");
       return;
     }
-  
     setIsLoading(true);
     try {
       const q = query(
-        collection(db, "appointments"),
-        where("appointmentDate", "==", bookingDate),
-        where("id", "==", patientID)
+        collection(db, "appointments"), where("appointmentDate", "==", bookingDate), where("id", "==", patientID)
       );
       const snapshot = await getDocs(q);
-  
+      
       if (!snapshot.empty) {
         toast.error("This patient already has an appointment on this date.");
         return;
       }
-  
-      await createAppointment(patientID, bookingDate);
-      toast.success("Appointment booked successfully!");
-      setPatientID("");
+      const data = await createAppointment(patientID, bookingDate);
+        if(data.success) {
+          toast.success("Appointment booked successfully!");
+          setPatientID("");
+        }
     } catch (errorMessage) {
       toast.error(errorMessage);
     } finally {
@@ -363,6 +370,14 @@ export default function AppointmentQueue() {
                           <FaExclamationTriangle className="me-2" />
                           Stop Queue
                         </button>
+                        <button
+                          className="btn btn-warning d-flex align-items-center justify-content-center"
+                          onClick={handleRestartQueue}
+                          disabled={queueStatus === "started" || isLoading}
+                        >
+                          <FaRedo className="me-2" />
+                          Restart Queue
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -411,7 +426,7 @@ export default function AppointmentQueue() {
           </div>
         </div>
       </div>
-       {/* Conditionally render the modal */}
+       {/* Conditionally render the Add patient modal */}
       {showModal && (
         <AddPatientModal
           showModal={true}  // Explicitly set to true since we're controlling visibility

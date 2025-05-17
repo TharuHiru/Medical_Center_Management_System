@@ -113,7 +113,32 @@ export default function BillingForm({prescriptionRows,handleRowChange,removeRow,
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
-  
+
+     // Validate doctor fee
+  const serviceCharge = parseFloat(e.target.serviceCharge.value);
+    if (serviceCharge <= 0) {
+      toast.error("Doctor fee must be greater than 0");
+      return;
+    }
+
+    // Validate each row
+  for (let i = 0; i < prescriptionRows.length; i++) {
+    const row = prescriptionRows[i];
+    // Validate inventory selection
+    if (!row.inventory_ID) {
+      toast.error(`Please select an inventory record for row ${i + 1}`);
+      return;
+    }    // Validate units
+    const units = parseFloat(row.units);
+    if (isNaN(units)) {
+      toast.error(`Please enter valid units for row ${i + 1}`);
+      return;
+    }
+    if (units <= 0) {
+      toast.error(`Units must be greater than 0 for row ${i + 1}`);
+      return;
+    }
+  }
     const billingDetails = {
       serviceCharge: e.target.serviceCharge.value,
       prescriptionId: prescriptionId,
@@ -291,4 +316,4 @@ export default function BillingForm({prescriptionRows,handleRowChange,removeRow,
     )}
   </div>
   );
-}
+  }

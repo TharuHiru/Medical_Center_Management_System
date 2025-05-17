@@ -5,13 +5,14 @@ import { useRouter } from "next/navigation"; // Next.js 13+ uses "next/navigatio
 import BackNavbar from "@/components/backNavBar";
 import { temporyPatientLogin } from "@/services/temporyPatientService"; // ✅ Use login, not signUp
 import Link from "next/link";
-
+import "react-toastify/dist/ReactToastify.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "@/Styles/loginForms.css";
+import { toast } from "react-toastify";
 
 const TemporyLogin = () => {
   const [formData, setFormData] = useState({
     phone: "",
-    password: ""
   });
 
   const router = useRouter(); // Initialize the router
@@ -23,19 +24,29 @@ const TemporyLogin = () => {
 
   const submitPatientData = async (e) => {
     e.preventDefault(); // Prevent the default form submission
+
+    // Basic phone validation
+    if (!formData.phone || !/^0\d{9}$/.test(formData.phone)) {
+      toast.error("Please enter a valid phone number");
+      return;
+    }
     try {
       const response = await temporyPatientLogin(formData); // Call the service function
 
+       if (!response) {
+          throw new Error("No response from server");
+       }
+
       if (response.success) {
-        alert("Login successful");
+        toast.success("Login successful");
         localStorage.setItem('temporarypatientData', JSON.stringify(response.data)); // save name and phone in local storage
         router.push("/temporyPatientQueue"); // Redirect on success
       } else {
-        alert(response.message || "Login failed");
+        toast.error(response.message || "Login failed");
       }
     } catch (error) {
       console.error("Login error:", error);
-      alert(error.response?.data?.message || "An error occurred while logging in");
+      toast.error(error.response?.data?.message || "An error occurred while logging in");
     }
   };
 
@@ -44,8 +55,8 @@ const TemporyLogin = () => {
       <BackNavbar />
       <section className="container d-flex justify-content-center">
         <div className="col-md-6 loginForm">
-          <h2 className="text-center mb-4">Temporary Patient Login</h2>
-          <form onSubmit={submitPatientData}> {/* Correct form submission */}
+          <h2 className="text-center mb-4">Check On Your Temporary Appointment</h2>
+          <form onSubmit={submitPatientData}> 
             <div className="mb-4">
               <label htmlFor="phone" className="form-label">Phone Number:</label>
               <input
@@ -59,25 +70,12 @@ const TemporyLogin = () => {
                 required
               />
             </div>
-            <div className="mb-4">
-              <label htmlFor="password" className="form-label">Password:</label>
-              <input
-                type="password"
-                className="form-control"
-                placeholder="Enter your password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
-            </div>
             <button type="submit" className="btn btn-primary w-100 loginBtn">
-              Login
+              View Appointment
             </button>
             <p>
-              Don&apos;t have an account? &nbsp;
-              <Link href="/TemporySignUp">Create patient Account</Link>
+              Want to create a new appointment? &nbsp;
+              <Link href="/TemporySignUp">Create Appointment</Link>
             </p>
           </form>
         </div>

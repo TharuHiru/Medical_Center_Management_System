@@ -1,10 +1,11 @@
-"use client"; // ✅ This makes the file a client component
-
+"use client";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation"; // Next.js 13+ uses "next/navigation"
+import { useRouter } from "next/navigation";
 import BackNavbar from "@/components/backNavBar";
-import { temporyPatientSignUp } from "@/services/temporyPatientService"; // Import service
+import { temporyPatientSignUp } from "@/services/temporyPatientService";
 import Link from "next/link";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "@/Styles/loginForms.css";
 
 const TemporySignUp = () => {
@@ -13,32 +14,60 @@ const TemporySignUp = () => {
     address: "",
     phone: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
-  const router = useRouter(); // Initialize the router
-
-  // Handle input changes
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
-  const submitPatientData = async () => {
+
+  const validateForm = () => {
+    // Name validation (letters, spaces, apostrophes)
+    if (!formData.name || !/^[A-Za-z\s'-]+$/.test(formData.name)) {
+      toast.error("Invalid name format");
+    }
+
+    // Phone validation (10 digits starting with 0)
+    if (!formData.phone || !/^0\d{9}$/.test(formData.phone)) {
+      toast.error("Invalid phone number format");
+      return false;
+    }
+
+    // Address validation (max 50 chars)
+    if (!formData.address || formData.address.length > 50) {
+      toast.error("Address must be less than 50 characters");
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSignUpSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) return;
+
+    setIsSubmitting(true);
+    const loadingToast = toast.loading("Creating temporary appointment...");
+
     try {
-      const response = await temporyPatientSignUp(formData); // Call the service function
-  
+      const response = await temporyPatientSignUp(formData);
+      toast.dismiss(loadingToast);
+
       if (response.success) {
-        alert("Temporary patient added successfully");
-        router.push("/TemporyLogin"); 
+        toast.success("Temporary patienta added successfully!");
+        router.push("/TemporyLogin");
       } else {
-        alert(response.message || "Error adding temporary patient");
+        toast.error(response.message || "Failed to create temporary appointment");
       }
     } catch (error) {
-      console.error("Error adding temporary patient:", error);
-      alert(error.response?.data?.message || "An error occurred while adding the patient");
+      toast.dismiss(loadingToast);
+      console.error("Error creating temporary appointment:", error);
+      toast.error(error.response?.data?.message || "An error occurred while creating the appointment");
+    } finally {
+      setIsSubmitting(false);
     }
-  };
-  
-  const handleSignUpSubmit = (e) => {
-    e.preventDefault();
-    submitPatientData();
   };
 
   return (
@@ -46,7 +75,7 @@ const TemporySignUp = () => {
       <BackNavbar />
       <section className="container d-flex justify-content-center">
         <div className="col-md-6 loginForm">
-          <h2 className="text-center mb-4">Temporary Patient Register</h2>
+          <h2 className="text-center mb-4">Temporary Patient Appointment</h2>
           <form onSubmit={handleSignUpSubmit}>
             <div className="mb-4">
               <label htmlFor="name" className="form-label">Name:</label>
@@ -66,20 +95,21 @@ const TemporySignUp = () => {
               <input
                 type="text"
                 className="form-control"
-                placeholder="Enter your Address"
+                placeholder="Enter your address (max 50 characters)"
                 id="address"
                 name="address"
                 value={formData.address}
                 onChange={handleChange}
+                maxLength={50}
                 required
               />
             </div>
             <div className="mb-4">
-              <label htmlFor="phone" className="form-label">Phone Number[Please insert a unique phone number]:</label>
+              <label htmlFor="phone" className="form-label">Phone Number:</label>
               <input
-                type="text"
+                type="tel"
                 className="form-control"
-                placeholder="Enter your phone number"
+                placeholder="Enter your phone number (0712345678)"
                 id="phone"
                 name="phone"
                 value={formData.phone}
@@ -87,12 +117,15 @@ const TemporySignUp = () => {
                 required
               />
             </div>
-            <button type="submit" className="btn btn-primary w-100 loginBtn">
-              Create Account
+            <button 
+               type="submit"  className="btn btn-primary w-100 loginBtn" >
+               Go to appointments
             </button>
-            <p>
-                Already have an appointment? View status of the appointment &nbsp;
-                <Link href="/TemporyLogin">View Appointment</Link>
+            <p className="mt-3 text-center">
+              Already have an appointment?{" "}
+              <Link href="/TemporyLogin" className="text-primary">
+                View Appointment
+              </Link>
             </p>
           </form>
         </div>

@@ -73,7 +73,7 @@
 }
 
 .dashboard-content {
-  padding: 20px;
+  padding-left: 20px;
   flex-grow: 1;
   background-color: #f8f9fa;
 }

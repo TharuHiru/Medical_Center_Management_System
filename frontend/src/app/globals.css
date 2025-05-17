@@ -1,4 +1,9 @@
 @import '~bootstrap/dist/css/bootstrap.min.css';
 
-/* Add your custom styles here */
+html, body {
+  margin: 0;
+  padding: 0 !important;
+  max-width: 100%;
+}
+
 

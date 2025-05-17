@@ -10,7 +10,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import DoctorNavBar from "@/components/doctorSideBar";
 import { FaEye, FaSearch } from "react-icons/fa";
 import { fetchPatients } from "@/services/patientService";
-import PatientProfileView from "@/components/patientProfile";
+import PatientAppointments from "@/components/patientAppointments";
 
 function AssistantDashboardPatient() {
   const router = useRouter();
@@ -24,8 +24,9 @@ function AssistantDashboardPatient() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPatient, setSelectedPatient] = useState(null);
 
-  const patientDetailsRef = useRef(null);  // Ref to scroll to patient details
+  const patientDetailsRef = useRef(null);
 
+  // get patient data Api call
   useEffect(() => {
     const getPatients = async () => {
       try {
@@ -38,6 +39,7 @@ function AssistantDashboardPatient() {
     getPatients();
   }, []);
 
+  // Filter patients based on search term
   const filteredPatients = patients.filter((patient) => {
     return Object.values(patient).some(
       (value) =>
@@ -46,10 +48,9 @@ function AssistantDashboardPatient() {
     );
   });
 
+  // Handle view patient appointments and sroll to the section
   const handleViewPatient = (patient) => {
     setSelectedPatient(patient);
-
-    // Scroll to the patient details section
     patientDetailsRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -57,7 +58,7 @@ function AssistantDashboardPatient() {
     <div className="dashboard-container">
       <DoctorNavBar onLogout={logout} />
 
-      <div className="content-area">
+      <div className="content-area container mt-4">
         <br />
         <h2>&nbsp; &nbsp; Patient Details</h2>
         <br />
@@ -85,6 +86,7 @@ function AssistantDashboardPatient() {
                   <th>Contact</th>
                   <th>Gender</th>
                   <th>DOB</th>
+                  <th>Allergies</th>
                   <th>House No</th>
                   <th>Address Line 1</th>
                   <th>Address Line 2</th>
@@ -108,6 +110,7 @@ function AssistantDashboardPatient() {
                       <td>{patient.contactNo}</td>
                       <td>{patient.gender}</td>
                       <td>{patient.DOB}</td>
+                      <td>{patient.allergies}</td>
                       <td>{patient.house_no}</td>
                       <td>{patient.addr_line_1}</td>
                       <td>{patient.addr_line_2}</td>
@@ -128,7 +131,7 @@ function AssistantDashboardPatient() {
           <div className="container" ref={patientDetailsRef}>
             <div className="row justify-content-center">
               <div className="col-md-10 mt-5" style={{ maxWidth: '80%' }}>
-                <PatientProfileView patient={selectedPatient} />
+                <PatientAppointments patient={selectedPatient} />
               </div>
             </div>
           </div>

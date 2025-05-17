@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "@/context/AuthContext";
 import PatientSidebar from "@/components/patientSideBar";
 import { fetchPatientIDs, fetchPatientAppointments } from "../../../services/patientAuthService";
-import PatientProfileView from "@/components/patientProfile";
+import PatientProfileView from "@/components/patientAppointments";
 import '@/Styles/profileTab.css'
 
 export default function ProfilePage() {

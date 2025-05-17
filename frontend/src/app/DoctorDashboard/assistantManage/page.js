@@ -50,8 +50,7 @@ function DoctorDashboard() {
   return (
     <div className="dashboard-container">
       <DoctorNavBar onLogout={logout} />
-      <div className="content-area">
-
+        <div className="content-area container mt-4">
         <div className="button-container">
           <button className="btn btn-primary btnAddPatient" onClick={handleShowAssistantModal}>
             <FaUser size={40} />

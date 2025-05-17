@@ -1,8 +1,9 @@
 .table-responsive-custom {
-    width: 94%;
+    width: 100%;
     max-width: 100%;
     overflow-x: auto;
     overflow-y: auto;
+    max-height: 550px;
     white-space: nowrap;
     background: #fff;
     border-radius: 12px;

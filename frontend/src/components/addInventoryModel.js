@@ -45,19 +45,45 @@ const AddInventoryModal = ({ showModal, handleClose }) => {
   };
 
   const validateForm = () => {
-    if (
-      !inventoryDetails.medicine_id ||
-      !inventoryDetails.brand_ID ||
-      !inventoryDetails.exp_date.trim() ||
-      !inventoryDetails.stock_quantity.trim() ||
-      !inventoryDetails.unit_price.trim() ||
-      !inventoryDetails.buying_price.trim()
-    ) {
-      toast.error('Please fill all the values');
-      return false;
-    }
-    return true;
-  };
+  const {
+    medicine_id, brand_ID, exp_date, stock_quantity, unit_price, buying_price,
+  } = inventoryDetails;
+
+  if (
+    !medicine_id || !brand_ID || !exp_date.trim() || !stock_quantity.trim() || !unit_price.trim() || !buying_price.trim()
+  ) {
+    toast.error('Please fill all the values');
+    return false;
+  }
+
+  // Check if expiry date is in the future
+  const today = new Date();
+  const expDate = new Date(exp_date);
+  expDate.setHours(0, 0, 0, 0); // ignore time part
+
+  if (expDate <= today) {
+    toast.error('Expiry date cannot be a past date');
+    return false;
+  }
+
+  // Check if quantity, prices are > 0
+  if (parseInt(stock_quantity) <= 0) {
+    toast.error('Quantity must be greater than 0');
+    return false;
+  }
+
+  if (parseFloat(unit_price) <= 0) {
+    toast.error('Unit price must be greater than 0');
+    return false;
+  }
+
+  if (parseFloat(buying_price) <= 0) {
+    toast.error('Buying price must be greater than 0');
+    return false;
+  }
+
+  return true;
+};
 
   const handleMedicineSelect = async (event) => {
     const selectedID = event.target.value;

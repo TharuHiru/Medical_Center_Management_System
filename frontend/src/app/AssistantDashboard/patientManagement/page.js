@@ -8,6 +8,7 @@ import AssistNavBar from "@/components/assistantSideBar";
 import { FaPlus, FaSearch } from "react-icons/fa";
 import AddPatientModal from "@/components/addPatientModel";
 import { fetchPatients } from "@/services/patientService";
+import "@/Styles/tableStyle.css";
 
 function AssistantDashboardPatient() {
   const router = useRouter(); // create a router instance
@@ -58,7 +59,7 @@ function AssistantDashboardPatient() {
       {/* Vertical Navigation Bar */}
       <AssistNavBar onLogout={logout} />
 
-      <div className="content-area">
+      <div className="content-area container mt-4">
         {/* Add Patient Button */}
         <div className="button-container">
           <button className="btnAddPatient ms-auto" onClick={handleShowPatientModal}>
@@ -75,7 +76,7 @@ function AssistantDashboardPatient() {
         </div>
 
         {/* Search Box */}
-        <h2>&nbsp; &nbsp; Patient Details</h2>
+        <h1>&nbsp; Patient Details</h1>
         <div className="search-container">
           <FaSearch className="search-icon" />
           <input
@@ -89,8 +90,9 @@ function AssistantDashboardPatient() {
 
         {/* Patient Table */}
         <div>
+          <div className="table-wrapper">
           <div className="table-responsive-custom">
-            <table className="table table-striped patient-data-table">
+            <table className=" data-table">
               <thead>
                 <tr>
                   <th>ID</th>
@@ -132,6 +134,7 @@ function AssistantDashboardPatient() {
             </table>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

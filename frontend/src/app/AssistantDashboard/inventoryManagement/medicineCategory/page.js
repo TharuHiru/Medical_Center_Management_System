@@ -5,6 +5,8 @@ import { Row, Col } from "react-bootstrap";
 import "@/Styles/AssistantDashboard.css";
 import "@/Styles/loginForms.css";
 import "@/Styles/pages.css";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import AssistNavBar from "@/components/assistantSideBar";
 import Select from "react-select";
 import {fetchBrandsByMedicineID, addMedicineCategory, addMedicineBrand, fetchMedicineCategory} from "../../../../services/inventoryService";
@@ -21,26 +23,47 @@ const MedicineCategoryPage = () => {
   const handleNewBrandChange = (event) => setNewBrand(event.target.value);
 
   const handleAddNewCategory = async () => {
-    if (newCategory.trim() !== "") {
-      try {
-        setIsLoading(true);
-        const response = await addMedicineCategory({
-          medicine_name: newCategory,
-        });
-        if (response.success) {
-          alert("Category added successfully!");
-          setNewCategory("");
-          fetchMedicines(); // Refresh dropdown
-        } else {
-          alert("Failed to add category.");
-        }
-        setIsLoading(false);
-      } catch (error) {
-        setIsLoading(false);
-        alert("An error occurred. Please try again.");
-      }
+
+  const trimmedCategory = newCategory.trim();
+  // Required check
+  if (trimmedCategory === "") {
+    toast.error("Please enter a category.");
+    return;
+  }
+
+  // Length check
+  if (trimmedCategory.length > 50) {
+    toast.error("Category name should not exceed 50 characters.");
+    return;
+  }
+
+  // Character validation
+  const categoryPattern = /^[a-zA-Z0-9 ]+$/;
+  if (!categoryPattern.test(trimmedCategory)) {
+    toast.error("Category name can only contain letters, numbers, and spaces.");
+    return;
+  }
+
+  try {
+    setIsLoading(true);
+    const response = await addMedicineCategory({
+      medicine_name: trimmedCategory,
+    });
+    if (response.success) {
+      toast.success("Category added successfully!");
+      setNewCategory("");
+      fetchMedicines(); // Refresh dropdown
+    } else {
+      toast.error("Failed to add category.");
     }
-  };
+  } catch (error) {
+      const errorMessage = error?.response?.data?.message || "An error occurred. Please try again.";
+      toast.error(errorMessage);
+  } finally {
+      setIsLoading(false);
+    }
+};
+
 
   const handleAddNewBrand = async () => {
     if (newBrand.trim() !== "" && selectedMedicine !== "") {

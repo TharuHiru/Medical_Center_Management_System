@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import "@/Styles/AssistantDashboard.css";
 import "@/Styles/loginForms.css";
 import "@/Styles/tableStyle.css"
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Row, Col } from "react-bootstrap";
 import AssistNavBar from "@/components/assistantSideBar";
 import { FaPlus, FaSearch } from "react-icons/fa";
@@ -91,7 +93,7 @@ function AssistantDashboardInventory() {
       {/* Vertical Navigation Bar */}
       <AssistNavBar onLogout={logout} />
 
-      <div className="content-area">
+      <div className="content-area container mt-4">
         {/* Add Patient Button */}
         <div className="button-container">
           <button className="btnAddPatient ms-auto" onClick={handleShowInventoryModal}>
@@ -106,11 +108,11 @@ function AssistantDashboardInventory() {
             handleSubmit={handleFormSubmit}
           />
         </div>
-        <h2>&nbsp; &nbsp; Inventory Details</h2>
+        <h1>&nbsp; Inventory Details</h1>
 
         <div className="top-bar">
           <Row>
-            <Col md={4}>
+            <Col md={6}>
               {/* Search Box */}
               <div className="search-container">
                 <FaSearch className="search-icon" />
@@ -124,7 +126,7 @@ function AssistantDashboardInventory() {
               </div>
             </Col>
 
-            <Col md={4}>
+            <Col md={6}>
               {/* Medicine Category Dropdown (Searchable) */}
               <div>
                 <label>Select Medicine:</label>

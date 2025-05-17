@@ -64,7 +64,7 @@ const DoctorSignUp = () => {
       const result = await registerDoctorStep1(formData);
       if (result.success) {
         toast.success("Step 1 complete. Proceed to Step 2.");
-        router.push("/DoctorSignUpDetails");
+        router.push(`/DoctorSignUpDetails?email=${encodeURIComponent(formData.email)}`);
       } else {
         toast.error(result.message || "Something went wrong!");
       }
@@ -80,7 +80,7 @@ const DoctorSignUp = () => {
         <div className="col-md-6 loginForm">
           <h2 className="text-center mb-4">Create Doctor Account</h2>
           <form className="temporyLoginForm" onSubmit={handleSubmit}>
-          
+
             {/* Title Combo Box */}
             <div className="mb-3">
               <label htmlFor="title" className="form-label">Title:</label>

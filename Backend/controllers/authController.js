@@ -6,22 +6,33 @@ const nodemailer = require('nodemailer');
 const userTempData = {}; // In-memory temporary storage
 
 // Step 1 - Store doctor basic info
-const registerStep1 = (req, res) => {
+const registerStep1 = async (req, res) => {
     const { title, FirstName, LastName, email, Speciality } = req.body;
+
     if (!title || !FirstName || !LastName || !Speciality || !email) {
         return res.status(400).json({ message: "All fields are required." });
     }
 
-    userTempData[email] = { title, FirstName, LastName, Speciality, email };
-    console.log("Stored Step 1 Data:", userTempData);
-    res.status(200).json({ success: true, message: 'Step 1 complete. Proceed to Step 2.', email });
+    try { // check whether the email already exists
+        const rows = await authModel.findDoctorByUsername(email);
+        if (rows.length === 1) {
+            return res.status(401).json({ success: false, message: "Email already exists!" });
+        }
+        userTempData[email] = { title, FirstName, LastName, Speciality, email };
+        console.log("Stored Step 1 Data:", userTempData);
+        res.status(200).json({ success: true, message: 'Step 1 complete. Proceed to Step 2.', email });
+
+    } catch (error) {
+        console.error('Error checking email:', error);
+        res.status(500).json({ message: 'Server error.' });
+    }
 };
 
 // Step 2 - Save doctor credentials
 const registerStep2 = async (req, res) => {
-    const { email, username, password, secretKey } = req.body;
+    const { email, password, secretKey } = req.body;
 
-    if (!email || !username || !password || !secretKey) {
+    if (!email || !password || !secretKey) {
         return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -35,11 +46,11 @@ const registerStep2 = async (req, res) => {
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
-        const userData = { ...userTempData[email], username, password: hashedPassword };
-        await insertDoctor(userData);
+        const userData = { ...userTempData[email], password: hashedPassword };
+        await authModel.insertDoctor(userData);
         delete userTempData[email];
 
-        res.status(201).json({ success: true, message: 'User registered successfully.' });
+        res.status(201).json({ success: true, message: 'Doctor registered successfully.' });
     } catch (error) {
         console.error('Error inserting data:', error);
         res.status(500).json({ message: 'Server error.' });

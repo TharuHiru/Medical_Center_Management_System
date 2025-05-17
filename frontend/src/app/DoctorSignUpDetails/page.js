@@ -1,27 +1,35 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation"; // Import useRouter hook
-
+import React, { useState ,useEffect} from "react";
+import { useRouter } from "next/navigation";
 import BackNavbar from '@/components/backNavBar';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { registerDoctorStep2 } from '@/services/authService';
-import { useSearchParams } from "next/navigation"; // Import useSearchParams
+import { useSearchParams } from "next/navigation";
 
 const DoctorSignUpDetails = () => {
-  const router = useRouter(); // Initialize the router
-  const searchParams = useSearchParams(); // Initialize searchParams
-  const userNameFromURL = searchParams.get("username"); // Get username from URL
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const emailFromURL = searchParams.get("email") || '';
 
-  const [userName, setUserName] = useState(userNameFromURL|| '');
   const [password, setPassword] = useState('');
   const [secretKey, setSecretKey] = useState('');
   const [rePassword, setRePassword] = useState('');
 
+  useEffect(() => {
+    if (!emailFromURL) {
+      toast.error("Please complete registration step 1 first");
+      router.push('/DoctorSignUp');
+    }
+  }, [emailFromURL, router]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const secret_Key = process.env.NEXT_PUBLIC_SECRET_KEY;
+
+    // Password validation regex:
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     
     if (secretKey !== secret_Key) {
       toast.error("Invalid Secret Key");
@@ -29,11 +37,13 @@ const DoctorSignUpDetails = () => {
     else if (password !== rePassword) {
       toast.error("Passwords do not match");
     } 
+    else if (!passwordRegex.test(password)) {
+    toast.error("Password must be at least 8 characters long and include letters, numbers, and a special character.");
+  }
     else {
       try {
         const formData = {
-          email: userName,
-          username: userName,
+          email: emailFromURL, // Use the email from Step 1
           password,
           secretKey: secret_Key,
         };
@@ -41,7 +51,7 @@ const DoctorSignUpDetails = () => {
         const response = await registerDoctorStep2(formData);
         if (response.success) {
           toast.success("Account Created Successfully");
-          router.push('/DoctorLogin'); // Redirect without useRouter
+          router.push('/DoctorLogin');
         } else {
           toast.error(response.message || "Something went wrong.");
         }
@@ -57,17 +67,9 @@ const DoctorSignUpDetails = () => {
       <section className="container d-flex justify-content-center">
         <div className="col-md-6 loginForm">
           <h2 className="text-center mb-4">Create Doctor Account</h2>
+          <p className="text-center mb-4">Registering as: {emailFromURL}</p>
+          
           <form className="temporyLoginForm" onSubmit={handleSubmit}>
-            <div className="mb-3">
-              <label htmlFor="userName" className="form-label">User Name:</label>
-              <input type="text"
-                className="form-control"
-                id="userName"
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
-                required
-              />
-            </div>
             <div className="mb-3">
               <label htmlFor="password" className="form-label">Password:</label>
               <input
@@ -81,7 +83,7 @@ const DoctorSignUpDetails = () => {
             </div>
 
             <div className="mb-3">
-              <label htmlFor="rePassword" className="form-label">Re Enter Password:</label>
+              <label htmlFor="rePassword" className="form-label">Confirm Password:</label>
               <input
                 type="password"
                 className="form-control"
@@ -104,11 +106,8 @@ const DoctorSignUpDetails = () => {
               />
             </div>
 
-            <p>Already have an account? &nbsp;
-              <a href="/DoctorLogin">Log in</a></p>
-
             <button type="submit" className="btn btn-primary w-100 loginBtn">
-              Create Account
+              Complete Registration
             </button>
           </form>
         </div>

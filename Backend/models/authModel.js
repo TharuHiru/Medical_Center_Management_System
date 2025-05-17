@@ -3,17 +3,17 @@ const QRCode = require('qrcode');
 
 //save doctor data to the database
 const insertDoctor = async (doctorData) => {
-    const query = `INSERT INTO doctor (Title, First_Name, Last_Name, Email, Speciality, User_Name, Password) 
-                   VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    const query = `INSERT INTO doctor (Title, First_Name, Last_Name, Email, Speciality, Password) 
+                   VALUES (?, ?, ?, ?, ?, ?)`;
     const values = [
-        doctorData.title, doctorData.FirstName, doctorData.LastName,doctorData.email,doctorData.Speciality,doctorData.username,doctorData.password,
+        doctorData.title, doctorData.FirstName, doctorData.LastName,doctorData.email,doctorData.Speciality,doctorData.password,
     ];
     return pool.query(query, values);
 };
 
 //get doctor details by username
 const findDoctorByUsername = async (username) => {
-    const [rows] = await pool.query("SELECT * FROM doctor WHERE User_Name = ?", [username]);
+    const [rows] = await pool.query("SELECT * FROM doctor WHERE Email = ?", [username]);
     return rows;
 };
 

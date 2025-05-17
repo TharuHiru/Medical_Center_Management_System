@@ -21,29 +21,24 @@ const MedicineCategoryPage = () => {
 
   const handleNewCategoryChange = (event) => setNewCategory(event.target.value);
   const handleNewBrandChange = (event) => setNewBrand(event.target.value);
-
   const handleAddNewCategory = async () => {
 
   const trimmedCategory = newCategory.trim();
-  // Required check
   if (trimmedCategory === "") {
     toast.error("Please enter a category.");
     return;
   }
-
   // Length check
   if (trimmedCategory.length > 50) {
     toast.error("Category name should not exceed 50 characters.");
     return;
   }
-
   // Character validation
   const categoryPattern = /^[a-zA-Z0-9 ]+$/;
   if (!categoryPattern.test(trimmedCategory)) {
     toast.error("Category name can only contain letters, numbers, and spaces.");
     return;
   }
-
   try {
     setIsLoading(true);
     const response = await addMedicineCategory({
@@ -63,7 +58,6 @@ const MedicineCategoryPage = () => {
       setIsLoading(false);
     }
 };
-
 
   const handleAddNewBrand = async () => {
     if (newBrand.trim() !== "" && selectedMedicine !== "") {

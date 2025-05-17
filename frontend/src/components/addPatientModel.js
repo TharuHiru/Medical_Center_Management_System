@@ -29,8 +29,9 @@ const AddPatientModal = ({ showModal, handleClose , temp = false , appointmentDa
   const [showQrModal, setShowQrModal] = useState(false); //control the visibility of QR model
   const [newPatient, setNewPatient] = useState(null); // store the new patient data
   const [masterAccounts, setMasterAccounts] = useState([]); // State to hold master account IDs
+  const titleOptions = ["Mr", "Miss", "Mrs", "Rev"];
 
-  //GET THE MASTER ACCOUNTS
+  //GET THE MASTER ACCOUNTS api call
   useEffect(() => {
     const fetchMasterAccounts = async () => {
       try {
@@ -60,66 +61,93 @@ const AddPatientModal = ({ showModal, handleClose , temp = false , appointmentDa
 
   //validation of the form fields
   const validateForm = () => {
-    if (!patientDetails.firstname.trim() || !patientDetails.lastname.trim() || !patientDetails.email.trim() || !patientDetails.contact.trim()) {
-      toast.error("Please fill in all required fields.");
-      return false;
-    }
-    return true;
-  };
+  const { firstname, lastname, contact, gender, dob, houseNo, addline1, email} = patientDetails;
+
+  // Required fields validation
+  if (!firstname.trim() || !lastname.trim() || !contact || !gender || 
+      !dob || !houseNo.trim() || !addline1.trim() || !email.trim()) {
+    toast.error('Please fill all required fields');
+    return false;
+  }
+
+  // Name validation (letters only)
+  if (!/^[a-zA-Z]+$/.test((firstname)||(lastname)) ){
+    toast.error('First name can only contain letters');
+    return false;
+  }
+  if (!/^[a-zA-Z]+$/.test(lastname)) {
+    toast.error('Last name can only contain letters');
+    return false;
+  }
+
+  // Contact validation (10 digits starting with 0)
+  if (!/^0\d{9}$/.test(contact)) {
+    toast.error('Contact must be 10 digits starting with 0');
+    return false;
+  }
+
+  // Date of birth validation (must be in the past)
+  const today = new Date();
+  const birthDate = new Date(dob);
+  if (birthDate >= today) {
+    toast.error('Date of birth must be in the past');
+    return false;
+  }
+
+  // Email validation
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    toast.error('Please enter a valid email address');
+    return false;
+  }
+  return true;
+};
 
   // handle form submit method
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return; // validate the form
-    setLoading(true); // set loading state to true
-
-    //Run API call to register the patient
-    try {
-      const response = await registerPatient({
+  e.preventDefault();
+  
+  if (!validateForm()) {
+    return; // Validation failed - toast errors already shown
+  }
+  setLoading(true);
+  // call register patient backend API
+  try {
+    const response = await registerPatient({
       ...patientDetails,
       temp: temp 
     });
-      console.log("patient details:", patientDetails); // Debugging log
-  
-      if (response.success) {
-        toast.success("Patient registered successfully!");
-  
+    if (response.success) {
+      toast.success("Patient registered successfully!");
       if (temp && appointmentData) {
         await upgradeTemporaryAppointment(appointmentData, response.patientID);
         toast.success("Temporary appointment upgraded successfully!");
       }
 
-        //Save the new patient data
-        const newPatientData = {
-          patientID: response.patientID,
-          name: response.name,
-          qrCode: response.qrCode,
-          qrPage: response.qrPage,
-        };
-  
-        console.log("New Patient Data:", newPatientData || "no data received"); // Debugging log
-  
-        setNewPatient(newPatientData);
-        // Show the QR modal before closing AddPatientModal
-        setShowQrModal(true);
-  
-        // Reset form
-        setPatientDetails({
-          title: "",firstname: "",lastname: "",contact: "",gender: "",
-          dob: "",houseNo: "",addline1: "",addline2: "",email: "",
-        });
-          
-        handleClose();
+      const newPatientData = {
+        patientID: response.patientID,
+        name: response.name,
+        qrCode: response.qrCode,
+        qrPage: response.qrPage,
+      };
 
-      } else {
-        toast.error(response.message || "Error adding patient");
-      }
-    } catch (error) {
-      toast.error("Error adding patient: " + error.message);
-    } finally {
-      setLoading(false);
+      setNewPatient(newPatientData);
+      setShowQrModal(true);
+
+      setPatientDetails({
+        title: "", firstname: "", lastname: "", contact: "", gender: "",
+        dob: "", houseNo: "", addline1: "", addline2: "", email: "", masterAccountID: ""
+      });
+        
+      handleClose();
+    } else {
+      toast.error(response.message || "Error adding patient");
     }
-  };
+  } catch (error) {
+    toast.error("Error adding patient: " + error.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <>
@@ -163,13 +191,19 @@ const AddPatientModal = ({ showModal, handleClose , temp = false , appointmentDa
               <Form.Group controlId="formTitle" className="formGroup">
                 <Form.Label>Title</Form.Label>
                 <Form.Control
-                  type="text"
-                  placeholder="Enter Title"
+                  as="select"
                   name="title"
                   value={patientDetails.title}
                   onChange={handleInputChange}
                   className="formControl"
-                />
+                >
+                  <option value="">Select Title</option>
+                  {titleOptions.map((title) => (
+                    <option key={title} value={title}>
+                      {title}
+                    </option>
+                  ))}
+              </Form.Control>
               </Form.Group>
             </Col>
             <Col md={6}>
@@ -186,7 +220,6 @@ const AddPatientModal = ({ showModal, handleClose , temp = false , appointmentDa
               </Form.Group>
             </Col>
           </Row>
-  
           <Row className="mb-3">
             <Col md={6}>
               <Form.Group controlId="formLastName" className="formGroup">
@@ -215,7 +248,6 @@ const AddPatientModal = ({ showModal, handleClose , temp = false , appointmentDa
               </Form.Group>
             </Col>
           </Row>
-
           <Row>
             <Col md={12}>
               <Form.Group controlId="formGender" className="formGroup genderBoxBorder">
@@ -269,7 +301,6 @@ const AddPatientModal = ({ showModal, handleClose , temp = false , appointmentDa
               </Form.Group>
             </Col>
           </Row>
-  
           <Row className="mb-3">
           <Col md={6}>
               <Form.Group controlId="formAddLine1" className="formGroup">
@@ -313,8 +344,6 @@ const AddPatientModal = ({ showModal, handleClose , temp = false , appointmentDa
               </Form.Group>
             </Col>
           </Row>
-
-  
           <Button
             variant="primary"
             type="submit"
@@ -338,5 +367,4 @@ const AddPatientModal = ({ showModal, handleClose , temp = false , appointmentDa
     </>
   );
 };
-
 export default AddPatientModal;

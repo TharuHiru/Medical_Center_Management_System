@@ -70,6 +70,7 @@ export default function TempPatientQueue() {
     fetchQueueStatus();
   }, [selectedDate]);
 
+  //booking an appointment
   const handleBook = async () => {
     if (!name || !phone) {
       toast.error("Please enter name and phone number");
@@ -84,7 +85,6 @@ export default function TempPatientQueue() {
       toast.error("You already have an appointment on this day!");
       return;
     }
-
     try {
       setIsLoading(true);
       await createTemporaryAppointment(name, phone, selectedDate);
@@ -96,6 +96,7 @@ export default function TempPatientQueue() {
     }
   };
 
+  // handle remove appointment of the patient
   const handleRemoveAppointment = async (docId) => {
   try {
     const appointmentToRemove = appointments.find(appt => appt.docId === docId);
@@ -112,6 +113,7 @@ export default function TempPatientQueue() {
   }
 };
 
+// handle date tab click
   const handleDateTabClick = (offset) => {
     const newDate = new Date();
     newDate.setDate(newDate.getDate() + offset);
@@ -119,80 +121,91 @@ export default function TempPatientQueue() {
   };
 
   return (
-    <div className="container py-5">
-      <h2 className="mb-4 text-center">Temporary Patient Appointment Queue</h2>
-      <h1>Welcome, {patientData?.name}</h1>
-      <p>Phone: {patientData?.phone}</p>
+  <div className="container py-5">
+    <h2 className="mb-4 text-center">Temporary Patient Appointment Queue</h2>
+    <h4 className="text-center mb-2">Welcome, {patientData?.name}</h4>
+    <p className="text-center">Phone: {patientData?.phone}</p>
 
-      <div className="text-center mb-3">
-        {[{ label: "Today", offset: 0 }, { label: "Tomorrow", offset: 1 }, { label: "Day After", offset: 2 }].map(
-          ({ label, offset }) => (
-            <button
-              key={label}
-              className={`btn btn-outline-primary mx-1 ${
-                getFormattedDate(new Date(new Date().setDate(new Date().getDate() + offset))) ===
-                getFormattedDate(selectedDate)
-                  ? "active"
-                  : ""
-              }`}
-              onClick={() => handleDateTabClick(offset)}
-            >
-              {label}
-            </button>
-          )
+    <div className="text-center mb-4">
+      {[{ label: "Today", offset: 0 }, { label: "Tomorrow", offset: 1 }, { label: "Day After", offset: 2 }].map(
+        ({ label, offset }) => (
+          <button
+            key={label}
+            className={`btn btn-outline-primary mx-1 ${
+              getFormattedDate(new Date(new Date().setDate(new Date().getDate() + offset))) ===
+              getFormattedDate(selectedDate)
+                ? "active"
+                : ""
+            }`}
+            onClick={() => handleDateTabClick(offset)}
+          >
+            {label}
+          </button>
+        )
+      )}
+    </div>
+
+    {queueStatus === "stopped" && (
+      <div className="alert alert-danger text-center">Queue Stopped: {queueNote}</div>
+    )}
+    {queueStatus === "started" && queueNote && (
+      <div className="alert alert-info text-center">Doctor Notice: {queueNote}</div>
+    )}
+
+    <div className="row">
+      {/* LEFT: Appointment Queue */}
+      <div className="col-md-7 mb-4">
+        <h5>Appointments for {getDisplayDate(selectedDate)}</h5>
+        {appointments.length === 0 ? (
+          <p>No appointments for this day.</p>
+        ) : (
+          <ul className="list-group">
+            {appointments.map((appt) => (
+              <li
+                key={appt.docId}
+                className="list-group-item d-flex justify-content-between align-items-center"
+              >
+                <div>
+                  {appt.queueNumber} - {appt.name || "Unnamed"} ({appt.phone})
+                </div>
+                {appt.phone === patientData?.phone && (
+                  <button
+                    className="btn btn-danger btn-sm"
+                    onClick={() => handleRemoveAppointment(appt.docId)}
+                  >
+                    Remove
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
         )}
       </div>
 
-      {queueStatus === "stopped" && (
-        <div className="alert alert-danger">Queue Stopped: {queueNote}</div>
-      )}
-      {queueStatus === "started" && queueNote && (
-        <div className="alert alert-info">Doctor Notice: {queueNote}</div>
-      )}
-
-      <div className="card p-4 mb-4">
-        <h5>Book an Appointment</h5>
-        <input
-          type="text"
-          className="form-control mb-2"
-          placeholder="Your Full Name"
-          value={patientData?.name}
-          readOnly
-        />
-        <input
-          type="tel"
-          className="form-control mb-3"
-          placeholder="Phone Number"
-          value={patientData?.phone}
-          readOnly
-        />
-        <button className="btn btn-primary" onClick={handleBook} disabled={isLoading}>
-          {isLoading ? "Booking..." : "Book Appointment"}
-        </button>
+      {/* RIGHT: Booking Controls */}
+      <div className="col-md-5">
+        <div className="card p-4">
+          <h5 className="mb-3">Book an Appointment</h5>
+          <input
+            type="text"
+            className="form-control mb-2"
+            placeholder="Your Full Name"
+            value={patientData?.name}
+            readOnly
+          />
+          <input
+            type="tel"
+            className="form-control mb-3"
+            placeholder="Phone Number"
+            value={patientData?.phone}
+            readOnly
+          />
+          <button className="btn btn-primary w-100" onClick={handleBook} disabled={isLoading}>
+            {isLoading ? "Booking..." : "Book Appointment"}
+          </button>
+        </div>
       </div>
-
-      <h5>Appointments for {getDisplayDate(selectedDate)}</h5>
-      {appointments.length === 0 ? (
-        <p>No appointments for this day.</p>
-      ) : (
-        <ul className="list-group">
-          {appointments.map((appt) => (
-            <li key={appt.id} className="list-group-item d-flex justify-content-between align-items-center">
-              <div>
-                {appt.queueNumber} - {appt.name || "Unnamed"} ({appt.phone})
-              </div>
-              {appt.phone === patientData?.phone && (
-                <button 
-                  className="btn btn-danger btn-sm"
-                  onClick={() => handleRemoveAppointment(appt.docId)}
-                >
-                  Remove
-                </button>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
     </div>
-  );
+  </div>
+);
 }

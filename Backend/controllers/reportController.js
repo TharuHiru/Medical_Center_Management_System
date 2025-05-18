@@ -9,19 +9,19 @@ exports.getReport = async (req, res) => {
       case 'daily-appointments':
         data = await Report.getDailyAppointments(startDate, endDate);
         break;
-      case 'medicine-usage':
-        data = await Report.getMedicineUsage(startDate, endDate);
+      case 'monthly-revenue-summary':
+        data = await Report.getMonthlyRevenueSummary(startDate, endDate);
         break;
-      case 'monthly-revenue':
-        data = await Report.getMonthlyRevenue(startDate, endDate);
+      case 'detailed-medicine-sales':
+        data = await Report.getDetailedMedicineSales(startDate, endDate);
         break;
       default:
-        return res.status(400).json({ error: 'Invalid report type' });
+        return res.status(400).json({ success: false, error: 'Invalid report type' });
     }
     
     res.json({ success: true, data });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ success: false, error: 'Server error' });
   }
 };

@@ -30,7 +30,7 @@ const ReportViewer = () => {
       case 'daily-appointments':
         return (
           <div>
-            <h3>Daily Appointments Report</h3>
+            <h3>Daily Appointments Report ({dateRange.startDate} to {dateRange.endDate})</h3>
             <table className="table">
               <thead>
                 <tr>
@@ -51,43 +51,18 @@ const ReportViewer = () => {
             </table>
           </div>
         );
-      case 'medicine-usage':
+      case 'monthly-revenue-summary':
         return (
           <div>
-            <h3>Medicine Usage Report</h3>
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Medicine</th>
-                  <th>Brand</th>
-                  <th>Units Prescribed</th>
-                  <th>Total Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                {reportData.map((row, index) => (
-                  <tr key={index}>
-                    <td>{row.medicine_Name}</td>
-                    <td>{row.Brand_Name}</td>
-                    <td>{row.total_units_prescribed}</td>
-                    <td>{row.total_value.toFixed(2)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        );
-      case 'monthly-revenue':
-        return (
-          <div>
-            <h3>Monthly Revenue Report</h3>
+            <h3>Monthly Revenue Summary ({dateRange.startDate} to {dateRange.endDate})</h3>
             <table className="table">
               <thead>
                 <tr>
                   <th>Month</th>
                   <th>Prescriptions</th>
                   <th>Service Charges</th>
-                  <th>Medicine Sales</th>
+                  <th>Medicine Revenue</th>
+                  <th>Medicine Profit</th>
                   <th>Total Revenue</th>
                 </tr>
               </thead>
@@ -95,13 +70,75 @@ const ReportViewer = () => {
                 {reportData.map((row, index) => (
                   <tr key={index}>
                     <td>{row.month}</td>
-                    <td>{row.prescriptions}</td>
-                    <td>{row.total_service_charges.toFixed(2)}</td>
-                    <td>{row.total_medicine_sales.toFixed(2)}</td>
-                    <td>{row.total_revenue.toFixed(2)}</td>
+                    <td>{row.prescriptionsCount}</td>
+                    <td>${(Number(row.totalServiceCharges) || 0).toFixed(2)}</td>                    
+                    <td>${row.medicineRevenue.toFixed(2)}</td>
+                    <td>${row.medicineProfit.toFixed(2)}</td>
+                    <td>${row.totalRevenue.toFixed(2)}</td>
                   </tr>
                 ))}
               </tbody>
+              {reportData.length > 1 && (
+                <tfoot>
+                  <tr>
+                    <th>Total</th>
+                    <th>{reportData.reduce((sum, row) => sum + row.prescriptionsCount, 0)}</th>
+                    <th>${reportData.reduce((sum, row) => sum + row.totalServiceCharges, 0).toFixed(2)}</th>
+                    <th>${reportData.reduce((sum, row) => sum + row.medicineRevenue, 0).toFixed(2)}</th>
+                    <th>${reportData.reduce((sum, row) => sum + row.medicineProfit, 0).toFixed(2)}</th>
+                    <th>${reportData.reduce((sum, row) => sum + row.totalRevenue, 0).toFixed(2)}</th>
+                  </tr>
+                </tfoot>
+              )}
+            </table>
+          </div>
+        );
+      case 'detailed-medicine-sales':
+        return (
+          <div>
+            <h3>Detailed Medicine Sales ({dateRange.startDate} to {dateRange.endDate})</h3>
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Medicine</th>
+                  <th>Brand</th>
+                  <th>Units Sold</th>
+                  <th>Total Cost</th>
+                  <th>Total Revenue</th>
+                  <th>Total Profit</th>
+                  <th>Profit Margin</th>
+                </tr>
+              </thead>
+              <tbody>
+                {reportData.map((row, index) => (
+                  <tr key={index}>
+                    <td>{row.medicineName}</td>
+                    <td>{row.brandName}</td>
+                    <td>{row.unitsSold}</td>
+                    <td>${(Number(row.totalCost) || 0).toFixed(2)}</td>
+                    <td>${(Number(row.totalRevenue) || 0).toFixed(2)}</td>
+                    <td>${(Number(row.totalProfit) || 0).toFixed(2)}</td>
+                    <td>{row.profitMargin}%</td>
+                  </tr>
+                ))}
+              </tbody>
+              {reportData.length > 1 && (
+                <tfoot>
+                  <tr>
+                    <th colSpan="2">Total</th>
+                    <th>{reportData.reduce((sum, row) => sum + row.unitsSold, 0)}</th>
+                    <th>${reportData.reduce((sum, row) => sum + row.totalCost, 0).toFixed(2)}</th>
+                    <th>${reportData.reduce((sum, row) => sum + row.totalRevenue, 0).toFixed(2)}</th>
+                    <th>${reportData.reduce((sum, row) => sum + row.totalProfit, 0).toFixed(2)}</th>
+                    <th>
+                      {(
+                        (reportData.reduce((sum, row) => sum + row.totalProfit, 0) / 
+                        reportData.reduce((sum, row) => sum + row.totalRevenue, 0)) * 100
+                      ).toFixed(2)}%
+                    </th>
+                  </tr>
+                </tfoot>
+              )}
             </table>
           </div>
         );
@@ -122,8 +159,8 @@ const ReportViewer = () => {
           onChange={(e) => setReportType(e.target.value)}
         >
           <option value="daily-appointments">Daily Appointments</option>
-          <option value="medicine-usage">Medicine Usage</option>
-          <option value="monthly-revenue">Monthly Revenue</option>
+          <option value="monthly-revenue-summary">Monthly Revenue Summary</option>
+          <option value="detailed-medicine-sales">Detailed Medicine Sales</option>
         </select>
       </div>
       

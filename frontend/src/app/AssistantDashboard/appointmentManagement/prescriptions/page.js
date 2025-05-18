@@ -98,7 +98,7 @@ export default function AppointmentQueue() {
   const handleCloseAll = () => {
     setShowBillingForm(false);
     setSelectedPrescription(null);
-    setShowReceipt(false); // You'll lift this state up too
+    //setShowReceipt(false); 
   };
   
 

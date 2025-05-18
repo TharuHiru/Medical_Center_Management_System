@@ -4,9 +4,19 @@ const Prescription = require("../models/prescriptionModel");
 
 const generatePrescriptionID = () => `P_${Math.floor(100000 + Math.random() * 900000)}`;
 
-// Add new prescription for a patient (Firestore & MySQL Atomic Transaction - add to Firestore and MySQL)
+// Add new prescription for a patient (Firestore & MySQL Atomic Transaction)
 exports.addPrescription = async (req, res) => {
-  const { status, date, diagnosis, otherNotes, patient_ID,Age, doctor_ID, medicines, appointment_ID } = req.body;
+  const {
+    status,
+    date,
+    diagnosis,
+    otherNotes,
+    patient_ID,
+    Age,
+    doctor_ID,
+    medicines,
+    appointment_ID
+  } = req.body;
 
   if (!diagnosis || !patient_ID || !Array.isArray(medicines) || medicines.length === 0) {
     return res.status(400).json({ success: false, message: "Missing or invalid input data" });
@@ -18,12 +28,22 @@ exports.addPrescription = async (req, res) => {
   try {
     await connection.beginTransaction();
 
+    // Check if prescription already exists for this appointment
+    const existingPrescription = await Prescription.getPrescriptionByAppointmentId(appointment_ID);
+    if (existingPrescription) {
+      throw new Error("Prescription already exists for this appointment");
+    }
+
+    // Fetch patient details
     const patient = await Prescription.getPatientById(patient_ID);
-    if (!patient) throw new Error("Patient not found");
+    if (!patient) {
+      throw new Error("Patient not found");
+    }
 
     const patientName = `${patient.firstName} ${patient.lastName}`;
     const fixedStatus = "pending";
 
+    // Insert prescription into MySQL
     await Prescription.insertPrescription({
       connection,
       prescription_ID,
@@ -36,13 +56,17 @@ exports.addPrescription = async (req, res) => {
       status: fixedStatus
     });
 
+    // Insert medicines
     for (const med of medicines) {
       const medicine = await Prescription.getMedicineIdByName(connection, med.medicine_Name);
-      if (!medicine) throw new Error(`Medicine not found: ${med.medicine_Name}`);
+      if (!medicine) {
+        throw new Error(`Medicine not found: ${med.medicine_Name}`);
+      }
 
       await Prescription.insertPrescriptionMedicine(connection, prescription_ID, medicine.medicine_ID, med.dosage);
     }
 
+    // Add prescription to Firestore
     await db.collection('prescriptions').doc(prescription_ID).set({
       status: fixedStatus,
       prescription_ID,
@@ -61,7 +85,7 @@ exports.addPrescription = async (req, res) => {
 
   } catch (err) {
     await connection.rollback();
-    console.error("Transaction failed:", err);
+    console.error("Transaction failed:", err.message);
     res.status(500).json({ success: false, message: err.message });
   } finally {
     connection.release();

@@ -97,20 +97,23 @@ export default function PrescriptionModal({ show, handleClose,patientId,appointm
             })),
           };
 
-          //Call the service function to add the prescription       
+          // Call the service function to add the prescription
           const result = await addPrescription(prescriptionPayload);
-          console.log ("doctor ID", doctorID);
+          console.log("doctor ID", doctorID);
+
           if (result.success) {
             toast.success(result.message);
             handleClose();
           } else {
-            toast.err(result.message);
+            toast.error(result.message); 
           }
-      
+
         } catch (error) {
-          toast.err("Error while preparing prescription payload:", error);
-        }
-      };
+          toast.error(
+            "Error while preparing prescription payload: " +
+              (error.response?.data?.message || error.message || "Unknown error")
+          );
+        }};
 
       // reset the model data when closes
       useEffect(() => {
@@ -246,6 +249,7 @@ export default function PrescriptionModal({ show, handleClose,patientId,appointm
                         <Form.Control
                           type="text"
                           value={med.dosage}
+                          placeholder="Ex : 1 * 3 for three days"
                           onChange={(e) =>
                             updateMedicine(index, "dosage", e.target.value)
                           }

@@ -110,56 +110,56 @@ function DoctorQueue() {
 
   // Render appointment card based on status
   const renderAppointmentCard = (appt, index) => {
-    const isPending = appt.status === "pending";
-    const statusClass = isPending ? "list-group-item-warning" : "list-group-item-success";
-    
-    return (
-      <div
-        key={appt.docId}
-        className={`list-group-item d-flex flex-column flex-md-row justify-content-between align-items-md-center ${statusClass} mb-2 shadow-sm rounded p-3`}
-      >
-        <div className="d-flex align-items-center mb-2 mb-md-0">
-          <span className="badge bg-primary rounded-pill me-3">#{index + 1}</span> {/*Queue Position*/}
-          <div>
-            <h5 className="mb-1">{appt.id}</h5> {/*Patient ID*/}
-            <p className="mb-0 text-muted small"> {/*status text*/}
-              {isPending ? 
-                "Waiting to be seen" : 
-                "Currently with doctor"
-              }
-            </p>
-          </div>
-        </div>
-        
-        {/*control Buttons*/}
-        <div className="d-flex flex-column flex-sm-row gap-2 mt-2 mt-md-0">
-          {isPending ? (
-            <button 
-              className="btn btn-primary btn-sm" 
-              onClick={() => handleAdmit(appt)}
-            >
-              <i className="fas fa-user-check me-1"></i> Admit
-            </button>
-          ) : (
-            <React.Fragment>
-              <button 
-                className="btn btn-outline-primary btn-sm" 
-                onClick={() => handleAddPrescription(appt)}
-              >
-                <i className="fas fa-prescription me-1"></i> Add Prescription
-              </button>
-              <button 
-                className="btn btn-outline-danger btn-sm" 
-                onClick={() => handleRemove(appt.docId)}
-              >
-                <i className="fas fa-times me-1"></i> Remove
-              </button>
-            </React.Fragment>
-          )}
+  const isPending = appt.status === "pending";
+  const isTemp = appt.temporary === true;
+  const statusClass = isPending ? "list-group-item-warning" : "list-group-item-success";
+  
+  return (
+    <div
+      key={appt.docId}
+      className={`list-group-item d-flex flex-column flex-md-row justify-content-between align-items-md-center ${statusClass} mb-2 shadow-sm rounded p-3`}
+    >
+      <div className="d-flex align-items-center mb-2 mb-md-0">
+        <span className="badge bg-primary rounded-pill me-3">#{index + 1}</span>
+        <div>
+          <h5 className="mb-1">{appt.id}</h5>
+          <p className="mb-0 text-muted small">
+            {isPending ? "Waiting to be seen" : "Currently with doctor"}
+          </p>
         </div>
       </div>
-    );
-  };
+      
+      {/* Control Buttons - Corrected Logic */}
+      <div className="d-flex flex-column flex-sm-row gap-2 mt-2 mt-md-0">
+        {!isTemp && isPending && (
+          <button 
+            className="btn btn-primary btn-sm" 
+            onClick={() => handleAdmit(appt)}
+          >
+            <i className="fas fa-user-check me-1"></i> Admit
+          </button>
+        )}
+        
+        {!isTemp && !isPending && (
+          <React.Fragment>
+            <button 
+              className="btn btn-outline-primary btn-sm" 
+              onClick={() => handleAddPrescription(appt)}
+            >
+              <i className="fas fa-prescription me-1"></i> Add Prescription
+            </button>
+            <button 
+              className="btn btn-outline-danger btn-sm" 
+              onClick={() => handleRemove(appt.docId)}
+            >
+              <i className="fas fa-times me-1"></i> Remove
+            </button>
+          </React.Fragment>
+        )}
+      </div>
+    </div>
+  );
+};
 
   return (
     <div className="dashboard-container bg-light min-vh-100 d-flex flex-column overflow-hidden">

@@ -5,6 +5,11 @@ exports.getPatientById = async (patientId) => {
   return rows[0];
 };
 
+exports.getPrescriptionByAppointmentId = async (appointment_ID) => {
+  const [rows] = await pool.query( "SELECT * FROM prescription WHERE appointment_ID = ? ",[appointment_ID]);
+  return rows[0];
+};
+
 exports.insertPrescription = async (data) => {
   const [result] = await data.connection.query(
     "INSERT INTO prescription (prescription_ID, Date, Diagnosis, patient_ID, doctor_ID, other, appointment_ID, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",

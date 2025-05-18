@@ -1,18 +1,17 @@
 'use client';
 
 import {
-  AppBar, Box, Divider, Drawer, IconButton, List, ListItemButton,
-  ListItemIcon, ListItemText, Toolbar, Typography, useMediaQuery,
-  useTheme, Collapse,
-} from '@mui/material';
+  AppBar, Box, Divider, Drawer, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography, useMediaQuery,useTheme, Collapse,} from '@mui/material';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { FaTachometerAlt, FaUser, FaCalendarCheck, FaBoxes } from 'react-icons/fa';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import MenuIcon from '@mui/icons-material/Menu';
-import '@/Styles/sideNavBar.css'; // Ensure you update this CSS file too
+import '@/Styles/sideNavBar.css'; 
+import { useAuth } from "@/context/AuthContext"; 
+import Swal from 'sweetalert2';
 
 const AssistSidebar = () => {
   const theme = useTheme();
@@ -21,6 +20,8 @@ const AssistSidebar = () => {
   const [inventoryOpen, setInventoryOpen] = useState(false);
   const [appointmentsOpen, setAppointmentsOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const { logout } = useAuth();
 
   const tabMap = {
     '/AssistantDashboard/dashboard': 'Dashboard',
@@ -35,6 +36,26 @@ const AssistSidebar = () => {
   const currentTab = tabMap[pathname] || 'Dashboard';
 
   const toggleDrawer = () => setOpen(!open);
+
+   const handleLogout = () => {
+         Swal.fire({
+           title: 'Are you sure?',
+           text: 'Do you want to log out?',
+           icon: 'warning',
+           showCancelButton: true,
+           confirmButtonColor: '#3085d6',
+           cancelButtonColor: '#d33',
+           confirmButtonText: 'Yes, logout',
+           background: '#203a43',
+           color: 'white',
+         }).then((result) => {
+           if (result.isConfirmed) {
+             logout();
+             router.push('/AssistantLogin');
+           }
+         });
+       };
+
   const handleInventoryClick = () => setInventoryOpen(!inventoryOpen);
   const handleAppointmentsClick = () => setAppointmentsOpen(!appointmentsOpen);
 
@@ -181,7 +202,7 @@ const AssistSidebar = () => {
         </List>
 
         <Box className="logout-container" sx={{ textAlign: 'center', mt: 'auto', pb: 3 }}>
-          <button className="logout-button">Log Out</button>
+          <button className="logout-button" onClick={handleLogout} >Log Out</button>
         </Box>
       </Drawer>
     </Box>

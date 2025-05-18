@@ -1,22 +1,23 @@
 'use client';
 
 import {
-  AppBar, Box, Divider, Drawer, IconButton, List, ListItemButton,
-  ListItemIcon, ListItemText, Toolbar, Typography, useMediaQuery,
-  useTheme,
-} from '@mui/material';
+  AppBar, Box, Divider, Drawer, IconButton, List, ListItemButton,ListItemIcon, ListItemText, Toolbar, Typography, useMediaQuery,useTheme } from '@mui/material';
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { FaTachometerAlt, FaUser, FaCalendarCheck } from 'react-icons/fa';
 import MenuIcon from '@mui/icons-material/Menu';
 import '@/Styles/sideNavBar.css';
+import { useAuth } from "@/context/AuthContext"; 
+import Swal from 'sweetalert2';
 
 const PatientSidebar = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const { logout } = useAuth();
 
   const tabMap = {
     '/patientDashboard/dashboard': 'Dashboard',
@@ -27,6 +28,25 @@ const PatientSidebar = () => {
   const currentTab = tabMap[pathname] || 'Dashboard';
 
   const toggleDrawer = () => setOpen(!open);
+
+  const handleLogout = () => {
+        Swal.fire({
+          title: 'Are you sure?',
+          text: 'Do you want to log out?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, logout',
+          background: '#203a43',
+          color: 'white',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            logout();
+            router.push('/PatientLogin');
+          }
+        });
+      };
 
   const links = [
     { href: '/patientDashboard/dashboard', text: 'Dashboard', icon: <FaTachometerAlt /> },
@@ -97,7 +117,7 @@ const PatientSidebar = () => {
         </List>
 
         <Box className="logout-container" sx={{ textAlign: 'center', mt: 'auto', pb: 3 }}>
-          <button className="logout-button">Log Out</button>
+          <button className="logout-button"  onClick={handleLogout}>Log Out</button>
         </Box>
       </Drawer>
     </Box>

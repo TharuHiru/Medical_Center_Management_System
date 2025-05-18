@@ -33,11 +33,7 @@ export default function AppointmentQueue() {
   const [showModal, setShowModal] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
 
-  const handleSaveAsPatient = (appt) => {
-    setSelectedPatient(appt); // Set the selected patient
-    setShowModal(true); // Open the modal
-  };
-
+ 
   // Real-time listener for appointments on selected date
   useEffect(() => {
     const formattedDate = getFormattedDate(selectedDate);
@@ -62,7 +58,7 @@ export default function AppointmentQueue() {
     setSelectedDate(newDate);
   };
 
-  // Get all the appointments into a combo box
+  // Get all the patients into a combo box
   useEffect(() => {
     const fetchPatients = async () => {
       try {
@@ -165,6 +161,7 @@ export default function AppointmentQueue() {
       }
     };
 
+    // handle temporary patient adding as a new patient
     const confirmBeforeSave = (appt) => {
     Swal.fire({
       title: 'Please Logout First',
@@ -178,6 +175,10 @@ export default function AppointmentQueue() {
         handleSaveAsPatient(appt); // Continue with saving as patient
       }
     });
+  };
+   const handleSaveAsPatient = (appt) => {
+    setSelectedPatient(appt); // Set the selected patient
+    setShowModal(true); // Open the modal
   };
   
   // Handle book appointment

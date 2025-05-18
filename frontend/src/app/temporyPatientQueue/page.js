@@ -20,6 +20,7 @@ export default function TempPatientQueue() {
   const getDisplayDate = (date) =>
     date.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
 
+  // get data from the local storage and set it to the state
   useEffect(() => {
     const storedData = localStorage.getItem("temporarypatientData");
     if (storedData) {
@@ -39,8 +40,8 @@ export default function TempPatientQueue() {
 
     const unsub = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map((doc, index) => ({
-        id: doc.id,
         ...doc.data(),
+        docId: doc.id,
         queueNumber: index + 1,
       }));
       setAppointments(data);
@@ -74,12 +75,10 @@ export default function TempPatientQueue() {
       toast.error("Please enter name and phone number");
       return;
     }
-
     if (queueStatus === "stopped") {
       toast.error("Queue is currently stopped.");
       return;
     }
-
     const alreadyExists = await checkExistingAppointment(name, phone, selectedDate);
     if (alreadyExists) {
       toast.error("You already have an appointment on this day!");
@@ -97,21 +96,21 @@ export default function TempPatientQueue() {
     }
   };
 
-  const handleRemoveAppointment = async (appointmentId) => {
-    try {
-      const appointmentToRemove = appointments.find(appt => appt.id === appointmentId);
-      
-      if (appointmentToRemove && appointmentToRemove.phone === patientData?.phone) {
-        await deleteDoc(doc(db, "appointments", appointmentId));
-        toast.success("Appointment removed successfully");
-      } else {
-        toast.error("You can only remove your own appointments");
-      }
-    } catch (error) {
-      console.error("Error removing appointment:", error);
-      toast.error("Failed to remove appointment");
+  const handleRemoveAppointment = async (docId) => {
+  try {
+    const appointmentToRemove = appointments.find(appt => appt.docId === docId);
+
+    if (appointmentToRemove && appointmentToRemove.phone === patientData?.phone) {
+      await deleteDoc(doc(db, "appointments", docId));
+      toast.success("Appointment removed successfully");
+    } else {
+      toast.error("You can only remove your own appointments");
     }
-  };
+  } catch (error) {
+    console.error("Error removing appointment:", error);
+    toast.error("Failed to remove appointment");
+  }
+};
 
   const handleDateTabClick = (offset) => {
     const newDate = new Date();
@@ -180,12 +179,12 @@ export default function TempPatientQueue() {
           {appointments.map((appt) => (
             <li key={appt.id} className="list-group-item d-flex justify-content-between align-items-center">
               <div>
-                #{appt.queueNumber} - {appt.name || "Unnamed"} ({appt.phone})
+                {appt.queueNumber} - {appt.name || "Unnamed"} ({appt.phone})
               </div>
               {appt.phone === patientData?.phone && (
                 <button 
                   className="btn btn-danger btn-sm"
-                  onClick={() => handleRemoveAppointment(appt.id)}
+                  onClick={() => handleRemoveAppointment(appt.docId)}
                 >
                   Remove
                 </button>

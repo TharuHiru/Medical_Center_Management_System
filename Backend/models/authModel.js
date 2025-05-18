@@ -19,7 +19,7 @@ const findDoctorByUsername = async (username) => {
 
 //save patients into database
 const registerPatient = async (patientData, masterAccountID) => {
-    const { title, firstname, lastname, contact, gender, dob, houseNo, addline1, addline2, email } = patientData;
+    const { title, firstname, lastname, contact, gender, dob, houseNo, addline1, addline2,assistantID, email } = patientData;
 
     const connection = await pool.getConnection();
     try {
@@ -37,7 +37,7 @@ const registerPatient = async (patientData, masterAccountID) => {
         const qrData = `https://yourwebsite.com/patient-card/${newPatientID}`;
         const qrCodeImage = await QRCode.toDataURL(qrData);
 
-        const assist_ID = "1"; // Hardcoded for now
+        //const assist_ID = "1"; // Hardcoded for now
 
         const insertPatientQuery = `
             INSERT INTO patients 
@@ -45,7 +45,7 @@ const registerPatient = async (patientData, masterAccountID) => {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
         await connection.query(insertPatientQuery, [
-            newPatientID, assist_ID, title, firstname, lastname, contact, gender, dob, houseNo, addline1, addline2, email
+            newPatientID, assistantID, title, firstname, lastname, contact, gender, dob, houseNo, addline1, addline2, email
         ]);
 
         if (masterAccountID !== "") {

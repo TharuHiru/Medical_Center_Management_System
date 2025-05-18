@@ -9,8 +9,10 @@ import { useEffect } from "react";
 import { registerPatient , getMasterAccounts} from "@/services/authService";
 import {upgradeTemporaryAppointment} from "@/services/temporaryAppointmentService"
 import '@/Styles/loginForms.css';
+import { useAuth } from "@/context/AuthContext";
 
 const AddPatientModal = ({ showModal, handleClose , temp = false , appointmentData}) => {
+  const { assistantID } = useAuth();
   const [patientDetails, setPatientDetails] = useState({
     title: "",
     firstname: "",
@@ -20,6 +22,7 @@ const AddPatientModal = ({ showModal, handleClose , temp = false , appointmentDa
     dob: "",
     houseNo: "",
     addline1: "",
+    assistantID: assistantID,
     addline2: "",
     email: "",
     masterAccountID : ""// Add masterAccountID 
@@ -114,8 +117,10 @@ const AddPatientModal = ({ showModal, handleClose , temp = false , appointmentDa
   try {
     const response = await registerPatient({
       ...patientDetails,
+      assistantID: assistantID,
       temp: temp 
     });
+    
     if (response.success) {
       toast.success("Patient registered successfully!");
       if (temp && appointmentData) {

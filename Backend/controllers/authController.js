@@ -216,9 +216,8 @@ const changeAssistantPassword = async (req, res) => {
 const registerPatient = async (req, res) => {
     console.log("Received Patient Data:", req.body);
 
-    const { title, firstname, lastname, contact, gender, dob, houseNo, addline1, addline2, email, masterAccountID } = req.body;
-
-    if (!title || !firstname || !lastname || !contact || !gender || !dob || !houseNo || !addline1 || !addline2 || !email) {
+    const { title, firstname, lastname, contact, gender, dob, houseNo, addline1, addline2,assistantID, email, masterAccountID } = req.body;
+    if (!title || !firstname || !lastname || !contact || !gender || !dob || !houseNo || !addline1 || !addline2 || !assistantID || !email) {
         return res.status(400).json({ message: "All fields are required." });
     }
 
@@ -238,7 +237,6 @@ const registerPatient = async (req, res) => {
         return res.status(500).json({ message: 'Server error during registration.' });
     }
 };
-
 
 module.exports = {
     registerStep1,

@@ -11,9 +11,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { FaTimes , FaPlus ,FaPrescriptionBottleAlt } from 'react-icons/fa';
 import '@/Styles/loginForms.css';
 
-export default function PrescriptionModal({ show, handleClose,patientId,appointmentID}) {
-  // the model receives three props
-  const { doctorID } = useAuth(); // Get the doctor ID from context
+export default function PrescriptionModal({ show, handleClose,patientId,appointmentID }) {
+  const { doctorID } = useAuth(); 
   const [diagnosis, setDiagnosis] = useState("");
   const [others, setOthers] = useState("");
   const [prescribedMedicines, setPrescribedMedicines] = useState([]);
@@ -91,7 +90,7 @@ export default function PrescriptionModal({ show, handleClose,patientId,appointm
             patient_ID: patientId,
             Age :  patientAge,
             appointment_ID : appointmentID ,
-            doctor_ID: doctorID, // 👈 Use context-based doctorID
+            doctor_ID: doctorID,
             medicines: prescribedMedicines.map((med) => ({
               medicine_Name: med.name,
               dosage: med.dosage,
@@ -100,7 +99,7 @@ export default function PrescriptionModal({ show, handleClose,patientId,appointm
 
           //Call the service function to add the prescription       
           const result = await addPrescription(prescriptionPayload);
-      
+          console.log ("doctor ID", doctorID);
           if (result.success) {
             toast.success(result.message);
             handleClose();

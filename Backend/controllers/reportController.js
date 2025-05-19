@@ -1,27 +1,30 @@
 const Report = require('../models/reportModel');
 
-exports.getReport = async (req, res) => {
+exports.getRevenueReport = async (req, res) => {
   try {
-    const { reportType, startDate, endDate } = req.body;
+    const { startDate, endDate } = req.body;
     
-    let data;
-    switch(reportType) {
-      case 'daily-appointments':
-        data = await Report.getDailyAppointments(startDate, endDate);
-        break;
-      case 'monthly-revenue-summary':
-        data = await Report.getMonthlyRevenueSummary(startDate, endDate);
-        break;
-      case 'detailed-medicine-sales':
-        data = await Report.getDetailedMedicineSales(startDate, endDate);
-        break;
-      default:
-        return res.status(400).json({ success: false, error: 'Invalid report type' });
+    if (!startDate || !endDate) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Start date and end date are required' 
+      });
     }
+
+    const reportData = await Report.getRevenueProfitAnalysis(startDate, endDate);
     
-    res.json({ success: true, data });
+    res.json({ 
+      success: true, 
+      data: reportData 
+    });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, error: 'Server error' });
+    console.error('Error in getRevenueReport:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Server error',
+      message: error.message 
+    });
   }
 };
+
+module.exports = exports;

@@ -37,42 +37,64 @@ export default function BillingForm({prescriptionRows,handleRowChange,removeRow,
 
   // Handle medicine selection from the combo box
   const handleMedicineChange = async (index, medicine_ID) => {
-    handleRowChange(index, "medicine_ID", medicine_ID); // Update the selected medicine ID for the row
-  
-    const ensureInventoryListSize = (list, requiredIndex) => {
-      const updated = [...list];
-      while (updated.length <= requiredIndex) {
-        updated.push([]);
-      }
-      return updated;
-    };
-  
-    if (medicine_ID) {
-      try {
-        const response = await fetchInventoryByMedicineID(medicine_ID);
-  
-        let updatedInventoryList = ensureInventoryListSize(inventoryList, index);
-  
-        if (response.success && Array.isArray(response.data)) {
-          updatedInventoryList[index] = response.data;
-        } else {
-          updatedInventoryList[index] = [];
-          toast.error("Failed to load inventory");
+  handleRowChange(index, "medicine_ID", medicine_ID);
+
+  const ensureInventoryListSize = (list, requiredIndex) => {
+    const updated = [...list];
+    while (updated.length <= requiredIndex) {
+      updated.push([]);
+    }
+    return updated;
+  };
+
+  if (medicine_ID) {
+    try {
+      const response = await fetchInventoryByMedicineID(medicine_ID);
+      let updatedInventoryList = ensureInventoryListSize(inventoryList, index);
+
+      if (response.success) {
+        const currentDate = new Date();
+        // Filter valid inventory items
+        const validInventory = Array.isArray(response.data) 
+          ? response.data.filter(inv => {
+              const expDate = new Date(inv.Exp_Date);
+              return inv.stock_quantity > 0 && expDate > currentDate;
+            })
+          : [];
+        
+        updatedInventoryList[index] = validInventory;
+        
+        // Show info message if no valid inventory found
+        if (validInventory.length === 0) {
+          toast.info("No available inventory found for this medicine");
         }
-  
-        setInventoryList(updatedInventoryList);
-      } catch (error) {
-        const updatedInventoryList = ensureInventoryListSize(inventoryList, index);
+      } else {
         updatedInventoryList[index] = [];
-        setInventoryList(updatedInventoryList);
-        toast.error("Error fetching inventory: " + error.message);
       }
-    } else {
+      
+      setInventoryList(updatedInventoryList);
+    } catch (error) {
       const updatedInventoryList = ensureInventoryListSize(inventoryList, index);
       updatedInventoryList[index] = [];
       setInventoryList(updatedInventoryList);
+      console.error("Error fetching inventory:", error.message);
     }
-  };  
+  } else {
+    const updatedInventoryList = ensureInventoryListSize(inventoryList, index);
+    updatedInventoryList[index] = [];
+    setInventoryList(updatedInventoryList);
+  }
+};
+
+    const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
 
   // Log the billing data whenever it changes
   useEffect(() => {
@@ -109,7 +131,6 @@ export default function BillingForm({prescriptionRows,handleRowChange,removeRow,
     removeRow(index); // Remove the row by its index
     setInventoryList((prev) => prev.filter((_, i) => i !== index)); // Remove corresponding inventory for this row
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
@@ -254,7 +275,7 @@ export default function BillingForm({prescriptionRows,handleRowChange,removeRow,
                                   <td>{inv.inventory_ID}</td>
                                   <td>{inv.Brand_Name}</td>
                                   <td>{inv.stock_quantity}</td>
-                                  <td>{inv.Exp_Date}</td>
+                                   <td>{formatDate(inv.Exp_Date)}</td>
                                   <td>{inv.unit_price}</td>
                                 </tr>
                               ))}

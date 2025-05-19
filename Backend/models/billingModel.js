@@ -12,7 +12,7 @@ const getInventoryByMedicineID = async (medicine_ID) => {
              WHERE mi.medicine_ID = ?`, 
             [medicine_ID]
         );
-        return inventory;
+        return inventory || [];
     } catch (error) {
         throw new Error('Error fetching inventory: ' + error.message);
     }

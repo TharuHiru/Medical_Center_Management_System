@@ -16,8 +16,7 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("");
   const [selectedPatientDetails, setSelectedPatientDetails] = useState(null);
   const [appointmentsByPatient, setAppointmentsByPatient] = useState({});
-  const [collapsedAppointments, setCollapsedAppointments] = useState({});
-  const appointmentRef = useRef(null);
+
 
   useEffect(() => {
     const loadPatients = async () => {
@@ -65,21 +64,10 @@ export default function ProfilePage() {
     loadAppointments();
   }, [activeTab]);
 
-  const logout = () => {
-    console.log("Logged out");
-  };
-
-  const toggleCollapse = (index) => {
-    setCollapsedAppointments((prevState) => ({
-      ...prevState,
-      [index]: !prevState[index],
-    }));
-  };
-
   return (
     <>
     <ProtectedRoute>
-      <PatientSidebar onLogout={logout} />
+      <PatientSidebar />
       <div className="content-area" style={{ marginLeft: "260px" }}>
         <div className="container mt-4">
           <h3 className="mb-4">Family Patient Profiles</h3>

@@ -15,7 +15,16 @@ export default function PatientAppointments({ patient }) {
         if (data && data.length === 0) {
           setAppointments([]); 
         } else {
-          setAppointments(data);
+          // Sort appointments by date in descending order (newest first)
+          const sortedData = data.sort((a, b) => new Date(b.date) - new Date(a.date));
+          setAppointments(sortedData);
+          
+          // Initialize all appointments as collapsed
+          const initialCollapsedState = {};
+          sortedData.forEach((_, index) => {
+            initialCollapsedState[index] = true;
+          });
+          setCollapsedAppointments(initialCollapsedState);
         }
       } catch (err) {
         console.error("Failed to load appointments", err);
@@ -51,7 +60,7 @@ export default function PatientAppointments({ patient }) {
                         onClick={() => toggleCollapse(index)}
                       >
                         <span>{formattedDate}</span>
-                        <span>{collapsedAppointments[index] ? "▼" : "▲"}</span>
+                        <span>{collapsedAppointments[index] ? "▲" : "▼"}</span>
                       </button>
 
                       <div className={`mt-2 ${collapsedAppointments[index] ? "collapse" : ""}`}>

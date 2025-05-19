@@ -106,3 +106,19 @@
     cursor: pointer;
   }
   
+.expired-badge {
+  color: #d32f2f;
+  font-size: 0.8em;
+  margin-left: 5px;
+}
+
+.nearly-expired-badge {
+  color: #e65100 !important;
+  font-size: 0.8em !important;
+  margin-left: 5px !important;
+}
+.low-quantity-badge{
+  color: #ff9800 !important;
+  font-size: 0.8em !important;
+  margin-left: 5px !important;
+}

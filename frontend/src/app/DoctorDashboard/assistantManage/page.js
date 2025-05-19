@@ -12,6 +12,7 @@ import "react-toastify/dist/ReactToastify.css"; // Toastify CSS
 import { FaUser , FaPencilAlt } from 'react-icons/fa'; // Import icons
 import { fetchAssistants , updateAssistant } from '@/services/doctorAssistantService';
 import AddAssistantModal from '@/components/addAssistantModel';
+import ProtectedRoute from '@/components/protectedRoute';
 
 function DoctorDashboard() {
   const router = useRouter();
@@ -108,6 +109,7 @@ function DoctorDashboard() {
 };
 
   return (
+    <ProtectedRoute>
     <div className="dashboard-container">
       <DoctorNavBar onLogout={logout} />
         <div className="content-area container mt-4">
@@ -214,6 +216,7 @@ function DoctorDashboard() {
         </div>
       </div>
     </div>
+    </ProtectedRoute>
   );
 }
 

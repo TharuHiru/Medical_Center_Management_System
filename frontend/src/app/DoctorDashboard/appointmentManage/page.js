@@ -6,6 +6,7 @@ import { collection, query, orderBy, onSnapshot, doc, deleteDoc, where } from "f
 import { admitPatient } from "@/services/appointmentService";
 import { db } from "@/lib/firebase";
 import DoctorNavBar from '@/components/doctorSideBar';
+import ProtectedRoute from '@/components/protectedRoute';
 import PrescriptionModal from "@/components/AddPrescriptionModel";
 
 // Styles
@@ -115,6 +116,7 @@ function DoctorQueue() {
   const statusClass = isPending ? "list-group-item-warning" : "list-group-item-success";
   
   return (
+    <ProtectedRoute>
     <div
       key={appt.docId}
       className={`list-group-item d-flex flex-column flex-md-row justify-content-between align-items-md-center ${statusClass} mb-2 shadow-sm rounded p-3`}
@@ -158,10 +160,12 @@ function DoctorQueue() {
         )}
       </div>
     </div>
+    </ProtectedRoute>
   );
 };
 
   return (
+    <ProtectedRoute>
     <div className="dashboard-container bg-light min-vh-100 d-flex flex-column overflow-hidden">
       <div className="d-lg-none position-fixed top-0 start-0 p-3" style={{ zIndex: 1000 }}>
         <button className="btn btn-primary" onClick={toggleSidebar}>
@@ -267,6 +271,7 @@ function DoctorQueue() {
         appointmentID={selectedAppointment?.appointment_ID}
       />
     </div>
+    </ProtectedRoute>
   );
 }
 

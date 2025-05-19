@@ -5,6 +5,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import '@/Styles/patientDashboard.css';
 import Image from "next/image"; // Optimize images
+import ProtectedRoute from '@/components/protectedRoute';
+
 
 const Dashboard = () => {
   const router = useRouter();
@@ -25,6 +27,7 @@ const Dashboard = () => {
   };
 
   return (
+    <ProtectedRoute>
     <div className="min-vh-100 bg-light">
       {/* Full-width Top Navigation Bar */}
       <nav className="navbar navbar-expand-lg navbar-dark topNav">
@@ -112,6 +115,7 @@ const Dashboard = () => {
         </div>
       </div>
     </div>
+    </ProtectedRoute>
   );
 };
 

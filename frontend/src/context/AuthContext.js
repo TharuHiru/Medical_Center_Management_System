@@ -12,6 +12,7 @@ export const AuthProvider = ({ children }) => {
   const [masterID , setMasterID] = useState(null);
   const [userName, setUserName] = useState(null);
   const [assistantID, setAssistantID] = useState(null);
+  const [token, setToken] = useState(null);
 
   // Load saved user details on page refresh
   useEffect(() => {
@@ -42,6 +43,10 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (type, id = null, masterIDVal = null, userDetails = null) => {
+    if (token) {
+    setToken(token);
+    localStorage.setItem("token", token);
+  }
     setUserType(type);
     localStorage.setItem("userType", type);
   
@@ -85,11 +90,14 @@ export const AuthProvider = ({ children }) => {
   
   // Logout function
   const logout = () => {
+    setToken(null);
     setUserType(null);
     setPatientID(null);
     setDoctorID(null);
     setAssistantID(null);
     setMasterID(null);
+
+    localStorage.removeItem("token"); 
     localStorage.removeItem("userType");
     localStorage.removeItem("userName");
     localStorage.removeItem("doctorID");
@@ -98,7 +106,7 @@ export const AuthProvider = ({ children }) => {
   };
   
   return (
-    <AuthContext.Provider value={{ userType, userName, doctorID, patientID, masterID, assistantID,login, logout }}>
+    <AuthContext.Provider value={{ userType, userName, doctorID, patientID, masterID, token, assistantID,login, logout }}>
       {children}
     </AuthContext.Provider>
   );

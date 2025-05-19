@@ -13,6 +13,7 @@ import { fetchPatientIDs } from "@/services/patientAuthService";
 import { useAuth } from "@/context/AuthContext";
 import PatientSidebar from "@/components/patientSideBar";
 import { FaCalendarAlt, FaUserClock, FaUserCheck, FaUserMinus, FaSpinner, FaInfoCircle, FaExclamationTriangle } from "react-icons/fa";
+import ProtectedRoute from '@/components/protectedRoute';
 
 export default function AppointmentQueue() {
   const { userType, patientID, masterID } = useAuth();
@@ -190,6 +191,7 @@ export default function AppointmentQueue() {
   );
 
   return (
+    <ProtectedRoute>
     <div className="bg-light min-vh-100">
       <PatientSidebar onLogout={logout} />
       <div className="content-area" style={{ marginLeft: "260px" }}>
@@ -417,5 +419,6 @@ export default function AppointmentQueue() {
       </div>
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
     </div>
+    </ProtectedRoute>
   );
 }

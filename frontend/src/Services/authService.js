@@ -34,7 +34,14 @@ export const doctorLogin = async (UserName, password) => {
       password,
     });
 
-    return response.data; // Return the response data
+    const data = response.data;
+
+    if (data.success && data.token) {
+      localStorage.setItem('token', data.token); // Save token
+      console.log("Doctor Token:", data.token);  // Log token
+    }
+
+    return data;
   } catch (error) {
     return error.response?.data || { success: false, message: "Server error!" };
   }
@@ -61,7 +68,14 @@ export const assistLogin = async (email, password) => {
       password,
     });
 
-    return response.data; // Return the response data
+    const data = response.data;
+
+    if (data.success && data.token) {
+      localStorage.setItem('token', data.token); // Save token
+      console.log("Assistant Token:", data.token); // Log token
+    }
+
+    return data;
   } catch (error) {
     return error.response?.data || { success: false, message: "Server error!" };
   }

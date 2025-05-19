@@ -9,6 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 import AssistNavBar from "@/components/assistantSideBar";
 import { getDashboardStats } from "@/services/dashboardAPI";
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import ProtectedRoute from '@/components/protectedRoute';
 
 function AssistantDashboard() {
   const router = useRouter();
@@ -39,6 +40,7 @@ function AssistantDashboard() {
 
   if (loading) {
     return (
+    <ProtectedRoute>  
       <div className="dashboard-container bg-light">
         <AssistNavBar onLogout={logout} />
         <div className="content-area container py-5">
@@ -50,11 +52,13 @@ function AssistantDashboard() {
           </div>
         </div>
       </div>
+     </ProtectedRoute> 
     );
   }
 
   if (error) {
     return (
+      <ProtectedRoute>
       <div className="dashboard-container bg-light">
         <AssistNavBar onLogout={logout} />
         <div className="content-area container py-5">
@@ -63,6 +67,7 @@ function AssistantDashboard() {
           </div>
         </div>
       </div>
+      </ProtectedRoute>
     );
   }
 
@@ -79,6 +84,7 @@ function AssistantDashboard() {
   ];
 
   return (
+    <ProtectedRoute>
     <div className="dashboard-container bg-light">
       <AssistNavBar onLogout={logout} />
       
@@ -134,6 +140,8 @@ function AssistantDashboard() {
         </div>
       </div>
     </div>
+    </ProtectedRoute>
+    
   );
 }
 

@@ -8,6 +8,7 @@ import "@/Styles/dashboardCard.css";
 import { useAuth } from "@/context/AuthContext";
 import Image from "next/image";
 import DoctorNavBar from '@/components/doctorSideBar';
+import ProtectedRoute from '@/components/protectedRoute';
 
 function AssistantDashboard() {
    const router = useRouter();
@@ -21,6 +22,7 @@ function AssistantDashboard() {
 
   
   return (
+    <ProtectedRoute>
     <div className="dashboard-container">
       <DoctorNavBar onLogout={logout} />
       <div className="content-area container mt-4">
@@ -42,6 +44,7 @@ function AssistantDashboard() {
         </div>
       </div>
     </div>
+    </ProtectedRoute>
   );
 }
 

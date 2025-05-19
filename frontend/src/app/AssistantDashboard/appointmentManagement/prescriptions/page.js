@@ -10,6 +10,7 @@ import AssistNavBar from "@/components/assistantSideBar";
 import BillingForm from "@/components/billingForm";
 import Receipt from "@/components/receipt";   
 import Image from "next/image";
+import ProtectedRoute from '@/components/protectedRoute';
 import { sendPrescriptionEmail,getPatientEmail } from '@/services/prescriptionPdfService';
 
 
@@ -139,6 +140,7 @@ export default function AppointmentQueue() {
 
   return (
     <>
+    <ProtectedRoute>
       {/* Prescription to be billed section */}
       <div className="d-flex">
             <AssistNavBar />
@@ -304,10 +306,9 @@ export default function AppointmentQueue() {
                   patientEmail
                   onCloseAll={handleCloseAll}
                 />
-              )}
-
-              
+              )}             
       <ToastContainer />
-    </>
+      </ProtectedRoute>
+    </>    
   );
 }

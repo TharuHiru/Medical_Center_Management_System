@@ -83,31 +83,46 @@ const setPassword = async (req, res) => {
     }
 };
 
-//patient Login
+const jwt = require('jsonwebtoken');
+const SECRET_KEY = process.env.JWT_SECRET || "yourSecretKey";
+
 const login = async (req, res) => {
-    const { userName, password } = req.body;
+  const { userName, password } = req.body;
 
-    if (!userName || !password)
-        return res.status(400).json({ error: 'Patient ID and password are required' });
+  if (!userName || !password)
+    return res.status(400).json({ error: 'Patient ID and password are required' });
 
-    try {
-        const users = await patientAuthModel.getUserByUsername(userName);
+  try {
+    const users = await patientAuthModel.getUserByUsername(userName);
 
-        if (!users || users.length === 0)
-            return res.status(404).json({ error: 'Account not found' });
+    if (!users || users.length === 0)
+      return res.status(404).json({ error: 'Account not found' });
 
-        const user = users[0];
+    const user = users[0];
+    const passwordMatch = await bcrypt.compare(password, user.password);
 
-        const passwordMatch = await bcrypt.compare(password, user.password);
-        if (!passwordMatch)
-            return res.status(401).json({ error: 'Invalid password' });
+    if (!passwordMatch)
+      return res.status(401).json({ error: 'Invalid password' });
 
-        res.json({ success: true, message: 'Login successful', userName, master_ID: user.master_ID });
+    // 🔐 Generate JWT token
+    const token = jwt.sign(
+      { userType: "patient", userName: user.userName, masterID: user.master_ID },
+      SECRET_KEY,
+      { expiresIn: '2h' }
+    );
 
-    } catch (error) {
-        console.error("Database error:", error);
-        res.status(500).json({ error: 'Database error' });
-    }
+    res.json({
+      success: true,
+      message: 'Login successful',
+      token,
+      userName,
+      master_ID: user.master_ID,
+    });
+
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ error: 'Database error' });
+  }
 };
 
 

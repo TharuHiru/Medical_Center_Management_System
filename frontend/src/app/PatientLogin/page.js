@@ -29,7 +29,7 @@ const PatientLogin = () => {
         toast.success(`Login successful! Your Patient ID: ${userName}`); // ✅ Include ID in alert
         router.push("/patientDashboard/dashboard"); // Redirect to dashboard
       } else {
-        toast.err("Login failed: " + response.error);
+        toast.error("Login failed: " + response.error);
       }
     } catch (error) {
       console.error("Login error:", error);

@@ -43,6 +43,11 @@ export const patientLogin = async (userName, password) => {
       userName: userName, // Correct structure
       password: password
     });
+    console.log("Response from patientLogin:", response.data); // Log the response data
+    // Store the token in localStorage
+    if (response.data.token) {
+      localStorage.setItem("token", response.data.token);
+    }
     return response.data;
   } catch (error) {
     console.error("Error logging in:", error);

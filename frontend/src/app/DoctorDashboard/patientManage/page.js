@@ -10,6 +10,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import DoctorNavBar from "@/components/doctorSideBar";
 import { FaEye, FaSearch } from "react-icons/fa";
 import { fetchPatients } from "@/services/patientService";
+import ProtectedRoute from '@/components/protectedRoute';
 import PatientAppointments from "@/components/patientAppointments";
 
 function AssistantDashboardPatient() {
@@ -55,6 +56,7 @@ function AssistantDashboardPatient() {
   };
 
   return (
+    <ProtectedRoute>
     <div className="dashboard-container">
       <DoctorNavBar onLogout={logout} />
 
@@ -138,6 +140,7 @@ function AssistantDashboardPatient() {
         )}
       </div>
     </div>
+    </ProtectedRoute>
   );
 }
 

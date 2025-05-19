@@ -11,6 +11,7 @@ import Swal from "sweetalert2";
 import AssistNavBar from "@/components/assistantSideBar";
 import AddPatientModal from "@/components/addPatientModel";
 import { FaCalendarAlt, FaUserPlus, FaCheck, FaExclamationTriangle, FaArrowRight, FaRedo } from "react-icons/fa";
+import ProtectedRoute from '@/components/protectedRoute';
 
 // Format date as yyyy-mm-dd
 const getFormattedDate = (date) => {
@@ -234,6 +235,7 @@ export default function AppointmentQueue() {
   };
 
   return (
+    <ProtectedRoute>
     <div className="bg-light min-vh-100">
       <AssistNavBar onLogout={logout} />
       <div className="content-area" style={{ marginLeft: "260px" }}>
@@ -438,5 +440,6 @@ export default function AppointmentQueue() {
       )}
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
     </div>
+    </ProtectedRoute>   
   );
 }

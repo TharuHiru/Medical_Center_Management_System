@@ -13,6 +13,7 @@ import { FaPlus, FaSearch } from "react-icons/fa";
 import AddInventoryModal from "@/components/addInventoryModel";
 import { fetchInventory, fetchMedicineCategory} from "@/services/inventoryService";
 import Select from 'react-select';
+import ProtectedRoute from '@/components/protectedRoute';
 
 function AssistantDashboardInventory() {
   const router = useRouter(); // create a router instance
@@ -89,6 +90,7 @@ function AssistantDashboardInventory() {
   };
 
   return (
+    <ProtectedRoute>
     <div className="dashboard-container">
       {/* Vertical Navigation Bar */}
       <AssistNavBar onLogout={logout} />
@@ -185,6 +187,7 @@ function AssistantDashboardInventory() {
         </div>
       </div>
     </div>
+    </ProtectedRoute>
   );
 }
 

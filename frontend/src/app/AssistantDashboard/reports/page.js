@@ -4,6 +4,7 @@ import ReportViewer from '@/components/reportViewer';
 import AssistNavBar from "@/components/assistantSideBar";
 import "@/Styles/AssistantDashboard.css";
 import "@/Styles/loginForms.css";
+import ProtectedRoute from '@/components/protectedRoute';
 
 export default function ReportsPage() {
   // Dummy logout function for AssistNavBar
@@ -12,6 +13,7 @@ export default function ReportsPage() {
   };
 
   return (
+    <ProtectedRoute>
     <div className="dashboard-container">
       <AssistNavBar onLogout={logout} />
 
@@ -20,5 +22,6 @@ export default function ReportsPage() {
         <ReportViewer />
       </div>
     </div>
+    </ProtectedRoute>
   );
 }

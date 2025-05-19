@@ -8,6 +8,7 @@ import PatientSidebar from "@/components/patientSideBar";
 import { fetchPatientIDs, fetchPatientAppointments } from "@/services/patientAuthService";
 import PatientProfileView from "@/components/patientAppointments";
 import '@/Styles/profileTab.css'
+import ProtectedRoute from '@/components/protectedRoute';
 
 export default function ProfilePage() {
   const { masterID } = useAuth();
@@ -71,6 +72,7 @@ export default function ProfilePage() {
 
   return (
     <>
+    <ProtectedRoute>
       <PatientSidebar onLogout={logout} />
       <div className="content-area" style={{ marginLeft: "260px" }}>
         <div className="container mt-4">
@@ -105,6 +107,7 @@ export default function ProfilePage() {
         </div>
         <ToastContainer />
       </div>
+      </ProtectedRoute>
     </>
   );
 }

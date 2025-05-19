@@ -10,6 +10,7 @@ import AddPatientModal from "@/components/addPatientModel";
 import { fetchPatients, updatePatient } from "@/services/patientService";
 import "@/Styles/tableStyle.css";
 import { toast } from "react-toastify";
+import ProtectedRoute from '@/components/protectedRoute';
 
 function AssistantDashboardPatient() {
   const router = useRouter();
@@ -155,6 +156,7 @@ function AssistantDashboardPatient() {
   };
 
   return (
+    <ProtectedRoute>
     <div className="dashboard-container">
       <AssistNavBar onLogout={logout} />
       <div className="content-area container mt-4">
@@ -355,6 +357,7 @@ function AssistantDashboardPatient() {
         </div>
       </div>
     </div>
+  </ProtectedRoute>  
   );
 }
 export default AssistantDashboardPatient;

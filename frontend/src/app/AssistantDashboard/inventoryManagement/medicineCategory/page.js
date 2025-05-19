@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AssistNavBar from "@/components/assistantSideBar";
 import Select from "react-select";
+import ProtectedRoute from '@/components/protectedRoute';
 import {fetchBrandsByMedicineID, addMedicineCategory, addMedicineBrand, fetchMedicineCategory} from "../../../../services/inventoryService";
 
 const MedicineCategoryPage = () => {
@@ -123,6 +124,7 @@ const MedicineCategoryPage = () => {
   };
 
   return (
+    <ProtectedRoute>
     <div className="dashboard-container">
       <AssistNavBar />
 
@@ -250,6 +252,7 @@ const MedicineCategoryPage = () => {
         </div>
       </div>
     </div>
+    </ProtectedRoute>
   );
 };
 

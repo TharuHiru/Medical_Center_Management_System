@@ -5,7 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "@/context/AuthContext";
 import PatientSidebar from "@/components/patientSideBar";
-import { fetchPatientIDs, fetchPatientAppointments } from "@/services/patientAuthService";
+import { fetchPatientIDs, fetchPatientAppointments ,fetchPatientProfile } from "@/services/patientAuthService";
 import PatientProfileView from "@/components/patientAppointments";
 import '@/Styles/profileTab.css'
 import ProtectedRoute from '@/components/protectedRoute';
@@ -14,6 +14,7 @@ export default function ProfilePage() {
   const { masterID } = useAuth();
   const [patientList, setPatientList] = useState([]);
   const [activeTab, setActiveTab] = useState("");
+  const [selectedPatientDetails, setSelectedPatientDetails] = useState(null);
   const [appointmentsByPatient, setAppointmentsByPatient] = useState({});
   const [collapsedAppointments, setCollapsedAppointments] = useState({});
   const appointmentRef = useRef(null);
@@ -44,7 +45,12 @@ export default function ProfilePage() {
     const loadAppointments = async () => {
       if (!activeTab) return;
 
+      
+
       try {
+      const profile = await fetchPatientProfile(activeTab);
+      setSelectedPatientDetails(profile);
+
         const data = await fetchPatientAppointments(activeTab);
         setAppointmentsByPatient((prev) => ({
           ...prev,
@@ -92,15 +98,28 @@ export default function ProfilePage() {
                     </button>
                   </li>
                 ))}
-              </ul>
+              </ul>              
               <div className="tab-content mt-3">
-                {patientList.map((patient) =>
-                  activeTab === patient.patient_ID ? (
-                    <div className="tab-pane active" key={patient.patient_ID}>
-                      <PatientProfileView patient={patient} />
+                 {selectedPatientDetails && (
+                    <div className="card mb-3 p-3">
+                      <h4>Patient Information</h4>
+                      <br></br>
+                      <p><strong>Patient ID : </strong> {selectedPatientDetails.patient_ID}</p>
+                      <p><strong>Name : </strong>{selectedPatientDetails.title} {selectedPatientDetails.firstName} {selectedPatientDetails.lastName}</p>
+                      <p><strong>Gender : </strong> {selectedPatientDetails.gender}</p>
+                      <p><strong>DOB : </strong> {selectedPatientDetails.DOB}</p>
+                      <p><strong>Address : </strong> {selectedPatientDetails.house_no}{selectedPatientDetails.addr_line_1}{selectedPatientDetails.addr_line_2}</p>
+                      <p><strong>Contact : </strong> {selectedPatientDetails.contactNo}</p>
+                      <p><strong>Email : </strong> {selectedPatientDetails.email}</p>
                     </div>
-                  ) : null
-                )}
+                  )}
+
+                  {activeTab && appointmentsByPatient[activeTab] && (
+                    <PatientProfileView
+                      patient={{ patient_ID: activeTab }}
+                      appointments={appointmentsByPatient[activeTab]}
+                    />
+                  )}
               </div>
             </>
           )}

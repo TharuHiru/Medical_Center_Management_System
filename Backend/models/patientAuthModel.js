@@ -73,6 +73,13 @@ const getMedicines = async (prescription_ID) => {
     return rows;
 };
 
+//get patient details
+const getPatientDetailsByID = async (patient_ID) => {
+    const [rows] = await pool.query('SELECT * FROM patients WHERE patient_ID = ?', [patient_ID]);
+    return rows;
+};
+
+
 module.exports = {
     checkExistingUser,
     getEmailByPID,
@@ -83,5 +90,6 @@ module.exports = {
     getPatientDetails,
     getAppointments,
     getPrescriptions,
-    getMedicines
+    getMedicines,
+    getPatientDetailsByID
 };

@@ -76,4 +76,12 @@ export const fetchPatientAppointments = async (patientId) => {
   }
 };
 
-
+//get patient profile details
+export const fetchPatientProfile = async (patientId) => {
+  const response = await axios.get(`${API_URL}/fetch-patient-profile/${patientId}`);
+  if (response.data.success) {
+    return response.data.data;
+  } else {
+    throw new Error("Failed to fetch patient profile");
+  }
+};

@@ -175,11 +175,28 @@ const fetchAppointments = async (req, res) => {
     }
 };
 
+// Fetch patient profile details
+const fetchPatientProfile = async (req, res) => {
+    const { patient_ID } = req.params;
+
+    try {
+        const profile = await patientAuthModel.getPatientDetailsByID(patient_ID);
+        if (profile.length === 0) return res.status(404).json({ error: 'Patient not found' });
+
+        res.json({ success: true, data: profile[0] });
+
+    } catch (error) {
+        console.error("Database error:", error);
+        res.status(500).json({ error: 'Database error' });
+    }
+};
+
 module.exports = {
     sendVerification,
     verifyCode,
     setPassword,
     login,
     fetchPatientIDs,
-    fetchAppointments
+    fetchAppointments,
+    fetchPatientProfile
 };

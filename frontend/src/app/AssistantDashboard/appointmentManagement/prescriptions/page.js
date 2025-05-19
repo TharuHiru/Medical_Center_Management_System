@@ -10,6 +10,8 @@ import AssistNavBar from "@/components/assistantSideBar";
 import BillingForm from "@/components/billingForm";
 import Receipt from "@/components/receipt";   
 import Image from "next/image";
+import { sendPrescriptionEmail,getPatientEmail } from '@/services/prescriptionPdfService';
+
 
 export default function AppointmentQueue() {
   const [prescriptions, setPrescriptions] = useState([]);
@@ -21,6 +23,45 @@ export default function AppointmentQueue() {
   const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
   const [showBillingModal, setShowBillingModal] = useState(false);
   const [showReceiptModal, setShowReceiptModal] = useState(false);
+
+  const sendToMail = async () => {
+  try {
+    if (!selectedPrescription) return;
+    
+    // Get the HTML content
+    const prescriptionHtml = printRef.current.innerHTML;
+    
+    // Convert local images to base64
+    const images = printRef.current.querySelectorAll('img');
+    for (const img of images) {
+      if (img.src.startsWith('http')) continue;
+      
+      const response = await fetch(img.src);
+      const blob = await response.blob();
+      const base64 = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => resolve(reader.result);
+      });
+      img.src = base64;
+    }
+
+    // Get patient email from service
+    const patientEmail = await getPatientEmail(selectedPrescription.patient_ID);
+    console.log("Patient Email:", patientEmail);
+    // Send via service
+    await sendPrescriptionEmail({
+      htmlContent: printRef.current.innerHTML,
+      patientEmail, // Replace with dynamic email
+      patientName: selectedPrescription.patientName
+    });
+
+    toast.success("Prescription sent to email successfully!");
+  } catch (error) {
+    console.error("Error sending email:", error);
+    toast.error("Failed to send email");
+  }
+};
 
   // This will be passed to Receipt component
   const onCloseAll = () => {
@@ -89,24 +130,18 @@ export default function AppointmentQueue() {
     window.location.reload();
   };
 
-  //log out function
-  const logout = () => {
-    console.log("Logged out");
-  };
-
   //close all models
   const handleCloseAll = () => {
     setShowBillingForm(false);
     setSelectedPrescription(null);
     //setShowReceipt(false); 
   };
-  
 
   return (
     <>
       {/* Prescription to be billed section */}
       <div className="d-flex">
-            <AssistNavBar onLogout={logout} />
+            <AssistNavBar />
             <div className="content-area flex-grow-1 p-4 ">
               <div className="container">
                 <h2 className="fw-bold mb-4">Billing Queue</h2>
@@ -249,18 +284,10 @@ export default function AppointmentQueue() {
 
                 {/* Print Button and goto billing button section */}
                 <div className="text-center mt-4">
-                  <button  className="btn btn-success me-3" onClick={handlePrint}>
-                    Print Prescription
-                  </button>
-                  <button  className="btn btn-danger me-3"  onClick={() => setShowBillingForm(true)}>
-                    Go to Billing
-                  </button>
-                  <button  className="btn btn-primary me-3" onClick={() => sendToMail(selectedPrescription.patient_ID)}>
-                    Send to mail
-                  </button>
-                  <button  className="btn btn-secondary "   onClick={() => setSelectedPrescription(null)}>
-                    Back to List
-                  </button>
+                  <button className="btn btn-success me-3" onClick={handlePrint}>                         Print Prescription </button>
+                  <button className="btn btn-danger me-3"  onClick={() => setShowBillingForm(true)}>      Go to Billing      </button>
+                  <button className="btn btn-primary me-3" onClick={sendToMail} >                         Send to mail       </button>
+                  <button className="btn btn-secondary "   onClick={() => setSelectedPrescription(null)}> Back to List       </button>
                 </div>
               </>
             )}
@@ -274,6 +301,7 @@ export default function AppointmentQueue() {
                   addRow={addRow}
                   billingRef={billingRef}
                   prescriptionId={selectedPrescription?.id}
+                  patientEmail
                   onCloseAll={handleCloseAll}
                 />
               )}

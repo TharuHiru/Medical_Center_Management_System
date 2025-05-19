@@ -8,7 +8,7 @@ import "@/Styles/table.css";
 import Select from "react-select";
 import Receipt from "./receipt";
 
-export default function BillingForm({prescriptionRows,handleRowChange,removeRow,addRow,billingRef,prescriptionId,onCloseAll}) {
+export default function BillingForm({prescriptionRows,handleRowChange,removeRow,addRow,billingRef,prescriptionId,onCloseAll,patientEmail}) {
   const [medicines, setMedicines] = useState([]);
   const [inventoryList, setInventoryList] = useState([]);
   const [selectedInventory, setSelectedInventory] = useState({});
@@ -312,6 +312,7 @@ export default function BillingForm({prescriptionRows,handleRowChange,removeRow,
         medicines={billingData.medicines}
         prescriptionId={prescriptionId}
         onConfirmClose={onCloseAll} 
+        patientEmail={patientEmail}
       />
     )}
   </div>

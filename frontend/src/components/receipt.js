@@ -1,8 +1,10 @@
 import React from "react";
 import { Modal, Button, Table, Image } from "react-bootstrap";
 import Swal from 'sweetalert2';
+import { sendReceiptEmail } from '@/services/prescriptionPdfService';
 
-export default function Receipt({ show, onHide, serviceCharge, medicines, prescriptionId, onConfirmClose}) {
+
+export default function Receipt({ show, onHide, serviceCharge, medicines, prescriptionId, onConfirmClose ,patientEmail}) {
   const total = medicines.reduce((sum, med) => {
     const price = parseFloat(med.unit_price) || 0;
     const units = parseFloat(med.units) || 0;
@@ -28,25 +30,51 @@ export default function Receipt({ show, onHide, serviceCharge, medicines, prescr
   };
 
   const handleSendToEmail = async () => {
-    try {
-      const response = await fetch('/api/send-receipt', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prescriptionId })
+  try {
+    // Get the modal content HTML
+    const modalContent = document.querySelector('.modal-content').outerHTML;
+
+    // Convert local images to base64
+    const images = document.querySelectorAll('.modal-content img');
+    for (const img of images) {
+      if (img.src.startsWith('http')) continue;
+      
+      const response = await fetch(img.src);
+      const blob = await response.blob();
+      const base64 = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => resolve(reader.result);
       });
-
-      const result = await response.json();
-      if (result.success) {
-        alert("Receipt sent successfully!");
-      } else {
-        alert("Failed to send receipt.");
-      }
-    } catch (error) {
-      console.error(error);
-      alert("Error sending email.");
+      // Create a temporary div to hold modified HTML
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = modalContent;
+      tempDiv.querySelector(`img[src="${img.src}"]`).src = base64;
+      modalContent = tempDiv.outerHTML;
     }
-  };
 
+    // Send via service
+    await sendReceiptEmail({
+      htmlContent: modalContent,
+      recipientEmail: patientEmail,
+      prescriptionId
+    });
+    console.log("patient email :  " , patientEmail);
+
+    Swal.fire({
+      title: "Success!",
+      text: "Receipt sent to email successfully!",
+      icon: "success"
+    });
+  } catch (error) {
+    Swal.fire({
+      title: "Error!",
+      text: error.message || "Failed to send receipt",
+      icon: "error"
+    });
+    console.error(error);
+  }
+};
   return (
     <Modal show={show} onHide={onHide} size="lg">
       <Modal.Header>

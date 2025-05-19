@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { fetchReport } from '@/services/reportService';
 import "@/Styles/reportViewer.css"
+import { Image } from 'react-bootstrap';
 
 const ReportViewer = () => {
   const [reportType, setReportType] = useState('revenue-profit-analysis');
@@ -32,7 +33,16 @@ const ReportViewer = () => {
     return (
       <div className="report-container printable">
         <div className="report-header">
-          <h2>Medical Center - Revenue & Profit Analysis</h2>
+          <div className="header-content">
+            <Image 
+              src="/Logo.png" 
+              alt="Poly Clinic" 
+              width={100} 
+              height={100} 
+              className="header-logo"
+            />
+            <h2>Medical Center - Revenue & Profit Analysis</h2>
+          </div>
           <p className="report-period">
             Period: {new Date(dateRange.startDate).toLocaleDateString()} to {new Date(dateRange.endDate).toLocaleDateString()}
           </p>
@@ -43,9 +53,9 @@ const ReportViewer = () => {
         
         {/* 1. Consultation Summary */}
         <div className="section-container">
-          <h3 className="section-title">Consultation Summary</h3>
+          <h4 className="section-title">Consultation Summary</h4>
           <div className="summary-cards">
-            <div className="summary-card">
+            <div className="summary-card" >
               <h4>Total Appointments</h4>
               <p className="amount">{reportData.consultationSummary.totalAppointments}</p>
             </div>
@@ -62,7 +72,7 @@ const ReportViewer = () => {
         
         {/* 2. Medicine Sales Summary */}
         <div className="section-container">
-          <h3 className="section-title">Medicine Sales Summary</h3>
+          <h4 className="section-title">Medicine Sales Summary</h4>
           <div className="summary-cards">
             <div className="summary-card">
               <h4>Total Units Sold</h4>
@@ -85,7 +95,7 @@ const ReportViewer = () => {
         
         {/* 3. Detailed Medicine Sales */}
         <div className="section-container">
-          <h3 className="section-title">Detailed Medicine Sales</h3>
+          <h4 className="section-title">Detailed Medicine Sales</h4>
           <table className="report-table">
             <thead>
               <tr>

@@ -20,6 +20,8 @@ export default function AppointmentQueue() {
   const printRef = useRef();
   const billingRef = useRef(null);
   const [showBillingForm, setShowBillingForm] = useState(false);
+  const [patientEmail, setPatientEmail] = useState('');
+
 
   const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
   const [showBillingModal, setShowBillingModal] = useState(false);
@@ -48,12 +50,14 @@ export default function AppointmentQueue() {
     }
 
     // Get patient email from service
-    const patientEmail = await getPatientEmail(selectedPrescription.patient_ID);
-    console.log("Patient Email:", patientEmail);
+    const email = await getPatientEmail(selectedPrescription.patient_ID);
+    console.log("Patient Email:", email);
+    setPatientEmail(email);
+
     // Send via service
     await sendPrescriptionEmail({
       htmlContent: printRef.current.innerHTML,
-      patientEmail, // Replace with dynamic email
+      patientEmail: email, // Replace with dynamic email
       patientName: selectedPrescription.patientName
     });
 
@@ -303,7 +307,7 @@ export default function AppointmentQueue() {
                   addRow={addRow}
                   billingRef={billingRef}
                   prescriptionId={selectedPrescription?.id}
-                  patientEmail
+                   patientEmail={patientEmail}
                   onCloseAll={handleCloseAll}
                 />
               )}             

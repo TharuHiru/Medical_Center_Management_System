@@ -31,8 +31,9 @@ export default function BillingForm({prescriptionRows,handleRowChange,removeRow,
         setMedicines([]);
       }
     };
-    fetchMedicines(); // Call the API when the component loads
-  }, []);
+    fetchMedicines(); // Call the API when the component load
+    console.log ("email : " , patientEmail)
+  }, [patientEmail]);
 
 
   // Handle medicine selection from the combo box
@@ -180,7 +181,7 @@ export default function BillingForm({prescriptionRows,handleRowChange,removeRow,
       const response = await savePaymentData(billingDetails); // Save billing details to the backend
       if (response.success) {
         toast.success("Billing details saved successfully!");
-  
+        
         // Update state
         setBillingData({
           serviceCharge: billingDetails.serviceCharge,

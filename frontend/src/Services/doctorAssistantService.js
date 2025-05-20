@@ -23,3 +23,13 @@ export const updateAssistant = async (id, assistantData) => {
     throw error;
   }
 };
+
+export const deactivateAssistant = async (id) => {
+  try {
+    const response = await axios.put(`${API_URL}/deactivate-assistant/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deactivating assistant:", error);
+    throw error;
+  }
+};

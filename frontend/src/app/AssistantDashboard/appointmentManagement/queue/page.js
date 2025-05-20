@@ -217,11 +217,6 @@ export default function AppointmentQueue() {
     }
   };
   
-  // Logout function
-  const logout = () => {
-    console.log("Logged out");
-  };
-
   const customSelectStyles = {
     control: (provided) => ({
       ...provided,borderRadius: '0.375rem',border: '1px solid #ced4da',boxShadow: 'none',
@@ -237,7 +232,7 @@ export default function AppointmentQueue() {
   return (
     <ProtectedRoute>
     <div className="bg-light min-vh-100">
-      <AssistNavBar onLogout={logout} />
+      <AssistNavBar />
       <div className="content-area" style={{ marginLeft: "260px" }}>
         <div className="container py-5">
           <div className="card shadow-sm">
@@ -332,7 +327,7 @@ export default function AppointmentQueue() {
                                       className="btn btn-sm btn-outline-primary"
                                       onClick={() => confirmBeforeSave(appt)}
                                     >
-                                      Save as Patient
+                                      Temporary Patient - Save as Patient
                                     </button>
                                   )}
                                 </div>

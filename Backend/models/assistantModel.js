@@ -33,7 +33,20 @@ const updateAssistant = async (id, data) => {
   return result;
 };
 
+const deactivateAssistant = async (id) => {
+  const [result] = await pool.query(`
+    UPDATE assistant SET
+      Assist_Email = NULL,
+      Assist_Password = NULL,
+      Active = 0
+    WHERE assist_ID = ?
+  `, [id]);
+
+  return result;
+};
+
 module.exports = {
   getAllAssistants,
-  updateAssistant
+  updateAssistant,
+  deactivateAssistant
 };

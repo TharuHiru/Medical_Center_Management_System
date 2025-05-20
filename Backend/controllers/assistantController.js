@@ -31,7 +31,33 @@ const updateAssistant = async (req, res) => {
   }
 };
 
+const deactivateAssistant = async (req, res) => {
+  const assistantId = req.params.id;
+
+  try {
+    const result = await AssistantModel.deactivateAssistant(assistantId);
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ success: false, message: 'Assistant not found' });
+    }
+
+    res.status(200).json({ 
+      success: true, 
+      message: 'Assistant deactivated successfully',
+      data: {
+        affectedRows: result.affectedRows
+      }
+    });
+  } catch (error) {
+    console.error("Error deactivating assistant:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Server error while deactivating assistant' 
+    });
+  }
+};
 module.exports = {
   fetchAllAssistants,
-  updateAssistant
+  updateAssistant,
+  deactivateAssistant
 };

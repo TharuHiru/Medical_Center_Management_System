@@ -31,19 +31,6 @@ const ReportViewer = () => {
   const formatCurrency = (value) => `$${Number(value || 0).toFixed(2)}`;
   const formatPercent = (value) => `${Number(value || 0).toFixed(2)}%`;
 
-  // Print handler
-  const handlePrint = useReactToPrint({
-    content: () => reportRef.current,
-    pageStyle: `
-      @page { size: auto; margin: 10mm; }
-      @media print {
-        body { margin: 0; padding: 0; }
-        .report-container { box-shadow: none; margin: 0; }
-        .print-btn, .report-controls { display: none !important; }
-      }
-    `,
-  });
-
   // PDF download handler
   const handleDownloadPDF = async () => {
     if (!reportRef.current) return;
@@ -163,16 +150,9 @@ const ReportViewer = () => {
             </tbody>
           </table>
         </div>
-
         <div className="report-footer">
-          <button className="btn btn-secondary print-btn me-2" onClick={handlePrint}>
-            Print Report
-          </button>
           <button
-            className="btn btn-primary print-btn"
-            onClick={handleDownloadPDF}
-            disabled={isLoading}
-          >
+            className="btn btn-primary print-btn" onClick={handleDownloadPDF} disabled={isLoading}>
             {isLoading ? 'Generating PDF...' : 'Download as PDF'}
           </button>
         </div>
@@ -187,18 +167,14 @@ const ReportViewer = () => {
       <ReportContent
         reportData={reportData}
         dateRange={dateRange}
-        handlePrint={handlePrint}
         handleDownloadPDF={handleDownloadPDF}
         isLoading={isLoading}
         ref={reportRef}
       />
     );
   };
-
   return (
     <div className="container">
-      <h2>Medical Center Reports</h2>
-
       <div className="report-controls">
         <div className="mb-3">
           <label className="form-label">Report Type:</label>

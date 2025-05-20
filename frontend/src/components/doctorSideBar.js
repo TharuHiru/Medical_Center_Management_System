@@ -24,6 +24,7 @@ const DoctorSidebar = () => {
     '/DoctorDashboard/patientManage': 'Patients',
     '/DoctorDashboard/appointmentManage': 'Appointments',
     '/DoctorDashboard/assistantManage': 'Assistants',
+    '/DoctorDashboard/reports': 'Reports',
   };
 
   const currentTab = tabMap[pathname] || 'Dashboard';
@@ -54,6 +55,7 @@ const DoctorSidebar = () => {
     { href: '/DoctorDashboard/patientManage', text: 'Patients', icon: <FaUser /> },
     { href: '/DoctorDashboard/appointmentManage', text: 'Appointments', icon: <FaCalendarCheck /> },
     { href: '/DoctorDashboard/assistantManage', text: 'Assistants', icon: <FaUser /> },
+    { href: '/DoctorDashboard/reports', text: 'Reports', icon: <FaUser /> },
   ];
 
   return (

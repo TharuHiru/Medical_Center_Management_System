@@ -161,29 +161,37 @@ export default function AppointmentQueue() {
 
   // Check if the doctor is unavailable today
   useEffect(() => {
-    const fetchQueueStatus = async () => {
+    const fetchQueueStatus = () => {
       setIsLoading(true);
       try {
-        const statusDocs = await getDocs(query(collection(db, "queueStatus"), where("date", "==", getFormattedDate(selectedDate)))); // Get the docof the day
-  
-        if (!statusDocs.empty) {
-          const data = statusDocs.docs[0].data(); // Get the first document's data
-          setQueueStatus(data.status); // 'started', 'stopped', etc.
-          setQueueNote(data.note || "");
-        } else {
-          setQueueStatus("started"); // Default to started if no record exists
-          setQueueNote("");
-        }
+        const q = query(
+          collection(db, "queueStatus"),
+          where("date", "==", getFormattedDate(selectedDate))
+        );
+        
+        // Set up real-time listener
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+          if (!snapshot.empty) {
+            const data = snapshot.docs[0].data();
+            setQueueStatus(data.status);
+            setQueueNote(data.note || "");
+          } else {
+            setQueueStatus("started"); // Default to started if no record exists
+            setQueueNote("");
+          }
+          setIsLoading(false);
+        });
+        
+        return unsubscribe; // Cleanup function
       } catch (err) {
         console.error("Error fetching queue status:", err);
         toast.error("Could not load queue status");
-      } finally {
         setIsLoading(false);
       }
     };
   
-    fetchQueueStatus();
-  }, [selectedDate]);
+  return fetchQueueStatus();
+}, [selectedDate]);
 
   // check if the selected patient already has an appointment
   const hasAppointment = appointments.some(

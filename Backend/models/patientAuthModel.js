@@ -61,6 +61,14 @@ const getPrescriptions = async (appoint_ID) => {
     return rows;
 };
 
+const getPaymentDetails = async (prescription_ID) => {
+    const [rows] = await pool.query(
+        'SELECT full_amount FROM payments WHERE prescription_ID = ?', 
+        [prescription_ID]
+    );
+    return rows[0] || { full_amount: 0 }; // Return 0 if no payment found
+};
+
 // get medicine details
 const getMedicines = async (prescription_ID) => {
     const [rows] = await pool.query(
@@ -91,5 +99,6 @@ module.exports = {
     getAppointments,
     getPrescriptions,
     getMedicines,
-    getPatientDetailsByID
+    getPatientDetailsByID,
+    getPaymentDetails
 };

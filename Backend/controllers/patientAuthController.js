@@ -160,11 +160,21 @@ const fetchAppointments = async (req, res) => {
             const prescription = prescriptions[0] || null;
 
             let medicines = [];
+            let payment = { full_amount: 0 }; // Default payment object
+            
             if (prescription) {
                 medicines = await patientAuthModel.getMedicines(prescription.prescription_ID);
+                payment = await patientAuthModel.getPaymentDetails(prescription.prescription_ID);
             }
 
-            return { ...app, prescription, medicines };
+            return { 
+                ...app, 
+                prescription: prescription ? { 
+                    ...prescription,
+                    payment_amount: payment.full_amount 
+                } : null, 
+                medicines 
+            };
         }));
 
         res.json({ success: true, data: detailed });

@@ -30,7 +30,6 @@ const AssistSidebar = () => {
     '/AssistantDashboard/appointmentManagement/prescriptions': 'Prescriptions',
     '/AssistantDashboard/inventoryManagement/inventoryRecords': 'Inventory Records',
     '/AssistantDashboard/inventoryManagement/medicineCategory': 'Medicine Category',
-    '/AssistantDashboard/reports': 'Reports',
   };
 
   const currentTab = tabMap[pathname] || 'Dashboard';
@@ -87,7 +86,6 @@ const AssistSidebar = () => {
         { href: '/AssistantDashboard/inventoryManagement/medicineCategory', text: 'Medicine Category' },
       ],
     },
-    { href: '/AssistantDashboard/reports', text: 'Reports', icon: <FaTachometerAlt /> },
   ];
 
   return (

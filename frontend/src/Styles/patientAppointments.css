@@ -1,0 +1,283 @@
+/* Main container */
+.patient-appointments-container {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Card styles */
+.patient-appointments-card {
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.card-body {
+  padding: 2rem;
+}
+
+/* Title styles */
+.appointments-title {
+  color: #2c3e50;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+
+.title-icon {
+  margin-right: 10px;
+  color: #3498db;
+}
+
+/* Search styles */
+.search-container {
+  margin-bottom: 1.5rem;
+}
+
+.search-icon-container {
+  background-color: white;
+  border-right: none;
+}
+
+.search-icon {
+  color: #7f8c8d;
+}
+
+.search-input {
+  border-left: none;
+  padding: 10px;
+}
+
+.search-input:focus {
+  box-shadow: none;
+  border-color: #ced4da;
+}
+
+.clear-button {
+  border-radius: 0 5px 5px 0;
+}
+
+/* Loading state */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0;
+}
+
+/* Appointment list styles */
+.appointment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.appointment-item {
+  margin-bottom: 1rem;
+}
+
+/* Appointment header */
+.appointment-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(90deg, #f8f9fa 0%, #ffffff 100%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.appointment-header:hover {
+  background: linear-gradient(90deg, #e9ecef 0%, #f8f9fa 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.appointment-header-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.date-badge {
+  font-weight: 600;
+  min-width: 70px;
+  text-align: center;
+  background-color: #3498db;
+  color: white;
+  border-radius: 50px;
+  padding: 0.25rem 0.75rem;
+}
+
+.appointment-info {
+  text-align: left;
+}
+
+.appointment-date {
+  margin: 0;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.appointment-diagnosis {
+  color: #7f8c8d;
+  font-size: 0.85rem;
+}
+
+.collapse-icon {
+  color: #7f8c8d;
+  transition: transform 0.2s ease;
+}
+
+/* Appointment details */
+.appointment-details {
+  margin-top: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.appointment-details.collapsed {
+  display: none;
+}
+
+.details-card {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.details-card-body {
+  padding: 1.5rem;
+}
+
+/* Section styles */
+.section-title {
+  color: #2c3e50;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.section-icon {
+  margin-right: 10px;
+  color: #3498db;
+}
+
+/* Diagnosis section */
+.diagnosis-section {
+  padding-right: 1.5rem;
+}
+
+.diagnosis-info, .notes-info {
+  margin-bottom: 1.5rem;
+}
+
+.diagnosis-info label, .notes-info label {
+  display: block;
+  color: #7f8c8d;
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+}
+
+.diagnosis-info p, .notes-info p {
+  margin: 0;
+  color: #2c3e50;
+}
+
+/* Medicines section */
+.medicines-section {
+  padding-left: 1.5rem;
+}
+
+.medicine-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.medicine-item {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.medicine-item:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.medicine-name {
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.medicine-details {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.dosage-info label {
+  display: block;
+  color: #7f8c8d;
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+}
+
+.dosage-info p {
+  margin: 0;
+  color: #2c3e50;
+}
+
+.no-medicines-alert {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  color: #7f8c8d;
+  text-align: center;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 3rem 0;
+}
+
+.empty-state-icon {
+  font-size: 3rem;
+  color: #bdc3c7;
+  margin-bottom: 1rem;
+}
+
+.empty-state h4 {
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state-message {
+  color: #7f8c8d;
+  margin: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .card-body {
+    padding: 1.5rem;
+  }
+  
+  .diagnosis-section, .medicines-section {
+    padding: 0;
+  }
+  
+  .medicines-section {
+    margin-top: 2rem;
+  }
+  
+  .medicine-details {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

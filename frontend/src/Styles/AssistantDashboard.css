@@ -125,6 +125,11 @@
   font-size: 20px;
 }
 
+.top-bar {
+  z-index: 99999;
+  color: #2c6a75;
+}
+
 /* Search Container */
 .search-container {
   display: flex;

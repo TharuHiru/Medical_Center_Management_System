@@ -8,6 +8,7 @@ import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "@/Styles/AssistantDashboard.css";
 import { createAppointment } from "@/services/appointmentService";
 import { fetchPatientIDs } from "@/services/patientAuthService";
 import { useAuth } from "@/context/AuthContext";
@@ -147,11 +148,7 @@ export default function AppointmentQueue() {
       }
     });
   };
-
-  const logout = () => {
-    console.log("Logged out");
-  };
-
+  
   // Handle date selection for tabs
   const handleDateTabClick = (dateOffset) => {
     const newDate = new Date();
@@ -200,9 +197,9 @@ export default function AppointmentQueue() {
 
   return (
     <ProtectedRoute>
-    <div className="bg-light min-vh-100">
+    <div className="dashboard-container">
       <PatientSidebar onLogout={logout} />
-      <div className="content-area" style={{ marginLeft: "260px" }}>
+      <div className="content-area container mt-4 ">
         <div className="container py-4">
           <div className="card shadow-sm">
             <div className="card-header text-white py-3" style={{ background: 'rgba(32, 58, 67, 0.9)' }}>
@@ -247,7 +244,7 @@ export default function AppointmentQueue() {
                 <div className="alert alert-danger d-flex align-items-center mb-4" role="alert">
                   <FaExclamationTriangle className="me-2" />
                   <div>
-                    <strong>Queue Stopped:</strong> {queueNote || "The doctor is currently unavailable. Booking is disabled."}
+                    <strong>Booking numbers are currently unavailable:</strong> {queueNote || "The doctor is currently unavailable. Booking is disabled."}
                   </div>
                 </div>
               )}
@@ -292,7 +289,12 @@ export default function AppointmentQueue() {
                 <div className="col-md-8">
                   <div className="card h-100 border-0 shadow-sm">
                     <div className="card-header bg-white d-flex justify-content-between align-items-center">
-                      <h5 className="mb-0">Current Queue</h5>
+                     <div className="mb-0" style={{ fontWeight: '600', fontSize: '1.25rem' }}>
+                        Current Queue{' '}
+                        <span className="text-muted" style={{ fontSize: '0.9rem', fontWeight: 'normal' }}>
+                          ( Each patient check-up takes about 15 minute. Thank you for your patience ! )
+                        </span>
+                      </div>
                       <span className="badge bg-primary rounded-pill">{appointments.length} Appointments</span>
                     </div>
                     <div className="card-body p-0">

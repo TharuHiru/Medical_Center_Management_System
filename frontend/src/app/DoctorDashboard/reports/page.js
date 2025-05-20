@@ -2,7 +2,6 @@
 
 import ReportViewer from '@/components/reportViewer';
 import DoctorSidebar from '@/components/doctorSideBar';
-import "@/Styles/AssistantDashboard.css";
 import "@/Styles/loginForms.css";
 import ProtectedRoute from '@/components/protectedRoute';
 
@@ -20,4 +19,4 @@ export default function ReportsPage() {
     </div>
     </ProtectedRoute>
   );
-}
+}import "@/Styles/AssistantDashboard.css";

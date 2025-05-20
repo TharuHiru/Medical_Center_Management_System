@@ -4,12 +4,15 @@ import { useRouter } from 'next/navigation';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import '@/Styles/patientDashboard.css';
-import Image from "next/image"; // Optimize images
+import Image from "next/image"; 
 import ProtectedRoute from '@/components/protectedRoute';
-
+import "@/Styles/sideNavBar.css";
+import Swal from 'sweetalert2';
+import { useAuth } from "@/context/AuthContext";
 
 const Dashboard = () => {
   const router = useRouter();
+  const { logout } = useAuth();
   
   // Handle navigation functions
   const navigateToAppointments = () => {
@@ -19,13 +22,26 @@ const Dashboard = () => {
   const navigateToProfile = () => {
     router.push('/patientDashboard/profile');
   };
-  
-  // Handle logout function
-  const logout = () => {
-    console.log("Logged out");
-    router.push('/login');
-  };
 
+  const handleLogout = () => {
+          Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you want to log out?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, logout',
+            background: '#203a43',
+            color: 'white',
+          }).then((result) => {
+            if (result.isConfirmed) {
+              logout();
+              router.push('/PatientLogin');
+            }
+          });
+        };
+  
   return (
     <ProtectedRoute>
     <div className="min-vh-100 bg-light">
@@ -34,11 +50,7 @@ const Dashboard = () => {
         <div className="container-fluid px-4 py-2">
           <Image src="/Logo.png" alt="Poly Clinic" width={100} height={100} className="me-1" />
           <a className="navbar-brand fs-3 fw-bold" href="#">Patient Portal</a>
-          <button 
-            onClick={logout}
-            className="btn btn-light d-flex align-items-center"
-          >
-            <i className="bi bi-box-arrow-right me-2"></i>
+          <button className="logout-button" style={{ width: "100px" }} onClick={handleLogout}>
             Logout
           </button>
         </div>

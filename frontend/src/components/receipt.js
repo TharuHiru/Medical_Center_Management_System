@@ -123,7 +123,7 @@ export default function Receipt({ show, onHide, serviceCharge, medicines, prescr
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleSendToEmail}>
-          Send to Me
+          Send to Email
         </Button>
         <Button variant="primary" onClick={handlePrint}>
           Print

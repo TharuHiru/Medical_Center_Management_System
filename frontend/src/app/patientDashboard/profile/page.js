@@ -9,6 +9,7 @@ import { fetchPatientIDs, fetchPatientAppointments ,fetchPatientProfile } from "
 import PatientProfileView from "@/components/patientAppointments";
 import '@/Styles/profileTab.css'
 import ProtectedRoute from '@/components/protectedRoute';
+import "@/Styles/AssistantDashboard.css";
 
 export default function ProfilePage() {
   const { masterID } = useAuth();
@@ -67,8 +68,9 @@ export default function ProfilePage() {
   return (
     <>
     <ProtectedRoute>
-      <PatientSidebar />
-      <div className="content-area" style={{ marginLeft: "260px" }}>
+    <div className="dashboard-container">
+      <PatientSidebar /> 
+      <div className="content-area container mt-4" >
         <div className="container mt-4">
           <h3 className="mb-4">Family Patient Profiles</h3>
           {patientList.length === 0 ? (
@@ -113,6 +115,7 @@ export default function ProfilePage() {
           )}
         </div>
         <ToastContainer />
+      </div>
       </div>
       </ProtectedRoute>
     </>

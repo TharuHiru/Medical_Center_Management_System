@@ -161,6 +161,14 @@ export default function PatientAppointments({ patient }) {
                                       <p>{appt.prescription?.other || "N/A"}</p>
                                     </div>
                                   </div>
+                                  <div className="payment-info">
+                                    <label>Payment Amount</label>
+                                    <p className="payment-amount">
+                                      {appt.prescription?.payment_amount ? 
+                                        `Rs. ${appt.prescription.payment_amount.toFixed(2)}` : 
+                                        "No payment recorded"}
+                                    </p>
+                                  </div>
                                   
                                   <div className="col-md-6 medicines-section">
                                     <h5 className="section-title">

@@ -281,3 +281,24 @@
     gap: 0.5rem;
   }
 }
+
+.payment-info {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.payment-info label {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.25rem;
+  display: block;
+}
+
+.payment-amount {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #28a745; /* Green color for payment amount */
+  margin-bottom: 0;
+}

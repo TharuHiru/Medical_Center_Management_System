@@ -6,12 +6,12 @@ import "@/Styles/loginForms.css";
 import "@/Styles/dashboardCard.css";
 import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
-import AssistNavBar from "@/components/assistantSideBar";
+import DoctorSidebar from "@/components/doctorSideBar";
 import { getDashboardStats } from "@/services/dashboardAPI";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import ProtectedRoute from '@/components/protectedRoute';
 
-function AssistantDashboard() {
+function DoctorDashboard() {
   const router = useRouter();
   const { userName } = useAuth();
   const [stats, setStats] = useState(null);
@@ -34,15 +34,11 @@ function AssistantDashboard() {
     fetchStats();
   }, []);
 
-  const logout = () => {
-    router.push("/login");
-  };
-
   if (loading) {
     return (
     <ProtectedRoute>  
       <div className="dashboard-container bg-light">
-        <AssistNavBar onLogout={logout} />
+        <DoctorSidebar />
         <div className="content-area container py-5">
           <div className="d-flex justify-content-center align-items-center" style={{ height: "300px" }}>
             <div className="spinner-border text-primary me-3" role="status">
@@ -60,7 +56,7 @@ function AssistantDashboard() {
     return (
       <ProtectedRoute>
       <div className="dashboard-container bg-light">
-        <AssistNavBar onLogout={logout} />
+        <DoctorSidebar  />
         <div className="content-area container py-5">
           <div className="alert alert-danger">
             <i className="bi bi-exclamation-triangle-fill me-2"></i> {error}
@@ -86,7 +82,7 @@ function AssistantDashboard() {
   return (
     <ProtectedRoute>
     <div className="dashboard-container bg-light">
-      <AssistNavBar onLogout={logout} />
+      <DoctorSidebar />
       
       <div className="content-area container py-4">
         {/* Welcome Card */}
@@ -145,4 +141,4 @@ function AssistantDashboard() {
   );
 }
 
-export default AssistantDashboard;
+export default DoctorDashboard;

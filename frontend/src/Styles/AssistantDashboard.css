@@ -126,7 +126,7 @@
 }
 
 .top-bar {
-  z-index: 99999;
+  z-index: 5;
   color: #2c6a75;
 }
 

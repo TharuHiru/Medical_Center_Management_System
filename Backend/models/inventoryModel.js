@@ -1,10 +1,27 @@
 const pool = require('../config/db');
 
-const insertInventory = (medicine_id, brand_ID, exp_date, stock_quantity, unit_price, buying_price) => {
-    const query = `INSERT INTO medicine_inventory (medicine_ID, Brand_ID, Exp_Date, stock_quantity, unit_price, buying_price, date_added)
-                   VALUES (?, ?, ?, ?, ?, ?, NOW())`;
-    return pool.query(query, [medicine_id, brand_ID, exp_date, stock_quantity, unit_price, buying_price]);
+const getNextInventoryID = async () => {
+    const [rows] = await pool.query("SELECT inventory_ID FROM medicine_inventory ORDER BY inventory_ID DESC LIMIT 1");
+
+    if (rows.length === 0) {
+        return "IN_0000001";
+    }
+
+    const lastID = rows[0].inventory_ID;
+    const numPart = parseInt(lastID.split('_')[1], 10);
+    const nextNum = numPart + 1;
+    return `IN_${nextNum.toString().padStart(7, '0')}`;
 };
+
+const insertInventory = async (medicine_id, brand_ID, exp_date, stock_quantity, unit_price, buying_price) => {
+    const inventory_ID = await getNextInventoryID();
+    
+    const query = `INSERT INTO medicine_inventory (inventory_ID, medicine_ID, Brand_ID, Exp_Date, stock_quantity, unit_price, buying_price, date_added)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`;
+
+    return pool.query(query, [inventory_ID, medicine_id, brand_ID, exp_date, stock_quantity, unit_price, buying_price]);
+};
+
 
 const getAllInventory = async () => {
     const [rows] = await pool.query("SELECT * FROM medicine_inventory");
